@@ -37,6 +37,11 @@ export interface StudyPost extends BasePost {
   status: StudyStatus;
   meeting_type: StudyMeetingType;
   days: number[];
+  location?: {
+    latitude: number;
+    longitude: number;
+    address: string;
+  };
 }
 
 export interface StudyResponse {
@@ -52,6 +57,7 @@ export interface BasePost {
   content: string;
   thumbnail?: string;
   createdAt: string;
+  authorId: number;
 }
 
 export type InfoPost = BasePost;
