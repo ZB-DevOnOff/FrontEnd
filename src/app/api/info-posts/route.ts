@@ -14,38 +14,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const file = formData.get('file');
+    // 파일 처리
+    const thumbnail = formData.get('thumbnail');
     const transformedFormData = new FormData();
 
-    if (file && file instanceof File) {
-      transformedFormData.append('file', file);
+    if (thumbnail && thumbnail instanceof File) {
+      transformedFormData.append('thumbnail', thumbnail);
     }
 
-    // dayType 배열을 쉼표로 구분된 문자열로 변환
-    const dayType = formData.get('dayType');
-    const parsedDayType = dayType ? JSON.parse(dayType as string) : [];
-
+    // 나머지 필드들 추가
     const fields = {
       title: formData.get('title'),
-      studyName: formData.get('studyName'),
-      subject: formData.get('subject'),
-      difficulty: formData.get('difficulty'),
-      dayType: parsedDayType,
-      startDate: formData.get('startDate'),
-      endDate: formData.get('endDate'),
-      startTime: formData.get('startTime'),
-      endTime: formData.get('endTime'),
-      meetingType: formData.get('meetingType'),
-      recruitmentPeriod: formData.get('recruitmentPeriod'),
-      description: formData.get('description'),
-      maxParticipants: Number(formData.get('maxParticipants')),
+      content: formData.get('content'),
       userId: Number(formData.get('userId')),
-      latitude: formData.get('latitude')
-        ? Number(formData.get('latitude'))
-        : undefined,
-      longitude: formData.get('longitude')
-        ? Number(formData.get('longitude'))
-        : undefined,
     };
 
     // FormData에 필드 추가
@@ -56,7 +37,7 @@ export async function POST(req: NextRequest) {
     });
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/study-posts`,
+      `${process.env.NEXT_PUBLIC_API_URL}/info-posts`,
       {
         method: 'POST',
         headers: {
@@ -67,7 +48,7 @@ export async function POST(req: NextRequest) {
     );
 
     if (!response.ok) {
-      throw new Error('스터디 글 작성 실패');
+      throw new Error('정보공유 글 작성 실패');
     }
 
     const responseData = await response.json();
@@ -75,7 +56,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('API Route 에러:', error);
     return NextResponse.json(
-      { message: '스터디 글 작성에 실패했습니다.' },
+      { message: '정보공유 글 작성에 실패했습니다.' },
       { status: 500 },
     );
   }

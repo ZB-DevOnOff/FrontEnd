@@ -39,12 +39,12 @@ export default function OnlineStudyList() {
         meetingType: 'ONLINE',
       });
 
-      selectedSubjects.forEach(subject => params.append('subjects[]', subject));
+      selectedSubjects.forEach(subject => params.append('subject[]', subject));
       selectedStatus.forEach(status => params.append('status[]', status));
       selectedDifficulty.forEach(difficulty =>
         params.append('difficulty[]', difficulty),
       );
-      selectedDays.forEach(day => params.append('days[]', day));
+      selectedDays.forEach(day => params.append('dayType[]', day));
 
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/study-posts/search`,
@@ -93,8 +93,8 @@ export default function OnlineStudyList() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {isLoading ? (
           <div>로딩 중...</div>
-        ) : posts?.data ? (
-          posts.data.map((post: StudyPost) => (
+        ) : posts?.content ? (
+          posts.content.map((post: StudyPost) => (
             <StudyCard key={post.id} post={post} />
           ))
         ) : (
@@ -104,7 +104,7 @@ export default function OnlineStudyList() {
 
       <div className="flex justify-center mt-8">
         <div className="join">
-          {Array.from({ length: posts?.total_pages || 0 }).map((_, i) => (
+          {Array.from({ length: posts?.totalPages || 0 }).map((_, i) => (
             <button
               key={i}
               className={`join-item btn ${page === i ? 'btn-active' : ''}`}

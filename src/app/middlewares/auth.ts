@@ -18,6 +18,11 @@ const checkAuth = (request: NextRequest) => {
   const refreshToken = request.cookies.get('refreshToken')?.value;
   console.log('Refresh token:', refreshToken);
 
+  console.log('미들웨어 토큰 체크:', {
+    accessToken: accessToken ? '존재' : '없음',
+    refreshToken: refreshToken ? '존재' : '없음',
+  });
+
   if (accessToken) {
     return processAccessToken(request, accessToken);
   }

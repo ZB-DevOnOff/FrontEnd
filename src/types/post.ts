@@ -21,20 +21,24 @@ export interface PostResponse<T> {
 export interface StudyPost {
   id: number;
   title: string;
-  thumbnail?: string;
+  studyName: string;
+  subject: string;
+  difficulty: string;
+  dayType: string[];
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  meetingType: string;
+  recruitmentPeriod: string;
+  description: string;
+  latitude?: number;
+  longitude?: number;
   status: 'RECRUITING' | 'IN_PROGRESS' | 'CANCELED';
-  subject:
-    | 'CONCEPT_LEARNING'
-    | 'PROJECT'
-    | 'CHALLENGE'
-    | 'CERTIFICATION'
-    | 'JOB_PREPARATION'
-    | 'ETC';
-  difficulty: 'HIGH' | 'MEDIUM' | 'LOW';
-  meetingTime: string;
-  recruitmentEndDate: string;
-  currentMembers: number;
-  maxMembers: number;
-  studyStartDate: string;
-  studyEndDate: string;
+  thumbnailImgUrl: string | null;
+  maxParticipants: number;
+  currentParticipants: number;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
 }

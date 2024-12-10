@@ -10,8 +10,7 @@ import {
   DAY_KOREAN,
   StudyPost,
 } from '@/types/study';
-import { convertDifficulty } from '@/utils/study';
-import { StudySubject } from '@/types/study';
+import { useAuthStore } from '@/store/authStore';
 
 interface OnlineFormProps {
   initialData?: StudyPost;
@@ -20,9 +19,17 @@ interface OnlineFormProps {
 
 export default function OnlineForm({ initialData, isEdit }: OnlineFormProps) {
   const router = useRouter();
+  const { userInfo } = useAuthStore();
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
+  const { isSignedIn } = useAuthStore();
+
+  useEffect(() => {
+    if (!isSignedIn) {
+      router.push('/signin');
+    }
+  }, [isSignedIn]);
 
   useEffect(() => {
     if (initialData && isEdit) {
@@ -44,47 +51,100 @@ export default function OnlineForm({ initialData, isEdit }: OnlineFormProps) {
     setIsLoading(true);
 
     try {
-      const formData = new FormData(e.currentTarget);
-      const thumbnail = formData.get('thumbnail') as File;
+      const formData = new FormData();
+      const fileInput = e.currentTarget.querySelector(
+        'input[name="file"]',
+      ) as HTMLInputElement;
+      const file = fileInput.files?.[0];
 
-      let thumbnailUrl = '';
-      if (thumbnail && thumbnail.size > 0) {
-        const imageFormData = new FormData();
-        imageFormData.append('image', thumbnail);
-        const response = await axios.post('/api/upload', imageFormData);
-        thumbnailUrl = response.data.url;
+      if (file) {
+        formData.append('file', file);
       }
 
-      const studyData = {
-        title: formData.get('title'),
-        studyName: formData.get('studyName'),
-        description: formData.get('content'),
-        subject: formData.get('subject') as StudySubject,
-        difficulty: convertDifficulty(formData.get('difficulty') as string),
-        startDate: formData.get('studyStartDate'),
-        endDate: formData.get('studyEndDate'),
-        startTime: formData.get('meetingStartTime'),
-        endTime: formData.get('meetingEndTime'),
-        meetingType: 'ONLINE',
-        recruitmentPeriod: formData.get('recruitmentEndDate'),
-        maxParticipants: parseInt(formData.get('maxMembers') as string),
+      // 나머지 필드들 추가
+      const requiredFields = {
+        title: (e.currentTarget.elements.namedItem('title') as HTMLInputElement)
+          .value,
+        studyName: (
+          e.currentTarget.elements.namedItem('studyName') as HTMLInputElement
+        ).value,
+        subject: (
+          e.currentTarget.elements.namedItem('subject') as HTMLSelectElement
+        ).value,
+        difficulty: (
+          e.currentTarget.elements.namedItem('difficulty') as HTMLSelectElement
+        ).value,
         dayType: selectedDays,
-        thumbnailImgUrl: thumbnailUrl || '/default-study-thumbnail.png',
-        userId: 1,
+        startDate: (
+          e.currentTarget.elements.namedItem(
+            'studyStartDate',
+          ) as HTMLInputElement
+        ).value,
+        endDate: (
+          e.currentTarget.elements.namedItem('studyEndDate') as HTMLInputElement
+        ).value,
+        startTime: (
+          e.currentTarget.elements.namedItem(
+            'meetingStartTime',
+          ) as HTMLInputElement
+        ).value,
+        endTime: (
+          e.currentTarget.elements.namedItem(
+            'meetingEndTime',
+          ) as HTMLInputElement
+        ).value,
+        meetingType: 'ONLINE',
+        recruitmentPeriod: (
+          e.currentTarget.elements.namedItem(
+            'recruitmentEndDate',
+          ) as HTMLInputElement
+        ).value,
+        maxParticipants: Number(
+          (e.currentTarget.elements.namedItem('maxMembers') as HTMLInputElement)
+            .value,
+        ),
+        description: (
+          e.currentTarget.elements.namedItem('content') as HTMLTextAreaElement
+        ).value,
+        userId: userInfo?.id,
       };
 
-      if (isEdit && initialData) {
-        await axios.put(`/api/study-posts/${initialData.id}`, studyData);
-      } else {
-        await axios.post('/api/study-posts', studyData);
-      }
+      // FormData에 필드 추가
+      Object.entries(requiredFields).forEach(([key, value]) => {
+        if (value !== undefined) {
+          if (Array.isArray(value)) {
+            formData.append(key, JSON.stringify(value));
+          } else {
+            formData.append(key, String(value));
+          }
+        }
+      });
 
+      if (isEdit && initialData) {
+        await axios.put(`/api/study-posts/${initialData.id}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        alert('스터디 글이 수정되었습니다!');
+      } else {
+        const response = await axios.post('/api/study-posts', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        if (response.status === 200) {
+          alert('스터디 글이 작성되었습니다!');
+        }
+      }
       router.push('/community/study');
     } catch (error) {
       console.error(
         isEdit ? '스터디 글 수정 실패:' : '스터디 글 작성 실패:',
         error,
       );
+      alert('스터디 글 작성에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -109,7 +169,7 @@ export default function OnlineForm({ initialData, isEdit }: OnlineFormProps) {
         </label>
         <input
           type="file"
-          name="thumbnail"
+          name="file"
           accept="image/*"
           onChange={handleThumbnailChange}
           className="file-input file-input-bordered w-full"
@@ -179,9 +239,8 @@ export default function OnlineForm({ initialData, isEdit }: OnlineFormProps) {
           name="difficulty"
           required
           className="select select-bordered"
-          defaultValue={initialData?.difficulty || ''}
+          defaultValue={initialData?.difficulty || 'BEGINNER'}
         >
-          <option value="">난이도 선택</option>
           {Object.entries(DIFFICULTY_OPTIONS).map(([key, value]) => (
             <option key={key} value={key}>
               {value}

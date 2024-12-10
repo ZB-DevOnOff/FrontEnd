@@ -13,7 +13,15 @@ const middleware = (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: [
+    '/api/study-posts/:path*/participants',
+    '/api/study-posts/:path*/applications',
+    '/api/study-posts/:path*/close',
+    '/api/comments',
+    '/api/study-posts/:path*/PUT',
+    '/api/qna-posts/:path*/PUT',
+    '/api/info-posts/:path*/PUT',
+  ],
 };
 
 export default middleware;

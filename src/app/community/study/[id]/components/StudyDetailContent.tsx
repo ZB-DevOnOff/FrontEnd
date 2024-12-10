@@ -26,14 +26,15 @@ export default function StudyDetailContent({
   useEffect(() => {
     const fetchStudy = async () => {
       try {
-        const response = await fetch(`/api/study-posts/${studyId}`);
-        if (!response.ok) {
-          throw new Error('스터디 정보를 불러올 수 없습니다.');
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/study-posts/${studyId}`,
+        );
+        if (response.status === 200) {
+          setStudy(response.data);
         }
-        const data = await response.json();
-        setStudy(data);
-      } catch (error) {
+      } catch (error: any) {
         console.error('스터디 정보 조회 실패:', error);
+        alert(error.response?.data?.message);
       } finally {
         setIsLoading(false);
       }
@@ -45,7 +46,7 @@ export default function StudyDetailContent({
   if (isLoading) return <div>Loading...</div>;
   if (!study) return <div>스터디를 찾을 수 없습니다.</div>;
 
-  const isAuthor = isSignedIn && userInfo?.id === study.authorId;
+  const isAuthor = isSignedIn && userInfo?.id === study.userId;
 
   const handleEdit = () => {
     router.push(`/community/study/edit/${studyId}`);
@@ -91,15 +92,15 @@ export default function StudyDetailContent({
         <div className="mb-6">
           <div className="grid grid-cols-2 gap-4 text-sm text-base-content/70">
             <p>
-              모집 기한: {dayjs(study.recruitmentEndDate).format('YYYY.MM.DD')}
+              모집 기한: {dayjs(study.recruitmentPeriod).format('YYYY.MM.DD')}
               까지
             </p>
             <p>
-              모집 인원: {study.currentMembers}/{study.maxMembers}명
+              모집 인원: {study.currentParticipants}/{study.maxParticipants}명
             </p>
             <p>
-              스터디 기간: {dayjs(study.studyStartDate).format('YYYY.MM.DD')} ~
-              {dayjs(study.studyEndDate).format('YYYY.MM.DD')}
+              스터디 기간: {dayjs(study.startDate).format('YYYY.MM.DD')} ~
+              {dayjs(study.endDate).format('YYYY.MM.DD')}
             </p>
             <p>스터디 요일: {study.dayType.join(', ')}</p>
           </div>
@@ -123,7 +124,7 @@ export default function StudyDetailContent({
           setStudy={setStudy}
         />
       </div>
-      {study.meeting_type === 'HYBRID' &&
+      {study.meetingType === 'HYBRID' &&
         study.latitude &&
         study.longitude &&
         study.address && (

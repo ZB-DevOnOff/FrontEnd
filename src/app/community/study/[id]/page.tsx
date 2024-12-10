@@ -1,6 +1,6 @@
 import StudyDetailContent from './components/StudyDetailContent';
 
-export default function StudyDetailPage({
+export default async function StudyDetailPage({
   params,
 }: {
   params: { id: string };

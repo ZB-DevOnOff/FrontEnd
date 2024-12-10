@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import handleRedirectToSignIn from './handleRedirectToSignIn';
 
 const processRefreshToken = (request: NextRequest, accessToken: string) => {
   console.log('accessToken 없음');
