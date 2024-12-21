@@ -11,7 +11,6 @@ import CustomAlert from '@/components/common/Alert';
 
 const Header = () => {
   const { isSignedIn, setIsSignedIn, userInfo, resetStore } = useAuthStore();
-  const [isNavOpen, setIsNavOpen] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -20,57 +19,52 @@ const Header = () => {
     () => () => {},
   );
   const [, setIsLoading] = useState(true);
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState<string>('');
 
   const pathname = usePathname();
   const router = useRouter();
 
-  // useEffect(() => {
-  //   setIsSignedIn(isSignedIn);
-  //   console.log('isSignedIn:', isSignedIn);
-  // }, []);
+  // pathname이 변경될 때마다 현재 활성화된 메뉴 설정
+  useEffect(() => {
+    if (pathname === '/') {
+      setActiveMenu('');
+    } else if (pathname.includes('/community/study')) {
+      setActiveMenu('study');
+    } else if (pathname.includes('/community/info')) {
+      setActiveMenu('info');
+    } else if (pathname.includes('/community/qna')) {
+      setActiveMenu('qna');
+    } else if (pathname.includes('/mypage')) {
+      setActiveMenu('mypage');
+    }
+  }, [pathname]);
 
-  // useEffect(() => {
-  //   const checkAuthStatus = async () => {
-  //     try {
-  //       const response = await axios.get('/api/auth/status');
-  //       console.log('isSignedIn참', response.data.isSignedIn);
-  //       if (response.data.isSignedIn === true) {
-  //         setIsSignedIn(true);
-  //       } else {
-  //         setIsSignedIn(false);
-  //         resetStore();
-  //         router.push('/signin');
-  //       }
-  //     } catch (error: any) {
-  //       console.log('isSignedIn 문제', error.response.data.isSignedIn);
-  //       console.error('인증 상태 확인 실패', error);
-  //       // setIsSignedIn(false);
-  //       // resetStore();
-  //       // router.push('/signin');
-  //     }
-  //   };
+  const toggleNav = () => {
+    setIsNavOpen(!isNavOpen);
+    if (!isNavOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  };
 
-  //   if (!isSignedIn) {
-  //     checkAuthStatus(); // isSignedIn이 false일 때만 인증 상태 확인
-  //   }
-  // }, [isSignedIn, setIsSignedIn, resetStore, router]);
+  const handleMenuClick = (menu: string) => {
+    setActiveMenu(menu);
+    setIsNavOpen(false);
+  };
 
   useEffect(() => {
-    // 상태 복원
     const storedSignedIn = useAuthStore.getState().isSignedIn;
     console.log('로그인 상태는', storedSignedIn);
     setIsSignedIn(storedSignedIn);
-    setIsLoading(false); // 로딩 완료
+    setIsLoading(false);
   }, [setIsSignedIn]);
 
   useEffect(() => {
     console.log(`닉네임: ${userInfo?.nickname}`);
     console.log(`profileImageUrl: ${userInfo?.profileImageUrl}`);
   }, [userInfo]);
-
-  const isActive = (path: string) => {
-    return pathname === path ? 'btn-active' : '';
-  };
 
   const showSignOutConfirm = () => {
     setConfirmMessage('로그아웃 하시겠습니까?');
@@ -93,18 +87,14 @@ const Header = () => {
         setAlertMessage('로그아웃이 완료되었습니다.');
         setShowAlert(true);
       } else {
-        setAlertMessage('액세스 토큰이 없어 로그아웃을 할 수 없습니다.'); // 삭제 예정
+        setAlertMessage('액세스 토큰이 없어 로그아웃을 할 수 없습니다.');
         setShowAlert(true);
       }
     } catch (error: any) {
-      const { status, data } = error.response;
-      console.log('data: ' + data.errorMessage);
-
-      // const message =
-      //   data?.errorMessage || '오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+      const { status } = error.response;
       if (error.response) {
         if (status === 401) {
-          setAlertMessage('액세스 토큰이 없어 로그아웃을 할 수 없습니다.'); // 삭제 예정
+          setAlertMessage('액세스 토큰이 없어 로그아웃을 할 수 없습니다.');
         } else if (status === 400) {
           setAlertMessage('로그아웃에 실패했습니다. 다시 시도해 주세요.');
         } else if (status === 404) {
@@ -126,39 +116,69 @@ const Header = () => {
   };
 
   return (
-    <header className="navbar bg-base-100 shadow-md">
+    <header className="navbar bg-base-100 shadow-md fixed w-full z-40">
+      {/* Logo */}
       <div className="navbar-start">
         <Link href="/" className="btn btn-ghost text-xl text-base-content">
           DevOff
         </Link>
       </div>
+
+      {/* Desktop Menu */}
       <div className="navbar-center hidden lg:flex">
         <div className="join">
           <Link
             href="/community/study"
-            className={`btn join-item ${isActive('/community/study')}`}
+            className={`btn join-item ${activeMenu === 'study' ? 'btn-active' : ''}`}
+            onClick={() => handleMenuClick('study')}
           >
             스터디
           </Link>
           <Link
             href="/community/info"
-            className={`btn join-item ${isActive('/community/info')}`}
+            className={`btn join-item ${activeMenu === 'info' ? 'btn-active' : ''}`}
+            onClick={() => handleMenuClick('info')}
           >
-            정보공유
+            정보 공유
           </Link>
           <Link
             href="/community/qna"
-            className={`btn join-item ${isActive('/community/qna')}`}
+            className={`btn join-item ${activeMenu === 'qna' ? 'btn-active' : ''}`}
+            onClick={() => handleMenuClick('qna')}
           >
             Q&A
           </Link>
         </div>
       </div>
+
+      <div className="navbar-end hidden lg:flex space-x-2">
+        {isSignedIn ? (
+          <>
+            <Link
+              href={`/mypage/${userInfo?.id}`}
+              className={`btn btn-ghost ${activeMenu === 'mypage' ? 'btn-active' : ''}`}
+              onClick={() => handleMenuClick('mypage')}
+            >
+              마이페이지
+            </Link>
+            <button className="btn btn-ghost" onClick={showSignOutConfirm}>
+              로그아웃
+            </button>
+          </>
+        ) : (
+          <>
+            <Link href="/signin" className="btn btn-ghost">
+              로그인
+            </Link>
+            <Link href="/signup" className="btn btn-ghost">
+              회원가입
+            </Link>
+          </>
+        )}
+      </div>
+
       <div className="navbar-end lg:hidden">
-        <button
-          className="btn btn-ghost text-base-content"
-          onClick={() => setIsNavOpen(!isNavOpen)}
-        >
+        <button className="btn btn-ghost" onClick={toggleNav}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
@@ -175,74 +195,93 @@ const Header = () => {
           </svg>
         </button>
       </div>
-      <div className={`navbar-end ${isNavOpen ? 'block' : 'hidden'} lg:hidden`}>
-        <div className="flex flex-col items-center space-y-2">
-          <Link
-            href="/community/study"
-            className={`btn ${isActive('/community/study')}`}
-          >
-            스터디
-          </Link>
-          <Link
-            href="/community/info"
-            className={`btn ${isActive('/community/info')}`}
-          >
-            정보공유
-          </Link>
-          <Link
-            href="/community/qna"
-            className={`btn ${isActive('/community/qna')}`}
-          >
-            Q&A
-          </Link>
-          {isSignedIn ? (
-            <>
-              <Link href={`/mypage/${userInfo?.id}`} className="btn btn-ghost">
-                마이페이지
-              </Link>
-              <button
-                className="btn btn-ghost text-base-content"
-                onClick={showSignOutConfirm}
+
+      {isNavOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-end">
+          <div className="w-2/3 max-w-xs bg-white h-full p-6">
+            <button className="btn btn-ghost" onClick={toggleNav}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <>
-              <Link href="/signin" className="btn btn-ghost text-base-content">
-                로그인
-              </Link>
-              <Link href="/signup" className="btn btn-ghost text-base-content">
-                회원가입
-              </Link>
-            </>
-          )}
-        </div>
-      </div>
-      <div className="navbar-end hidden lg:flex">
-        {isSignedIn ? (
-          <>
-            <Link href={`/mypage/${userInfo?.id}`} className="btn btn-ghost">
-              마이페이지
-            </Link>
-            <button
-              className="btn btn-ghost text-base-content"
-              onClick={showSignOutConfirm}
-            >
-              로그아웃
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
             </button>
-          </>
-        ) : (
-          <>
-            <Link href="/signin" className="btn btn-ghost text-base-content">
-              로그인
-            </Link>
-            <Link href="/signup" className="btn btn-ghost text-base-content">
-              회원가입
-            </Link>
-          </>
-        )}
-      </div>
+
+            <div className="flex flex-col mt-8 space-y-4">
+              <Link
+                href="/community/study"
+                className={`btn ${activeMenu === 'study' ? 'btn-active' : ''}`}
+                onClick={() => handleMenuClick('study')}
+              >
+                스터디
+              </Link>
+              <Link
+                href="/community/info"
+                className={`btn ${activeMenu === 'info' ? 'btn-active' : ''}`}
+                onClick={() => handleMenuClick('info')}
+              >
+                정보 공유
+              </Link>
+              <Link
+                href="/community/qna"
+                className={`btn ${activeMenu === 'qna' ? 'btn-active' : ''}`}
+                onClick={() => handleMenuClick('qna')}
+              >
+                Q&A
+              </Link>
+            </div>
+
+            <div className="border-t border-gray-200 my-4" />
+
+            {/* Mobile Auth Buttons */}
+            <div className="flex flex-col space-y-4">
+              {isSignedIn ? (
+                <>
+                  <Link
+                    href={`/mypage/${userInfo?.id}`}
+                    className={`btn ${activeMenu === 'mypage' ? 'btn-active' : ''}`}
+                    onClick={() => handleMenuClick('mypage')}
+                  >
+                    마이페이지
+                  </Link>
+                  <button
+                    className="btn btn-ghost"
+                    onClick={showSignOutConfirm}
+                  >
+                    로그아웃
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/signin"
+                    className="btn"
+                    onClick={() => handleMenuClick('signin')}
+                  >
+                    로그인
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="btn"
+                    onClick={() => handleMenuClick('signup')}
+                  >
+                    회원가입
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       {showConfirm && (
         <CustomConfirm
           message={confirmMessage}

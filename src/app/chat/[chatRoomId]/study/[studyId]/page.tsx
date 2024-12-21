@@ -8,12 +8,12 @@ type ChatPageProps = {
 };
 
 const ChatPage = async ({ params }: ChatPageProps) => {
-  const { chatRoomId, studyId } = await params;
+  const { chatRoomId } = await params;
 
   return (
     <div className="p-4 space-y-4">
       <div className="mt-4">
-        <ChatRoom chatRoomId={chatRoomId} studyId={studyId} />
+        <ChatRoom chatRoomId={chatRoomId} />
       </div>
     </div>
   );

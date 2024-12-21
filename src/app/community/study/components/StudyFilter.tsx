@@ -77,7 +77,9 @@ export function StudyFilter({
                 key={key}
                 onClick={() => onFilterChange('subjects', key)}
                 className={`btn btn-sm ${
-                  selectedSubjects.includes(key) ? 'btn-primary' : 'btn-outline'
+                  selectedSubjects.includes(key)
+                    ? 'btn-primary bg-primary/70'
+                    : 'btn-outline'
                 }`}
               >
                 {value}
@@ -94,7 +96,7 @@ export function StudyFilter({
                 key={key}
                 onClick={() => onFilterChange('status', key)}
                 className={`btn btn-sm ${
-                  selectedStatus.includes(key) ? 'btn-primary' : 'btn-outline'
+                  selectedStatus.includes(key) ? 'btn-secondary' : 'btn-outline'
                 }`}
               >
                 {value}
@@ -112,7 +114,7 @@ export function StudyFilter({
                 onClick={() => onFilterChange('difficulty', key)}
                 className={`btn btn-sm ${
                   selectedDifficulty.includes(key)
-                    ? 'btn-primary'
+                    ? 'btn-accent bg-accent/70'
                     : 'btn-outline'
                 }`}
               >
@@ -130,7 +132,9 @@ export function StudyFilter({
                 key={day}
                 onClick={() => handleDayChange(day)}
                 className={`btn btn-sm ${
-                  isSelected(day) ? 'btn-primary' : 'btn-outline'
+                  isSelected(day)
+                    ? 'btn-info bg-info/30 border-none'
+                    : 'btn-outline'
                 }`}
               >
                 {day}

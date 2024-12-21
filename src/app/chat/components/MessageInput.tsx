@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { FiSend } from 'react-icons/fi';
 
 interface MessageInputProps {
   onSendMessage: (content: string, file?: File) => Promise<void>;
@@ -74,10 +75,11 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
         />
         <button
           type="submit"
-          className="btn btn-primary px-6 py-3 text-base"
+          className="btn btn-base bg-green-400 text-base hover:bg-green-500 text-white rounded-full flex items-center gap-2 px-8 py-2"
           disabled={isLoading}
         >
           {isLoading ? '전송 중...' : '전송'}
+          {!isLoading && <FiSend className="text-lg" />}
         </button>
       </div>
     </form>

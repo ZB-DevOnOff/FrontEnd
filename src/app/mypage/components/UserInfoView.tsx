@@ -421,7 +421,7 @@ const UserInfoView = () => {
 
   return (
     <div className="flex flex-col md:flex-row gap-8 p-8 max-w-4xl mx-auto">
-      <div className="flex flex-col items-center w-full md:w-1/3 border-r pr-4">
+      <div className="flex flex-col items-center w-full md:w-1/3 md:border-r md:pr-4">
         <div className="relative">
           <Image
             src={profileImageUrl || '/default-profile-image.png'}
@@ -475,25 +475,25 @@ const UserInfoView = () => {
       <div className="flex flex-col w-full md:w-2/3 space-y-6">
         <div className="space-y-4">
           <div className="flex flex-col md:flex-row items-center gap-4">
-            <label className="font-medium text-lg w-32 md:w-1/3 text-right">
+            <label className="font-medium text-lg w-32 md:w-1/3 text-left">
               닉네임
             </label>
             <input
               type="text"
               value={nickname}
               onChange={e => setNickname(e.target.value)}
-              className="input input-bordered w-full"
+              className="input input-bordered w-full md:w-2/3" // Adjust width for consistency
             />
             <button
               onClick={handleNicknameButtonClick}
-              className="btn btn-primary w-full md:w-auto"
+              className="btn btn-primary w-full md:w-auto" // Ensure button width is consistent
             >
               닉네임 변경
             </button>
             {userInfo?.signinType === 'GENERAL' && (
               <button
                 onClick={handlePasswordButtonClick}
-                className="btn btn-secondary w-full md:w-auto"
+                className="btn btn-secondary w-full md:w-auto" // Ensure button width is consistent
               >
                 비밀번호 변경
               </button>
@@ -501,7 +501,7 @@ const UserInfoView = () => {
           </div>
 
           <div className="flex flex-col md:flex-row items-center gap-4">
-            <label className="font-medium text-lg w-32 md:w-1/3 text-right">
+            <label className="font-medium text-lg w-32 md:w-1/3 text-left">
               이메일
             </label>
             <div className="input input-bordered w-full cursor-not-allowed bg-gray-100 flex items-center justify-center">

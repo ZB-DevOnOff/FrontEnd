@@ -16,7 +16,7 @@ export interface InfoPost {
   user: User;
   thumbnailImgUrl: string | null;
   title: string;
-  description: string | null;
+  description: string;
   createdAt: string;
   updatedAt: string;
 }

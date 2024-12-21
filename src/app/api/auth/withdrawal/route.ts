@@ -60,10 +60,6 @@ export const POST = async (req: NextRequest) => {
     deleteCookie(res, 'accessToken');
     deleteCookie(res, 'refreshToken');
 
-    // return NextResponse.json(
-    //   { message: '회원 탈퇴 성공' },
-    //   { headers: res.headers },
-    // );
     return res;
   } catch (error: any) {
     if (error.response) {
