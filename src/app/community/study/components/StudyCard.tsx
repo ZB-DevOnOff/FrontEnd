@@ -27,9 +27,16 @@ export function StudyCard({ post }: StudyCardProps) {
     return time.slice(0, 5); // "HH:mm:ss" -> "HH:mm"
   };
 
+  const formatDayType = (days: string[]) => {
+    if (days.length <= 3) {
+      return days;
+    }
+    return [...days.slice(0, 3), `+${days.length - 3}`];
+  };
+
   return (
     <div
-      className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow w-full min-w-[320px] max-w-[320px] group h-[535px]"
+      className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow w-full min-w-[330px] max-w-[330px] group h-[540px]"
       onClick={() => router.push(`/community/study/${post.id}`)}
     >
       <figure className="px-4 pt-4">
@@ -42,12 +49,12 @@ export function StudyCard({ post }: StudyCardProps) {
         />
       </figure>
       <div className="card-body flex flex-col justify-between">
-        <h2 className="card-title text-xl mb-4">
+        <h2 className="card-title text-xl mb-2">
           {truncateText(post.title, 20)}
         </h2>
 
         {/* 정보 뱃지 그리드 */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
           <div className="badge badge-lg bg-primary/70 px-4 py-3 rounded-full">
             {truncateText(convertSubjectToKorean(post.subject), 7)}
           </div>
@@ -58,7 +65,7 @@ export function StudyCard({ post }: StudyCardProps) {
             {post.currentParticipants + 1}/{post.maxParticipants}명
           </div>
           <div className="flex flex-wrap gap-1">
-            {post.dayType.map((day, index) => (
+            {formatDayType(post.dayType).map((day, index) => (
               <div
                 key={index}
                 className="badge badge-lg bg-info/30 px-2 py-3 rounded-full"
@@ -70,20 +77,20 @@ export function StudyCard({ post }: StudyCardProps) {
         </div>
 
         {/* 하단 시간 정보 */}
-        <div className="mt-6 space-y-4">
+        <div className="mt-2 space-y-4">
           {/* 모집 마감일 */}
           <div className="flex items-center gap-2 text-base">
             <FaCalendarAlt className="text-red-400" />
-            <span className="text-gray-700">모집 마감일</span>
-            <span className="ml-auto font-semibold text-gray-700">
+            <span className="text-gray-700 text-sm">모집 마감일</span>
+            <span className="ml-auto font-semibold text-sm text-gray-700">
               {dayjs(post.recruitmentPeriod).format('YY.MM.DD')}
             </span>
           </div>
           {/* 스터디 기간 */}
           <div className="flex items-center gap-2 text-base">
             <FaCalendarAlt className="text-gray-500" />
-            <span className="text-gray-700">스터디 기간</span>
-            <span className="ml-auto font-semibold text-gray-700">
+            <span className="text-gray-700 text-sm">스터디 기간</span>
+            <span className="ml-auto font-semibold text-sm text-gray-700">
               {dayjs(post.startDate).format('YY.MM.DD')} ~{' '}
               {dayjs(post.endDate).format('YY.MM.DD')}
             </span>
@@ -91,8 +98,8 @@ export function StudyCard({ post }: StudyCardProps) {
           {/* 스터디 시간 */}
           <div className="flex items-center gap-2 text-base">
             <FaClock className="text-gray-500" />
-            <span className="text-gray-700">스터디 시간</span>
-            <span className="ml-auto font-semibold text-gray-700">
+            <span className="text-gray-700 text-sm">스터디 시간</span>
+            <span className="ml-auto font-semibold text-sm text-gray-700">
               {formatTime(post.startTime)} ~ {formatTime(post.endTime)}
             </span>
           </div>

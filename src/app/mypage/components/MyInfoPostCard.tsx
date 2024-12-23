@@ -24,7 +24,7 @@ const MyInfoPostCard = ({ post }: MyPostCardProps) => {
 
   return (
     <div
-      className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow w-full min-w-[320px] max-w-[320px] group h-[500px]"
+      className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow w-full min-w-[330px] max-w-[330px] group h-[500px]"
       onClick={() => router.push(`/community/info/${post.id}`)}
     >
       <figure className="px-4 pt-4">
