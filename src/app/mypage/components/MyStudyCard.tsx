@@ -64,6 +64,10 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
     return [...days.slice(0, 2), `+${days.length - 2}`];
   };
 
+  const formatDate = (date: string) => {
+    return date.replace(/-/g, '.');
+  };
+
   const checkStudyTime = () => {
     const now = new Date();
     const currentDay = ['일', '월', '화', '수', '목', '금', '토'][now.getDay()];
@@ -159,7 +163,7 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
             <FaCalendarAlt className="text-gray-500" />
             <span className="font-base text-sm text-gray-700">스터디 기간</span>
             <span className="ml-auto text-sm font-semibold text-gray-700 whitespace-nowrap">
-              {post.startDate} ~ {post.endDate}
+              {formatDate(post.startDate)}~{formatDate(post.endDate)}
             </span>
           </div>
           <div className="flex items-center gap-2 text-base">
