@@ -511,7 +511,7 @@ const UserInfoView = () => {
               className="btn btn-accent w-full md:w-auto"
               onClick={handleWithdrawalButtonClick}
             >
-              회원 탈퇴햣
+              회원 탈퇴
             </button>
           </div>
         </div>
