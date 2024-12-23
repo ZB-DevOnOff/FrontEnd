@@ -420,7 +420,7 @@ const UserInfoView = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-8 p-8 max-w-4xl mx-auto">
+    <div className="flex flex-col md:flex-row gap-8 p-8 max-w-5xl mx-auto">
       <div className="flex flex-col items-center w-full md:w-1/3 md:border-r md:pr-4">
         <div className="relative">
           <Image
@@ -511,7 +511,7 @@ const UserInfoView = () => {
               className="btn btn-accent w-full md:w-auto"
               onClick={handleWithdrawalButtonClick}
             >
-              회원 탈퇴
+              회원 탈퇴햣
             </button>
           </div>
         </div>
