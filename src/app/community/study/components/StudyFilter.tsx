@@ -67,7 +67,7 @@ export function StudyFilter({
   };
 
   return (
-    <div className="h-[330px] overflow-y-auto bg-base-200 p-4 rounded-lg">
+    <div className="h-[200px] overflow-y-auto bg-base-200 p-4 rounded-lg">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div>
           <h3 className="font-semibold mb-2">주제</h3>
