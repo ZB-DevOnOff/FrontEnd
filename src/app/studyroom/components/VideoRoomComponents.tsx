@@ -521,11 +521,11 @@ export default function VideoRoomComponent() {
       }
 
       // 4. 페이지 이동
-      router.push('/mypage');
+      router.push(`/`);
     } catch (error) {
       console.error('연결 종료 중 오류 발생:', error);
-      // 에러가 발생해도 마이페이지로 이동
-      router.push('/mypage');
+      // 에러가 발생해도 페이지 이동
+      router.push(`/`);
     }
   };
 

@@ -54,7 +54,7 @@ export default function RankingPage() {
               <th className="w-1/6">순위</th>
               <th className="w-2/6">스터디명</th>
               <th className="w-2/6">총 공부시간</th>
-              <th className="w-1/6">달성률</th>
+              <th className="w-1/6">상위</th>
             </tr>
           </thead>
           <tbody>
@@ -75,7 +75,7 @@ export default function RankingPage() {
                       value={rank.percent}
                       max="100"
                     ></progress>
-                    <span className="text-sm">{rank.percent}%</span>
+                    <span className="text-sm">{rank.percent.toFixed(2)}%</span>
                   </div>
                 </td>
               </tr>
