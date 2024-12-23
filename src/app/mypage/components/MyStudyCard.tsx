@@ -58,6 +58,13 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
     return time.slice(0, 5);
   };
 
+  const formatDayType = (days: string[]) => {
+    if (days.length <= 3) {
+      return days;
+    }
+    return [...days.slice(0, 3), `+${days.length - 3}`];
+  };
+
   const checkStudyTime = () => {
     const now = new Date();
     const currentDay = ['일', '월', '화', '수', '목', '금', '토'][now.getDay()];
@@ -105,7 +112,7 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
 
   return (
     <div
-      className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow w-full min-w-[320px] max-w-[320px] group h-[548px]"
+      className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow w-full min-w-[330px] max-w-[330px] group h-[548px]"
       onClick={() => router.push(`/community/study/${post.studyPostId}`)}
     >
       <figure className="px-4 pt-4">
@@ -127,48 +134,48 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
             </div>
           )}
         </h2>
-        <div className="grid grid-cols-2 gap-3 mt-4">
-          <div className="badge badge-lg bg-primary/70 px-4 py-3 rounded-full">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="badge badge-lg bg-primary/70 text-base px-4 py-3 rounded-full">
             {truncateText(convertSubjectToKorean(post.subject), 7)}
           </div>
-          <div className="badge badge-lg bg-accent/70 px-2 py-3 rounded-full">
+          <div className="badge badge-lg bg-accent/70 text-base px-2 py-3 rounded-full">
             {truncateText(convertDifficultyToKorean(post.difficulty), 5)}
           </div>
-          <div className="badge badge-lg bg-secondary px-4 py-3 rounded-full">
+          <div className="badge badge-lg bg-secondary text-base px-4 py-3 rounded-full">
             {convertStudyStatus(post.status)}
           </div>
           <div className="flex flex-wrap gap-1">
-            {post.dayType.map((day, index) => (
+            {formatDayType(post.dayType).map((day, index) => (
               <div
                 key={index}
-                className="badge badge-lg bg-info/30 px-2 py-3 rounded-full"
+                className="badge badge-lg bg-info/30 text-base px-2 py-3 rounded-full"
               >
                 {truncateText(day, 7)}
               </div>
             ))}
           </div>
         </div>
-        <div className="mt-6 space-y-4">
-          <div className="flex items-center gap-2 text-base">
+        <div className="mt-2 space-y-4">
+          <div className="flex items-center gap-2 text-base flex-shrink-0">
             <FaCalendarAlt className="text-gray-500" />
-            <span className="font-base text-gray-700">스터디 기간</span>
-            <span className="ml-auto font-semibold text-gray-700">
+            <span className="font-base text-sm text-gray-700">스터디 기간</span>
+            <span className="ml-auto text-sm font-semibold text-gray-700 whitespace-nowrap">
               {dayjs(post.startDate).format('YY.MM.DD')} ~{' '}
               {dayjs(post.endDate).format('YY.MM.DD')}
             </span>
           </div>
           <div className="flex items-center gap-2 text-base">
             <FaClock className="text-gray-500" />
-            <span className="font-base text-gray-700">스터디 시간</span>
-            <span className="ml-auto font-semibold text-gray-700">
+            <span className="font-base text-sm text-gray-700">스터디 시간</span>
+            <span className="ml-auto text-sm font-semibold text-gray-700">
               {formatTime(post.startTime)} ~ {formatTime(post.endTime)}
             </span>
           </div>
         </div>
 
-        <div className="card-actions justify-center mt-2 space-x-4">
+        <div className="card-actions flex justify-between mt-2 space-x-2">
           <button
-            className="btn btn-base bg-blue-400 text-base hover:bg-blue-500 text-white rounded-full flex items-center gap-2 px-8 py-2"
+            className="btn btn-base bg-blue-400 text-sm hover:bg-blue-500 text-white rounded-full flex-1 px-4 py-2 min-w-[120px] max-w-[140px]"
             onClick={async e => {
               e.stopPropagation();
               try {
@@ -203,7 +210,7 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
             채팅
           </button>
           <button
-            className="btn btn-base bg-green-400 text-base hover:bg-green-500 text-white rounded-full flex items-center gap-2 px-6 py-2"
+            className="btn btn-base bg-green-400 text-sm hover:bg-green-500 text-white rounded-full flex-1 px-4 py-2 min-w-[120px] max-w-[140px]"
             onClick={handleStudyRoomClick}
           >
             <FaChalkboardTeacher /> 스터디룸
