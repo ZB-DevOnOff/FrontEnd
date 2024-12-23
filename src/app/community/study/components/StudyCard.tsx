@@ -35,7 +35,7 @@ export function StudyCard({ post }: StudyCardProps) {
 
   // 날짜 형식을 변경하는 함수 추가
   const formatDate = (date: string) => {
-    return date.replace(/-/g, '.');
+    return date.substring(2).replace(/-/g, '.');
   };
 
   return (
