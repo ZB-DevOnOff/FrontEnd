@@ -110,7 +110,7 @@ export default function OnlineStudyList() {
   };
 
   return (
-    <div className="space-y-4 max-w-[1600px] mx-auto">
+    <div className="space-y-4 max-w-6xl mx-auto p-4">
       <SearchForm
         initialKeyword={searchParams.get('title') || ''}
         placeholder="스터디 제목을 검색하세요"
@@ -123,18 +123,20 @@ export default function OnlineStudyList() {
         selectedDays={selectedDays}
         onFilterChange={handleFilterChange}
       />
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 gap-x-0">
-        {isLoading ? (
-          <div>로딩 중...</div>
-        ) : posts?.content ? (
-          posts.content.map((post: StudyPost) => (
-            <div className="flex justify-center" key={post.id}>
-              <StudyCard post={post} />
-            </div>
-          ))
-        ) : (
-          <div>데이터가 없습니다.</div>
-        )}
+      <div className="bg-base-100 shadow-xl rounded-lg p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-y-6 gap-x-0">
+          {isLoading ? (
+            <div>로딩 중...</div>
+          ) : posts?.content ? (
+            posts.content.map((post: StudyPost) => (
+              <div className="flex justify-center" key={post.id}>
+                <StudyCard post={post} />
+              </div>
+            ))
+          ) : (
+            <div>데이터가 없습니다.</div>
+          )}
+        </div>
       </div>
 
       <div className="flex justify-center mt-8">
