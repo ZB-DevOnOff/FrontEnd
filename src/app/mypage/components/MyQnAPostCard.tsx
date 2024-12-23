@@ -17,7 +17,7 @@ const MyQnAPostCard = ({ post }: MyPostCardProps) => {
   };
 
   const formatDate = (date: string) => {
-    const d = date.replace('T', ' ').substring(0, 16);
+    const d = date.replace('T', ' ').substring(2, 16);
     return d.replace(/-/g, '.').replace(' ', ' ');
   };
 

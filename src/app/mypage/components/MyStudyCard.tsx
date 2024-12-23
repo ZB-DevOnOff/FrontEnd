@@ -65,7 +65,7 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
   };
 
   const formatDate = (date: string) => {
-    return date.replace(/-/g, '.');
+    return date.substring(2).replace(/-/g, '.');
   };
 
   const checkStudyTime = () => {
