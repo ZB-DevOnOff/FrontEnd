@@ -31,7 +31,7 @@ export function StudyCard({ post }: StudyCardProps) {
     if (days.length <= 3) {
       return days;
     }
-    return [...days.slice(0, 3), `+${days.length - 3}`];
+    return [...days.slice(0, 2), `+${days.length - 2}`];
   };
 
   return (
