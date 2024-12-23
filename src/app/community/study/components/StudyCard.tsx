@@ -33,6 +33,11 @@ export function StudyCard({ post }: StudyCardProps) {
     return [...days.slice(0, 2), `+${days.length - 2}`];
   };
 
+  // 날짜 형식을 변경하는 함수 추가
+  const formatDate = (date: string) => {
+    return date.replace(/-/g, '.');
+  };
+
   return (
     <div
       className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow w-full min-w-[330px] max-w-[330px] group h-[540px]"
@@ -82,7 +87,7 @@ export function StudyCard({ post }: StudyCardProps) {
             <FaCalendarAlt className="text-red-400" />
             <span className="text-gray-700 text-sm">모집 마감일</span>
             <span className="ml-auto font-semibold text-sm text-gray-700">
-              {post.recruitmentPeriod}
+              {formatDate(post.recruitmentPeriod)}
             </span>
           </div>
           {/* 스터디 기간 */}
@@ -90,7 +95,7 @@ export function StudyCard({ post }: StudyCardProps) {
             <FaCalendarAlt className="text-gray-500" />
             <span className="text-gray-700 text-sm">스터디 기간</span>
             <span className="ml-auto font-semibold text-sm text-gray-700">
-              {post.startDate} ~ {post.endDate}
+              {formatDate(post.startDate)}~{formatDate(post.endDate)}
             </span>
           </div>
           {/* 스터디 시간 */}
@@ -98,7 +103,7 @@ export function StudyCard({ post }: StudyCardProps) {
             <FaClock className="text-gray-500" />
             <span className="text-gray-700 text-sm">스터디 시간</span>
             <span className="ml-auto font-semibold text-sm text-gray-700">
-              {formatTime(post.startTime)} ~ {formatTime(post.endTime)}
+              {formatTime(post.startTime)}~{formatTime(post.endTime)}
             </span>
           </div>
         </div>
