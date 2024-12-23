@@ -1,7 +1,6 @@
 // 'use client';
 
 import { useRouter } from 'next/navigation';
-import dayjs from 'dayjs';
 import { StudyPost } from '@/types/post';
 import Image from 'next/image';
 import {
@@ -83,7 +82,7 @@ export function StudyCard({ post }: StudyCardProps) {
             <FaCalendarAlt className="text-red-400" />
             <span className="text-gray-700 text-sm">모집 마감일</span>
             <span className="ml-auto font-semibold text-sm text-gray-700">
-              {dayjs(post.recruitmentPeriod).format('YY.MM.DD')}
+              {post.recruitmentPeriod}
             </span>
           </div>
           {/* 스터디 기간 */}
@@ -91,8 +90,7 @@ export function StudyCard({ post }: StudyCardProps) {
             <FaCalendarAlt className="text-gray-500" />
             <span className="text-gray-700 text-sm">스터디 기간</span>
             <span className="ml-auto font-semibold text-sm text-gray-700">
-              {dayjs(post.startDate).format('YY.MM.DD')} ~{' '}
-              {dayjs(post.endDate).format('YY.MM.DD')}
+              {post.startDate} ~ {post.endDate}
             </span>
           </div>
           {/* 스터디 시간 */}

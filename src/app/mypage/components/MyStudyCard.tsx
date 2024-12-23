@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import dayjs from 'dayjs';
 import { useAuthStore } from '@/store/authStore';
 import axios from 'axios';
 import Image from 'next/image';
@@ -160,8 +159,7 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
             <FaCalendarAlt className="text-gray-500" />
             <span className="font-base text-sm text-gray-700">스터디 기간</span>
             <span className="ml-auto text-sm font-semibold text-gray-700 whitespace-nowrap">
-              {dayjs(post.startDate).format('YY.MM.DD')} ~{' '}
-              {dayjs(post.endDate).format('YY.MM.DD')}
+              {post.startDate} ~ {post.endDate}
             </span>
           </div>
           <div className="flex items-center gap-2 text-base">
