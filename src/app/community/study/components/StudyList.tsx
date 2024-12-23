@@ -59,24 +59,16 @@ export default function StudyList() {
         )}
       </div>
 
-      <div role="tablist" className="tabs tabs-lifted tabs-lg hover:tab-lifted">
+      <div className="tabs tabs-boxed">
         <button
-          onClick={() => handleTypeChange('ONLINE')}
-          className={`tab tab-lg text-base hover:font-bold hover:text-lg hover:text-black hover:shadow-lg ${
-            studyType === 'ONLINE'
-              ? 'tab-active text-black font-bold text-lg'
-              : 'bg-transparent text-gray-500'
-          }`}
+          className={`tab ${studyType === 'ONLINE' ? 'bg-black text-white border-transparent' : 'text-gray-700 hover:text-white hover:bg-gray-500'}`}
+          onClick={() => setStudyType('ONLINE')}
         >
           {MEETING_TYPE.ONLINE}
         </button>
         <button
-          onClick={() => handleTypeChange('HYBRID')}
-          className={`tab tab-lg text-base hover:font-bold hover:text-lg hover:text-black hover:shadow-lg ${
-            studyType === 'HYBRID'
-              ? 'tab-active text-black font-bold text-lg'
-              : 'bg-transparent text-gray-500'
-          }`}
+          className={`tab ${studyType === 'HYBRID' ? 'bg-black text-white border-transparent' : 'text-gray-700 hover:text-white hover:bg-gray-500'}`}
+          onClick={() => setStudyType('HYBRID')}
         >
           {MEETING_TYPE.HYBRID}
         </button>
