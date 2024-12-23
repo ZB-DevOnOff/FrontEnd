@@ -2,7 +2,6 @@
 
 import { QnAPost } from '@/types/post';
 import { useRouter } from 'next/navigation';
-import dayjs from 'dayjs';
 import Image from 'next/image';
 import { FaUser, FaRegCalendar } from 'react-icons/fa';
 
@@ -18,12 +17,13 @@ const MyQnAPostCard = ({ post }: MyPostCardProps) => {
   };
 
   const formatDate = (date: string) => {
-    return dayjs(date).format('YYYY-MM-DD HH:mm');
+    const d = date.replace('T', ' ').substring(0, 16);
+    return d.replace(/-/g, '.').replace(' ', ' ');
   };
 
   return (
     <div
-      className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow w-full min-w-[320px] max-w-[320px] group h-[500px]"
+      className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow w-full min-w-[330px] max-w-[330px] group h-[500px]"
       onClick={() => router.push(`/community/qna/${post.id}`)}
     >
       <figure className="px-4 pt-4">

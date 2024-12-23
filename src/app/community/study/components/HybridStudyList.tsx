@@ -143,7 +143,7 @@ export default function HybridStudyList() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-w-6xl mx-auto">
       <SearchForm
         initialKeyword={searchParams.get('title') || ''}
         placeholder="스터디 제목을 검색하세요"
@@ -172,18 +172,20 @@ export default function HybridStudyList() {
           userLocation={userLocation}
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {isLoading ? (
-          <div>로딩 중...</div>
-        ) : posts?.content ? (
-          posts.content.map((post: BaseStudyPost) => (
-            <div className="flex justify-center" key={post.id}>
-              <StudyCard post={post} />
-            </div>
-          ))
-        ) : (
-          <div>데이터가 없습니다.</div>
-        )}
+      <div className="bg-base-100 p-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-y-6 gap-x-0">
+          {isLoading ? (
+            <div>로딩 중...</div>
+          ) : posts?.content ? (
+            posts.content.map((post: BaseStudyPost) => (
+              <div className="flex justify-center" key={post.id}>
+                <StudyCard post={post} />
+              </div>
+            ))
+          ) : (
+            <div>데이터가 없습니다.</div>
+          )}
+        </div>
       </div>
 
       <div className="flex justify-center mt-8">

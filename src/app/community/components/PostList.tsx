@@ -31,7 +31,7 @@ export function PostList<T extends InfoPost | QnAPost>({
   searchForm,
 }: PostListProps<T>) {
   return (
-    <div className="w-full p-4">
+    <div className="w-full p-4 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{title}</h1>
         {onWrite && isSignedIn && (
@@ -47,37 +47,38 @@ export function PostList<T extends InfoPost | QnAPost>({
       {/* 필터 영역 */}
       {showFilters && filterComponent}
 
-      {/* 게시물 목록 */}
-      {isLoading ? (
-        <div className="flex justify-center items-center h-60">
-          <span className="loading loading-spinner loading-lg"></span>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 gap-x-0">
-            {posts.map(post => (
-              <div className="flex justify-center" key={post.id}>
-                {renderPostCard(post)}
-              </div>
-            ))}
+      <div className="bg-base-100 p-2">
+        {isLoading ? (
+          <div className="flex justify-center items-center h-60">
+            <span className="loading loading-spinner loading-lg"></span>
           </div>
-
-          {/* 페이지네이션 */}
-          <div className="flex justify-center mt-8">
-            <div className="join">
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <button
-                  key={i}
-                  className={`join-item btn ${currentPage === i ? 'btn-active' : ''}`}
-                  onClick={() => onPageChange(i)}
-                >
-                  {i + 1}
-                </button>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-y-6 gap-x-0">
+              {posts.map(post => (
+                <div className="flex justify-center" key={post.id}>
+                  {renderPostCard(post)}
+                </div>
               ))}
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
+
+      {/* 페이지네이션 */}
+      <div className="flex justify-center mt-8">
+        <div className="join">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              className={`join-item btn ${currentPage === i ? 'btn-active' : ''}`}
+              onClick={() => onPageChange(i)}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

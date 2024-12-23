@@ -46,7 +46,7 @@ export default function StudyList() {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="p-6 space-y-6 max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">스터디 모집</h1>
         {isSignedIn && (
@@ -59,16 +59,16 @@ export default function StudyList() {
         )}
       </div>
 
-      <div className="tabs tabs-boxed mb-6">
+      <div className="tabs tabs-boxed">
         <button
           className={`tab ${studyType === 'ONLINE' ? 'bg-black text-white border-transparent' : 'text-gray-700 hover:text-white hover:bg-gray-500'}`}
-          onClick={() => handleTypeChange('ONLINE')}
+          onClick={() => setStudyType('ONLINE')}
         >
           {MEETING_TYPE.ONLINE}
         </button>
         <button
           className={`tab ${studyType === 'HYBRID' ? 'bg-black text-white border-transparent' : 'text-gray-700 hover:text-white hover:bg-gray-500'}`}
-          onClick={() => handleTypeChange('HYBRID')}
+          onClick={() => setStudyType('HYBRID')}
         >
           {MEETING_TYPE.HYBRID}
         </button>
