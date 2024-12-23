@@ -3,7 +3,7 @@ import { FaGithub } from 'react-icons/fa';
 
 export default function Footer() {
   return (
-    <footer className="footer footer-center p-6 text-base-content bg-gradient-to-r from-blue-200 via-purple-200 to-green-200">
+    <footer className="footer footer-center p-6 text-base-content bg-gradient-to-r from-blue-100 via-purple-100 to-green-100">
       <div>
         <p className="font-medium text-lg">Repository</p>
         <div className="flex gap-6 mt-4 justify-center">
@@ -39,12 +39,12 @@ export default function Footer() {
           <p className="font-medium text-lg">Team Members</p>
           <div className="flex flex-wrap gap-6 justify-center mt-3">
             {[
-              { name: 'Member1', github: 'https://github.com/member1' },
-              { name: 'Member2', github: 'https://github.com/member2' },
-              { name: 'Member3', github: 'https://github.com/member3' },
-              { name: 'Member4', github: 'https://github.com/member4' },
-              { name: 'Member5', github: 'https://github.com/member5' },
-              { name: 'Member6', github: 'https://github.com/member6' },
+              { name: 'SwanyCastle', github: 'https://github.com/SwanyCastle' },
+              { name: 'yoon627', github: 'https://github.com/yoon627' },
+              { name: 'hjkim22', github: 'https://github.com/hjkim22' },
+              { name: 'heekuukuu', github: 'https://github.com/heekuukuu' },
+              { name: 'sim0102', github: 'https://github.com/sim0102' },
+              { name: 'jyeoney', github: 'https://github.com/jyeoney' },
             ].map((member, index) => (
               <a
                 key={index}
@@ -59,7 +59,7 @@ export default function Footer() {
             ))}
           </div>
         </div>
-        <div className="mt-8 pt-6 border-t border-gray-200">
+        <div className="mt-2 pt-6 border-t border-gray-200">
           <div className="flex justify-center gap-4">
             {/* <a href="/terms" className="text-sm text-gray-700 hover:underline">
               이용약관
@@ -70,10 +70,10 @@ export default function Footer() {
             >
               개인정보처리방침
             </a> */}
-            <p className="font-semibold">
+            {/* <p className="font-semibold">
               Copyright © {new Date().getFullYear()} - All rights reserved by
               DevOnOff
-            </p>
+            </p> */}
           </div>
         </div>
       </div>
