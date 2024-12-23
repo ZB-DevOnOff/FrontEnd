@@ -110,7 +110,7 @@ export default function OnlineStudyList() {
   };
 
   return (
-    <div className="space-y-4 max-w-6xl mx-auto p-4">
+    <div className="space-y-4 max-w-6xl mx-auto">
       <SearchForm
         initialKeyword={searchParams.get('title') || ''}
         placeholder="스터디 제목을 검색하세요"
@@ -123,7 +123,7 @@ export default function OnlineStudyList() {
         selectedDays={selectedDays}
         onFilterChange={handleFilterChange}
       />
-      <div className="bg-base-100 shadow-xl rounded-lg p-6">
+      <div className="bg-base-100 p-2">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-y-6 gap-x-0">
           {isLoading ? (
             <div>로딩 중...</div>

@@ -47,7 +47,7 @@ export function PostList<T extends InfoPost | QnAPost>({
       {/* 필터 영역 */}
       {showFilters && filterComponent}
 
-      <div className="bg-base-100 shadow-xl rounded-lg p-6">
+      <div className="bg-base-100 p-2">
         {isLoading ? (
           <div className="flex justify-center items-center h-60">
             <span className="loading loading-spinner loading-lg"></span>
