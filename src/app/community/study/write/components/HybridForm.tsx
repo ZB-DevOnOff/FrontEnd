@@ -166,7 +166,6 @@ export default function HybridForm({ initialData, isEdit }: HybridFormProps) {
         });
         setAlertMessage('스터디 글이 수정되었습니다!');
         setShowAlert(true);
-        router.push(`/community/study/${initialData.id}`);
       } else {
         const response = await axios.post('/api/study-posts', formData, {
           headers: {
@@ -181,7 +180,6 @@ export default function HybridForm({ initialData, isEdit }: HybridFormProps) {
       }
 
       await queryClient.invalidateQueries({ queryKey: ['studies'] });
-      router.push('/community/study');
     } catch (error) {
       console.error(
         isEdit ? '스터디 글 수정 실패:' : '스터디 글 작성 실패:',
@@ -452,6 +450,13 @@ export default function HybridForm({ initialData, isEdit }: HybridFormProps) {
         <CustomAlert
           message={alertMessage}
           onClose={() => setShowAlert(false)}
+          onConfirm={() => {
+            if (isEdit && initialData) {
+              router.push(`/community/study/${initialData.id}`);
+            } else {
+              router.push('/community/study');
+            }
+          }}
         />
       )}
     </form>

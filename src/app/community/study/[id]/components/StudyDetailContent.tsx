@@ -9,7 +9,6 @@ import { StudyApplication } from './StudyApplication';
 import StudyLocation from './StudyLocation';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import StudyParticipants from './StudyParticipants';
 import { useQueryClient } from '@tanstack/react-query';
 import { convertDifficultyToKorean, convertMeetingType } from '@/utils/study';
 import CustomAlert from '@/components/common/Alert';
@@ -150,14 +149,6 @@ export default function StudyDetailContent({
           </div>
         </div>
 
-        {/* 모집 완료된 경우에만 참여자 목록 표시 */}
-        {study.status === 'CLOSED' && (
-          <StudyParticipants study={study} studyId={study.id.toString()} />
-        )}
-
-        {/* 댓글 섹션 */}
-        <Comments studyId={studyId} postType="STUDY" />
-
         {/* 모집 중일 때만 신청 섹션 표시 */}
         {study.status === 'RECRUITING' && (
           <StudyApplication
@@ -166,6 +157,7 @@ export default function StudyDetailContent({
             setStudy={setStudy}
           />
         )}
+        <Comments studyId={studyId} postType="STUDY" />
       </div>
       {study.meetingType === 'HYBRID' &&
         study.latitude &&

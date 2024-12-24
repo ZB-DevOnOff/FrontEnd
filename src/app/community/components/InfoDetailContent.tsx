@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import { InfoPost } from '@/types/post';
 import Comments from '@/app/community/study/[id]/components/Comments';
 import { useQueryClient } from '@tanstack/react-query';
+import CustomAlert from '@/components/common/Alert/index';
 
 interface InfoDetailContentProps {
   postId: string;
@@ -18,6 +19,8 @@ export default function InfoDetailContent({ postId }: InfoDetailContentProps) {
   const { isSignedIn, userInfo } = useAuthStore();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [alertMessage, setAlertMessage] = useState<string>('');
+  const [showAlert, setShowAlert] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -43,9 +46,12 @@ export default function InfoDetailContent({ postId }: InfoDetailContentProps) {
           `${process.env.NEXT_PUBLIC_API_URL}/info-posts/${postId}`,
         );
         await queryClient.invalidateQueries({ queryKey: ['info-posts'] });
-        router.push('/community/info');
+        setAlertMessage('게시글이 삭제되었습니다.');
+        setShowAlert(true);
       } catch (error) {
         console.error('삭제 실패:', error);
+        setAlertMessage('게시글 삭제에 실패했습니다.');
+        setShowAlert(true);
       }
     }
   };
@@ -99,6 +105,13 @@ export default function InfoDetailContent({ postId }: InfoDetailContentProps) {
           <Comments studyId={postId} postType="INFO" />
         </div>
       </div>
+      {showAlert && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setShowAlert(false)}
+          onConfirm={() => router.push('/community/info')}
+        />
+      )}
     </div>
   );
 }

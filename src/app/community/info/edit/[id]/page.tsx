@@ -100,9 +100,12 @@ export default function InfoEditPage() {
       });
 
       await queryClient.invalidateQueries({ queryKey: ['info-posts'] });
-      router.push(`/community/info/${params.id}`);
+      setAlertMessage('게시글이 수정되었습니다!');
+      setShowAlert(true);
     } catch (error) {
       console.error('게시글 수정 실패:', error);
+      setAlertMessage('게시글 수정에 실패했습니다.');
+      setShowAlert(true);
     }
   };
 
@@ -176,6 +179,7 @@ export default function InfoEditPage() {
         <CustomAlert
           message={alertMessage}
           onClose={() => setShowAlert(false)}
+          onConfirm={() => router.push(`/community/info/${params.id}`)}
         />
       )}
     </form>

@@ -155,7 +155,6 @@ export default function OnlineForm({ initialData, isEdit }: OnlineFormProps) {
           });
           setAlertMessage('스터디 글이 수정되었습니다!');
           setShowAlert(true);
-          router.push(`/community/study/${initialData.id}`);
         } catch (error: any) {
           console.error('스터디 글 수정 실패:', error);
           setAlertMessage(
@@ -175,7 +174,6 @@ export default function OnlineForm({ initialData, isEdit }: OnlineFormProps) {
           setAlertMessage('스터디 글이 작성되었습니다!');
           setShowAlert(true);
           await queryClient.invalidateQueries({ queryKey: ['studies'] });
-          router.push('/community/study');
         } catch (error: any) {
           console.error('스터디 글 작성/수정 실패:', error);
           setAlertMessage(
@@ -425,6 +423,13 @@ export default function OnlineForm({ initialData, isEdit }: OnlineFormProps) {
         <CustomAlert
           message={alertMessage}
           onClose={() => setShowAlert(false)}
+          onConfirm={() => {
+            if (isEdit && initialData) {
+              router.push(`/community/study/${initialData.id}`);
+            } else {
+              router.push('/community/study');
+            }
+          }}
         />
       )}
     </form>
