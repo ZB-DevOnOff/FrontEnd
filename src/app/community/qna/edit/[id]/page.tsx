@@ -178,6 +178,7 @@ export default function QnAEditPage() {
         <CustomAlert
           message={alertMessage}
           onClose={() => setShowAlert(false)}
+          onConfirm={() => router.push(`/community/qna/${params.id}`)}
         />
       )}
     </form>

@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import { QnAPost } from '@/types/post';
 import Comments from '@/app/community/study/[id]/components/Comments';
 import { useQueryClient } from '@tanstack/react-query';
+import CustomAlert from '@/components/common/Alert/index';
 
 interface QnADetailContentProps {
   postId: string;
@@ -18,6 +19,8 @@ export default function QnADetailContent({ postId }: QnADetailContentProps) {
   const { isSignedIn, userInfo } = useAuthStore();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [alertMessage, setAlertMessage] = useState<string>('');
+  const [showAlert, setShowAlert] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -43,9 +46,12 @@ export default function QnADetailContent({ postId }: QnADetailContentProps) {
           `${process.env.NEXT_PUBLIC_API_URL}/qna-posts/${postId}`,
         );
         await queryClient.invalidateQueries({ queryKey: ['qna-posts'] });
-        router.push('/community/qna');
+        setAlertMessage('게시글이 삭제되었습니다.');
+        setShowAlert(true);
       } catch (error) {
         console.error('삭제 실패:', error);
+        setAlertMessage('게시글 삭제에 실패했습니다.');
+        setShowAlert(true);
       }
     }
   };
@@ -99,6 +105,13 @@ export default function QnADetailContent({ postId }: QnADetailContentProps) {
           <Comments studyId={postId} postType="QNA" />
         </div>
       </div>
+      {showAlert && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setShowAlert(false)}
+          onConfirm={() => router.push('/community/qna')}
+        />
+      )}
     </div>
   );
 }
