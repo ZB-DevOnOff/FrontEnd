@@ -96,16 +96,21 @@ export function StudyApplication({
               : app,
           ),
         );
+        setAlertMessage(
+          newStatus === 'APPROVED'
+            ? '신청이 수락되었습니다.'
+            : '신청이 거절되었습니다.',
+        );
+        setShowAlert(true);
       }
     } catch (error: any) {
       console.error('신청 상태 변경 실패:', error);
       if (error.response?.data?.errorMessage) {
         setAlertMessage(error.response.data.errorMessage);
-        setShowAlert(true);
       } else {
         setAlertMessage('신청 상태 변경에 실패했습니다.');
-        setShowAlert(true);
       }
+      setShowAlert(true);
     }
   };
 
@@ -126,6 +131,8 @@ export function StudyApplication({
 
   // 스터디 마감 기능
   const handleCloseRecruitment = async () => {
+    if (!window.confirm('정말로 이 스터디 모집을 마감하시겠습니까?')) return;
+
     try {
       const response = await axios.patch(`/api/study-posts/${study.id}/close`);
       if (response.status === 200) {
@@ -136,9 +143,13 @@ export function StudyApplication({
             status: 'CLOSED',
           };
         });
+        setAlertMessage('스터디 모집이 마감되었습니다.');
+        setShowAlert(true);
       }
     } catch (error) {
       console.error('스터디 마감 실패:', error);
+      setAlertMessage('스터디 모집 마감에 실패했습니다. 다시 시도해주세요.');
+      setShowAlert(true);
     }
   };
 
