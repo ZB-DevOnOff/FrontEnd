@@ -266,18 +266,20 @@ export function StudyApplication({
   }
 
   return (
-    <button
-      className="btn btn-primary w-full mt-4"
-      onClick={handleApply}
-      disabled={isLoading}
-    >
-      {isLoading ? '신청 중...' : '스터디 신청하기'}
+    <div className="mt-4">
+      <button
+        className="btn btn-primary w-full"
+        onClick={handleApply}
+        disabled={isLoading}
+      >
+        {isLoading ? '신청 중...' : '스터디 신청하기'}
+      </button>
       {showAlert && (
         <CustomAlert
           message={alertMessage}
           onClose={() => setShowAlert(false)}
         />
       )}
-    </button>
+    </div>
   );
 }
