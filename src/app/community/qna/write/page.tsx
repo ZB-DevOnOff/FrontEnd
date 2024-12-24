@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useQueryClient } from '@tanstack/react-query';
+import CustomAlert from '@/components/common/Alert/index';
 
 export default function QnAWritePage() {
   const [title, setTitle] = useState('');
@@ -13,6 +14,8 @@ export default function QnAWritePage() {
   const { isSignedIn, userInfo } = useAuthStore();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [alertMessage, setAlertMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -55,9 +58,12 @@ export default function QnAWritePage() {
       });
 
       await queryClient.invalidateQueries({ queryKey: ['qna-posts'] });
-      router.push('/community/qna');
+      setAlertMessage('게시글이 작성되었습니다!');
+      setShowAlert(true);
     } catch (error) {
       console.error('게시글 작성 실패:', error);
+      setAlertMessage('게시글 작성에 실패했습니다.');
+      setShowAlert(true);
     }
   };
 
@@ -115,6 +121,13 @@ export default function QnAWritePage() {
       <button type="submit" className="btn btn-primary w-full">
         작성하기
       </button>
+      {showAlert && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => setShowAlert(false)}
+          onConfirm={() => router.push('/community/qna')}
+        />
+      )}
     </form>
   );
 }
