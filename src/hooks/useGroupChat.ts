@@ -163,6 +163,7 @@ export const useGroupChat = ({ chatRoomId, userId }: UseGroupChatParams) => {
               newMessage.timestamp = newMessage.createdAt;
               // addNewMessage(newMessage);
               // 현재 캐시된 데이터 확인
+              console.log('보낸 메시지', newMessage);
               const currentData = queryClient.getQueryData(
                 getMessagesQueryKey(),
               ) as any;
