@@ -33,6 +33,7 @@ export interface MyStudyCardData {
   endDate: string;
   startTime: string;
   endTime: string;
+  meetingType: string;
   status: string;
   studyPostId: number;
   studyLeaderId: number;
