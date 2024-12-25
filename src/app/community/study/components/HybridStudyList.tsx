@@ -88,7 +88,7 @@ export default function HybridStudyList() {
         params.append('longitude', userLocation.longitude.toString());
       }
 
-      selectedSubjects.forEach(subject => params.append('subjects[]', subject));
+      selectedSubjects.forEach(subject => params.append('subject[]', subject));
       selectedStatus.forEach(status => params.append('status[]', status));
       selectedDifficulty.forEach(difficulty =>
         params.append('difficulty[]', difficulty),
