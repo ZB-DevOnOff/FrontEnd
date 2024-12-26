@@ -41,6 +41,11 @@ export interface MyStudyCardData {
   thumbnailImgUrl?: string;
 }
 
+const MEETING_TYPES = {
+  ONLINE: '온라인',
+  HYBRID: '병행',
+};
+
 const MyStudyCard = ({ post }: MyStudyCardProps) => {
   const router = useRouter();
   const { userInfo } = useAuthStore();
@@ -137,6 +142,11 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
               <span className="text-white text-xs font-bold">스터디장</span>
             </div>
           )}
+          <div className="absolute top-4 left-4 flex flex-col items-center space-y-1 bg-black p-2 rounded-lg shadow-md">
+            <span className="text-white text-xs font-bold">
+              {MEETING_TYPES[post.meetingType as keyof typeof MEETING_TYPES]}
+            </span>
+          </div>
         </h2>
         <div className="grid grid-cols-2 gap-2">
           <div className="badge badge-lg bg-primary/70 text-base px-4 py-3 rounded-full">
