@@ -1,6 +1,7 @@
 'use client';
 
 import { ReadonlyURLSearchParams } from 'next/navigation';
+import { RiCloseCircleLine } from 'react-icons/ri';
 
 type FilterType = 'subjects' | 'status' | 'difficulty' | 'dayType';
 
@@ -73,7 +74,8 @@ export function StudyFilter({
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">필터</h2>
         <button onClick={onReset} className="btn btn-sm btn-outline">
-          필터 초기화
+          <RiCloseCircleLine size={16} />
+          전체 해제
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
