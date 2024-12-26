@@ -1,6 +1,7 @@
 'use client';
 
 import { ReadonlyURLSearchParams } from 'next/navigation';
+import { RiCloseCircleLine } from 'react-icons/ri';
 
 type FilterType = 'subjects' | 'status' | 'difficulty' | 'dayType';
 
@@ -47,6 +48,7 @@ interface StudyFilterProps {
     value: string,
     isBitFlag?: boolean,
   ) => void;
+  onReset: () => void;
 }
 
 export function StudyFilter({
@@ -55,6 +57,7 @@ export function StudyFilter({
   selectedDifficulty,
   searchParams,
   onFilterChange,
+  onReset,
 }: StudyFilterProps) {
   const handleDayChange = (day: string) => {
     onFilterChange('dayType', day, true);
@@ -67,7 +70,14 @@ export function StudyFilter({
   };
 
   return (
-    <div className="h-[200px] overflow-y-auto bg-base-200 p-4 rounded-lg">
+    <div className="h-[230px] overflow-y-auto bg-base-200 p-4 rounded-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-bold">필터</h2>
+        <button onClick={onReset} className="btn btn-sm btn-outline">
+          <RiCloseCircleLine size={16} />
+          전체 해제
+        </button>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div>
           <h3 className="font-semibold mb-2">주제</h3>
