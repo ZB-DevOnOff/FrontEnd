@@ -109,6 +109,12 @@ export default function OnlineStudyList() {
     router.push(`?${newSearchParams.toString()}`);
   };
 
+  const handleReset = () => {
+    const newSearchParams = new URLSearchParams();
+    newSearchParams.set('page', '0');
+    router.push(`?${newSearchParams.toString()}`);
+  };
+
   return (
     <div className="space-y-4 max-w-6xl mx-auto">
       <SearchForm
@@ -122,6 +128,7 @@ export default function OnlineStudyList() {
         selectedDifficulty={selectedDifficulty}
         selectedDays={selectedDays}
         onFilterChange={handleFilterChange}
+        onReset={handleReset}
       />
       <div className="bg-base-100 p-2">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-y-6 gap-x-0">

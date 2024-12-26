@@ -142,6 +142,12 @@ export default function HybridStudyList() {
     router.push(`?${newSearchParams.toString()}`);
   };
 
+  const handleReset = () => {
+    const newSearchParams = new URLSearchParams();
+    newSearchParams.set('page', '0');
+    router.push(`?${newSearchParams.toString()}`);
+  };
+
   return (
     <div className="space-y-4 max-w-6xl mx-auto">
       <SearchForm
@@ -155,6 +161,7 @@ export default function HybridStudyList() {
         selectedDifficulty={selectedDifficulty}
         selectedDays={selectedDays}
         onFilterChange={handleFilterChange}
+        onReset={handleReset}
       />
       <div className="h-[400px] bg-base-200 p-4 rounded-lg">
         <KakaoMap
