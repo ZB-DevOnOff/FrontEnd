@@ -42,7 +42,10 @@ export default function SearchForm({
         placeholder={placeholder}
         className="input input-bordered flex-1"
       />
-      <button type="submit" className="btn btn-primary">
+      <button
+        type="submit"
+        className="btn bg-white text-black border-black hover:bg-teal-50 hover:text-teal-500 hover:border-teal-500"
+      >
         검색
       </button>
     </form>

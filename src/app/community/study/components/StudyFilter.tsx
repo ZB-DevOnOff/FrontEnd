@@ -2,14 +2,17 @@
 
 import { ReadonlyURLSearchParams } from 'next/navigation';
 import { RiCloseCircleLine } from 'react-icons/ri';
+import { FaBook, FaHourglassStart } from 'react-icons/fa';
+import { BsCalendar2WeekFill } from 'react-icons/bs';
+import { SiLevelsdotfyi } from 'react-icons/si';
 
 type FilterType = 'subjects' | 'status' | 'difficulty' | 'dayType';
 
 // 영어 Enum -> 한글 표시용 매핑
-const STATUS_DISPLAY = {
-  RECRUITING: '모집 중',
-  CLOSED: '모집 완료',
-  CANCELED: '모집 취소',
+export const STATUS_DISPLAY = {
+  RECRUITING: { label: '모집 중', color: 'bg-customRed text-red-50' },
+  CLOSED: { label: '모집 완료', color: 'bg-teal-500 text-teal-50' },
+  CANCELED: { label: '모집 취소', color: 'bg-gray-500 text-gray-50' },
 };
 
 const DIFFICULTY_DISPLAY = {
@@ -73,23 +76,29 @@ export function StudyFilter({
     <div className="h-[230px] overflow-y-auto bg-base-200 p-4 rounded-lg">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">필터</h2>
-        <button onClick={onReset} className="btn btn-sm btn-outline">
+        <button
+          onClick={onReset}
+          className="btn btn-sm border-black bg-white hover:bg-teal-50 hover:border-teal-500 hover:text-teal-500"
+        >
           <RiCloseCircleLine size={16} />
           전체 해제
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div>
-          <h3 className="font-semibold mb-2">주제</h3>
+          <h3 className="font-semibold mb-2 flex items-center">
+            <FaBook className="text-gray-500 mr-2" />
+            주제
+          </h3>
           <div className="flex flex-wrap gap-2">
             {Object.entries(SUBJECT_DISPLAY).map(([key, value]) => (
               <button
                 key={key}
                 onClick={() => onFilterChange('subjects', key)}
-                className={`btn btn-sm ${
+                className={`btn btn-sm border-black ${
                   selectedSubjects.includes(key)
-                    ? 'btn-primary bg-primary/70'
-                    : 'btn-outline'
+                    ? 'border-teal-500 text-teal-500 bg-white'
+                    : 'bg-white hover:bg-white hover:border-teal-500 hover:text-teal-500'
                 }`}
               >
                 {value}
@@ -99,33 +108,19 @@ export function StudyFilter({
         </div>
 
         <div>
-          <h3 className="font-semibold mb-2">상태</h3>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(STATUS_DISPLAY).map(([key, value]) => (
-              <button
-                key={key}
-                onClick={() => onFilterChange('status', key)}
-                className={`btn btn-sm ${
-                  selectedStatus.includes(key) ? 'btn-secondary' : 'btn-outline'
-                }`}
-              >
-                {value}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h3 className="font-semibold mb-2">난이도</h3>
+          <h3 className="font-semibold mb-2 flex items-center">
+            <SiLevelsdotfyi className="text-gray-500 mr-2" />
+            난이도
+          </h3>
           <div className="flex flex-wrap gap-2">
             {Object.entries(DIFFICULTY_DISPLAY).map(([key, value]) => (
               <button
                 key={key}
                 onClick={() => onFilterChange('difficulty', key)}
-                className={`btn btn-sm ${
+                className={`btn btn-sm border-black ${
                   selectedDifficulty.includes(key)
-                    ? 'btn-accent bg-accent/70'
-                    : 'btn-outline'
+                    ? 'border-teal-500 text-teal-500 bg-white'
+                    : 'bg-white hover:bg-white hover:border-teal-500 hover:text-teal-500'
                 }`}
               >
                 {value}
@@ -135,16 +130,41 @@ export function StudyFilter({
         </div>
 
         <div>
-          <h3 className="font-semibold mb-2">요일</h3>
+          <h3 className="font-semibold mb-2 flex items-center">
+            <FaHourglassStart className="text-gray-500 mr-2" />
+            상태
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(STATUS_DISPLAY).map(([key, value]) => (
+              <button
+                key={key}
+                onClick={() => onFilterChange('status', key)}
+                className={`btn btn-sm border-black ${
+                  selectedStatus.includes(key)
+                    ? 'border-teal-500 text-teal-500 bg-white'
+                    : 'bg-white hover:bg-white hover:border-teal-500 hover:text-teal-500'
+                }`}
+              >
+                {value.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="font-semibold mb-2 flex items-center">
+            <BsCalendar2WeekFill className="text-gray-500 mr-2" />
+            요일
+          </h3>
           <div className="flex flex-wrap gap-2">
             {['월', '화', '수', '목', '금', '토', '일'].map(day => (
               <button
                 key={day}
                 onClick={() => handleDayChange(day)}
-                className={`btn btn-sm ${
+                className={`btn btn-sm border-black ${
                   isSelected(day)
-                    ? 'btn-info bg-info/30 border-none'
-                    : 'btn-outline'
+                    ? 'border-teal-500 text-teal-500 bg-white'
+                    : 'bg-white hover:bg-white hover:border-teal-500 hover:text-teal-500'
                 }`}
               >
                 {day}

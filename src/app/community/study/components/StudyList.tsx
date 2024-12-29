@@ -20,22 +20,22 @@ export default function StudyList() {
         {isSignedIn && (
           <Link
             href={`/community/study/write?type=${studyType}`}
-            className="btn btn-primary"
+            className="btn bg-teal-500 text-white hover:bg-teal-500 hover:text-black"
           >
             스터디 모집하기
           </Link>
         )}
       </div>
 
-      <div className="tabs tabs-boxed">
+      <div className="tabs">
         <button
-          className={`tab ${studyType === 'ONLINE' ? 'bg-black text-white border-transparent' : 'text-gray-700 hover:text-white hover:bg-gray-500'}`}
+          className={`tab ${studyType === 'ONLINE' ? 'text-teal-500 border-b-2 border-teal-500 font-bold' : 'text-gray-700 border-b-2 border-transparent hover:text-teal-500 hover:font-bold'}`}
           onClick={() => setStudyType('ONLINE')}
         >
           {MEETING_TYPE.ONLINE}
         </button>
         <button
-          className={`tab ${studyType === 'HYBRID' ? 'bg-black text-white border-transparent' : 'text-gray-700 hover:text-white hover:bg-gray-500'}`}
+          className={`tab ${studyType === 'HYBRID' ? 'text-teal-500 border-b-2 border-teal-500 font-bold' : 'text-gray-700 border-b-2 border-transparent hover:text-teal-500 hover:font-bold'}`}
           onClick={() => setStudyType('HYBRID')}
         >
           {MEETING_TYPE.HYBRID}

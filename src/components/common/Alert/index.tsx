@@ -8,10 +8,10 @@ type CustomAlertProps = {
 
 const CustomAlert = ({ message, onClose, onConfirm }: CustomAlertProps) => {
   const handleConfirm = () => {
-    onClose();
     if (onConfirm) {
       onConfirm();
     }
+    onClose();
   };
 
   return (
@@ -19,7 +19,10 @@ const CustomAlert = ({ message, onClose, onConfirm }: CustomAlertProps) => {
       <div className="bg-white p-6 rounded-lg shadow-lg w-[28rem] max-w-lg">
         <p className="text-lg font-semibold text-center">{message}</p>
         <div className="mt-6 flex justify-center">
-          <button className="btn btn-primary" onClick={handleConfirm}>
+          <button
+            className="btn text-teal-50 bg-teal-500 hover:bg-teal-500 hover:text-black"
+            onClick={handleConfirm}
+          >
             확인
           </button>
         </div>

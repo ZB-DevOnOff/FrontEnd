@@ -10,7 +10,11 @@ import {
   FaClock,
   FaCommentDots,
   FaChalkboardTeacher,
+  FaHourglassStart,
 } from 'react-icons/fa';
+import { BiSolidCategoryAlt } from 'react-icons/bi';
+import { SiLevelsdotfyi } from 'react-icons/si';
+import { BsCalendar2WeekFill } from 'react-icons/bs';
 import {
   convertSubjectToKorean,
   convertDifficultyToKorean,
@@ -137,9 +141,9 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
         <h2 className="card-title text-xl items-center">
           {truncateText(post.studyName, 20)}
           {userInfo?.id === post.studyLeaderId && (
-            <div className="absolute top-4 right-4 flex flex-col items-center space-y-1 bg-rose-500 p-2 rounded-lg shadow-md">
-              <FaCrown className="text-white text-2xl" />
-              <span className="text-white text-xs font-bold">스터디장</span>
+            <div className="absolute top-4 right-4 flex flex-col items-center space-y-1 bg-white border-2 border-black p-2 rounded-lg shadow-md">
+              <FaCrown className="text-black text-2xl" />
+              <span className="text-black text-xs font-bold">스터디장</span>
             </div>
           )}
           <div className="absolute top-4 left-4 flex flex-col items-center space-y-1 bg-black p-2 rounded-lg shadow-md">
@@ -149,24 +153,36 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
           </div>
         </h2>
         <div className="grid grid-cols-2 gap-2">
-          <div className="badge badge-lg bg-primary/70 text-base px-4 py-3 rounded-full">
-            {truncateText(convertSubjectToKorean(post.subject), 7)}
+          <div className="flex items-center gap-2">
+            <BiSolidCategoryAlt className="text-gray-500" />
+            <div className="badge badge-md border-teal-500 text-teal-500 bg-white text-md px-4 py-3 rounded-full">
+              {truncateText(convertSubjectToKorean(post.subject), 7)}
+            </div>
           </div>
-          <div className="badge badge-lg bg-accent/70 text-base px-2 py-3 rounded-full">
-            {truncateText(convertDifficultyToKorean(post.difficulty), 5)}
+          <div className="flex items-center gap-2">
+            <SiLevelsdotfyi className="text-gray-500" />
+            <div className="badge badge-md border-teal-500 text-teal-500 bg-white text-md px-2 py-3 rounded-full">
+              {truncateText(convertDifficultyToKorean(post.difficulty), 5)}
+            </div>
           </div>
-          <div className="badge badge-lg bg-secondary text-base px-4 py-3 rounded-full">
-            {convertStudyStatus(post.status)}
+          <div className="flex items-center gap-2">
+            <FaHourglassStart className="text-gray-500" />
+            <div className="badge badge-md border-teal-500 text-teal-500 bg-white text-md px-4 py-3 rounded-full">
+              {convertStudyStatus(post.status)}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-1">
-            {formatDayType(post.dayType).map((day, index) => (
-              <div
-                key={index}
-                className="badge badge-lg bg-info/30 text-base px-2 py-3 rounded-full"
-              >
-                {truncateText(day, 7)}
-              </div>
-            ))}
+          <div className="flex items-center gap-2">
+            <BsCalendar2WeekFill className="text-gray-500" />
+            <div className="flex flex-wrap gap-1">
+              {formatDayType(post.dayType).map((day, index) => (
+                <div
+                  key={index}
+                  className="badge badge-md border-teal-500 text-teal-500 bg-white text-md px-2 py-3 rounded-full"
+                >
+                  {truncateText(day, 7)}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div className="mt-2 space-y-4">
@@ -174,7 +190,7 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
             <FaCalendarAlt className="text-gray-500" />
             <span className="font-base text-sm text-gray-700">스터디 기간</span>
             <span className="ml-auto text-sm font-semibold text-gray-700 whitespace-nowrap">
-              {formatDate(post.startDate)}~{formatDate(post.endDate)}
+              {formatDate(post.startDate)} ~ {formatDate(post.endDate)}
             </span>
           </div>
           <div className="flex items-center gap-2 text-base">
@@ -188,7 +204,7 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
 
         <div className="card-actions flex justify-between mt-2 space-x-2">
           <button
-            className="btn btn-base bg-blue-400 text-sm hover:bg-blue-500 text-white rounded-full flex-1 px-4 py-2 min-w-[120px] max-w-[140px]"
+            className="btn btn-base text-teal-50 bg-teal-500 text-sm hover:bg-teal-500 hover:border-teal-500 hover:text-black rounded-full flex-1 px-4 py-2 min-w-[120px] max-w-[140px]"
             onClick={async e => {
               e.stopPropagation();
               try {
@@ -223,7 +239,7 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
             채팅
           </button>
           <button
-            className="btn btn-base bg-green-400 text-sm hover:bg-green-500 text-white rounded-full flex-1 px-4 py-2 min-w-[120px] max-w-[140px]"
+            className="btn btn-base border-2 border-teal-500 text-teal-500 text-sm hover:bg-teal-50 hover:border-teal-500 hover:text-black rounded-full flex-1 px-4 py-2 min-w-[120px] max-w-[140px]"
             onClick={handleStudyRoomClick}
           >
             <FaChalkboardTeacher /> 스터디룸

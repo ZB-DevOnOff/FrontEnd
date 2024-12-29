@@ -135,10 +135,12 @@ const Header = () => {
       <div className="navbar-start">
         <Link href="/" className="btn btn-ghost text-base-content text-center">
           <div>
-            <span className="block text-xs text-gray-600">
+            <span className="block text-xs text-black">
               스마트한 개발 스터디 플랫폼
             </span>
-            <span className="block text-xl font-bold text-black">DevOnOff</span>
+            <span className="block text-xl font-bold text-teal-500">
+              DevOnOff
+            </span>
           </div>
         </Link>
       </div>
