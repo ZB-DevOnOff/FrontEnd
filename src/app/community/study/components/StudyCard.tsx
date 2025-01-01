@@ -7,7 +7,11 @@ import {
   convertSubjectToKorean,
   convertDifficultyToKorean,
 } from '@/utils/study';
-import { FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { FaCalendarAlt, FaClock, FaBook } from 'react-icons/fa';
+import { RiTeamFill } from 'react-icons/ri';
+import { SiLevelsdotfyi } from 'react-icons/si';
+import { BsCalendar2WeekFill } from 'react-icons/bs';
+import { STATUS_DISPLAY } from './StudyFilter';
 
 interface StudyCardProps {
   post: StudyPost;
@@ -38,6 +42,8 @@ export function StudyCard({ post }: StudyCardProps) {
     return date.substring(2).replace(/-/g, '.');
   };
 
+  const status = STATUS_DISPLAY[post.status as keyof typeof STATUS_DISPLAY];
+
   return (
     <div
       className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow w-full min-w-[330px] max-w-[330px] group h-[540px]"
@@ -55,28 +61,45 @@ export function StudyCard({ post }: StudyCardProps) {
       <div className="card-body flex flex-col justify-between">
         <h2 className="card-title text-xl mb-2">
           {truncateText(post.title, 20)}
+          <div
+            className={`absolute top-4 left-4 flex flex-col items-center space-y-1 p-2 rounded-lg shadow-md ${status.color}`}
+          >
+            <span className="text-white text-xs font-bold">{status.label}</span>
+          </div>
         </h2>
 
         {/* 정보 뱃지 그리드 */}
         <div className="grid grid-cols-2 gap-2">
-          <div className="badge badge-lg bg-primary/70 px-4 py-3 rounded-full">
-            {truncateText(convertSubjectToKorean(post.subject), 7)}
+          <div className="flex items-center gap-2">
+            <FaBook className="text-gray-500" />
+            <div className="badge badge-md border-teal-500 text-teal-500 bg-white text-md px-4 py-3 rounded-full">
+              {truncateText(convertSubjectToKorean(post.subject), 7)}
+            </div>
           </div>
-          <div className="badge badge-lg bg-accent/70 px-2 py-3 rounded-full">
-            {truncateText(convertDifficultyToKorean(post.difficulty), 5)}
+          <div className="flex items-center gap-2">
+            <SiLevelsdotfyi className="text-gray-500" />
+            <div className="badge badge-md border-teal-500 text-teal-500 bg-white text-md px-2 py-3 rounded-full">
+              {truncateText(convertDifficultyToKorean(post.difficulty), 5)}
+            </div>
           </div>
-          <div className="badge badge-lg bg-secondary px-4 py-3 rounded-full">
-            {post.currentParticipants + 1}/{post.maxParticipants}명
+          <div className="flex items-center gap-2">
+            <RiTeamFill className="text-gray-500" />
+            <div className="badge badge-md border-teal-500 text-teal-500 bg-white text-md px-4 py-3 rounded-full">
+              {post.currentParticipants + 1}/{post.maxParticipants}명
+            </div>
           </div>
-          <div className="flex flex-wrap gap-1">
-            {formatDayType(post.dayType).map((day, index) => (
-              <div
-                key={index}
-                className="badge badge-lg bg-info/30 px-2 py-3 rounded-full"
-              >
-                {truncateText(day, 7)}
-              </div>
-            ))}
+          <div className="flex items-center gap-2">
+            <BsCalendar2WeekFill className="text-gray-500" />
+            <div className="flex flex-wrap gap-1">
+              {formatDayType(post.dayType).map((day, index) => (
+                <div
+                  key={index}
+                  className="badge badge-md border-teal-500 text-teal-500 bg-white text-md px-2 py-3 rounded-full"
+                >
+                  {truncateText(day, 7)}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -84,7 +107,7 @@ export function StudyCard({ post }: StudyCardProps) {
         <div className="mt-2 space-y-4">
           {/* 모집 마감일 */}
           <div className="flex items-center gap-2 text-base">
-            <FaCalendarAlt className="text-red-400" />
+            <FaCalendarAlt className="text-gray-500" />
             <span className="text-gray-700 text-sm">모집 마감일</span>
             <span className="ml-auto font-semibold text-sm text-gray-700">
               {formatDate(post.recruitmentPeriod)}
@@ -95,7 +118,7 @@ export function StudyCard({ post }: StudyCardProps) {
             <FaCalendarAlt className="text-gray-500" />
             <span className="text-gray-700 text-sm">스터디 기간</span>
             <span className="ml-auto font-semibold text-sm text-gray-700">
-              {formatDate(post.startDate)}~{formatDate(post.endDate)}
+              {formatDate(post.startDate)} ~ {formatDate(post.endDate)}
             </span>
           </div>
           {/* 스터디 시간 */}
@@ -103,7 +126,7 @@ export function StudyCard({ post }: StudyCardProps) {
             <FaClock className="text-gray-500" />
             <span className="text-gray-700 text-sm">스터디 시간</span>
             <span className="ml-auto font-semibold text-sm text-gray-700">
-              {formatTime(post.startTime)}~{formatTime(post.endTime)}
+              {formatTime(post.startTime)} ~ {formatTime(post.endTime)}
             </span>
           </div>
         </div>

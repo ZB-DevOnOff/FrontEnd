@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/store/authStore';
 import axios from 'axios';
 
 const axiosInstance = axios.create({
@@ -22,9 +23,16 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   response => response,
-  error => {
+  async error => {
+    const { resetStore } = useAuthStore.getState();
     if (error.response && error.response.status === 401) {
-      console.error('axios interceptor 인증 에러');
+      console.log('토큰 문제 발생. 로그인이 필요합니다.');
+
+      // 약간의 지연을 주어 alert가 보일 수 있도록 함
+      setTimeout(() => {
+        resetStore();
+        window.location.href = '/signin';
+      }, 3000);
     }
     return Promise.reject(error);
   },

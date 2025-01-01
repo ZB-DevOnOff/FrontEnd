@@ -6,6 +6,11 @@ import CustomConfirm from '@/components/common/Confirm';
 import CustomAlert from '@/components/common/Alert';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import axiosInstance from '@/utils/axios';
+import { IoPerson } from 'react-icons/io5';
+import { MdEmail } from 'react-icons/md';
+import { FaCircle } from 'react-icons/fa';
+import { RiLockPasswordFill } from 'react-icons/ri';
 
 const UserInfoView = () => {
   const { userInfo, setUserInfo, resetStore } = useAuthStore();
@@ -53,7 +58,7 @@ const UserInfoView = () => {
     setConfirmMessage('프로필 이미지를 삭제하시겠습니까?');
     setConfirmCallback(() => async () => {
       try {
-        const response = await axios.delete(
+        const response = await axiosInstance.delete(
           `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/users/${userInfo?.id}/profile-image`,
           {
             headers: { 'Content-Type': 'application/json' },
@@ -79,6 +84,9 @@ const UserInfoView = () => {
             '오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
 
           if (status === 404) {
+            setAlertMessage(message);
+            setShowAlert(true);
+          } else if (status === 500) {
             setAlertMessage(message);
             setShowAlert(true);
           } else {
@@ -115,7 +123,7 @@ const UserInfoView = () => {
           console.log('FormData:', formData);
         }
 
-        const response = await axios.post(
+        const response = await axiosInstance.post(
           `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/users/${userInfo?.id}/profile-image`,
 
           formData,
@@ -148,11 +156,19 @@ const UserInfoView = () => {
           if (status === 404) {
             setAlertMessage(message);
             setShowAlert(true);
-          } else if (status === 401) {
-            console.log('토큰 문제 발생. 로그인이 필요합니다.');
-            router.push('/signin');
-            resetStore();
-          } else {
+          } else if (status === 500) {
+            setAlertMessage(message);
+            setShowAlert(true);
+          }
+          // else if (status === 401) {
+          //   console.log('토큰 문제 발생. 로그인이 필요합니다.');
+          //   router.push('/signin');
+          //   resetStore();
+          // }
+          // else if (status === 401) {
+          //   setAlertMessage('로그인이 필요합니다.');
+          // }
+          else {
             setAlertMessage(
               '프로필 이미지를 변경하지 못했습니다. 잠시 후 다시 시도해주세요.',
             );
@@ -200,7 +216,7 @@ const UserInfoView = () => {
           return;
         }
 
-        const response = await axios.put(
+        const response = await axiosInstance.put(
           `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/users/${userInfo?.id}`,
           { nickname },
           {
@@ -421,6 +437,7 @@ const UserInfoView = () => {
 
   return (
     <div className="flex flex-col md:flex-row gap-8 p-8 max-w-5xl mx-auto">
+      {/* 프로필 이미지 섹션 */}
       <div className="flex flex-col items-center w-full md:w-1/3 md:border-r md:pr-4">
         <div className="relative">
           <Image
@@ -428,94 +445,137 @@ const UserInfoView = () => {
             alt="Profile"
             width={500}
             height={300}
-            className="w-32 h-32 rounded-full object-cover border"
+            className="w-48 h-48 rounded-full object-cover border"
           />
         </div>
         <div className="mt-4 flex flex-col gap-4 w-full">
-          {profileImageUrl && (
-            <button
-              onClick={handleImageDeleteButtonClick}
-              className="btn btn-secondary w-full"
-            >
-              이미지 삭제
-            </button>
-          )}
-
-          {!selectedImage && (
-            <label className="btn btn-primary w-full cursor-pointer">
-              이미지 변경
-              <input
-                type="file"
-                className="hidden"
-                onChange={handleFileChange}
-                accept="image/png, image/jpeg"
-              />
-            </label>
-          )}
-
-          {selectedImage && (
-            <div className="flex gap-2 mt-2 w-full justify-between">
-              <button
-                onClick={handleImageChangeCancelButtonClick}
-                className="btn btn-accent w-1/2"
-              >
-                취소
-              </button>
-              <button
-                onClick={handleImageChangeConfirmButtonClick}
-                className="btn btn-primary w-1/2"
-              >
-                완료
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="flex flex-col w-full md:w-2/3 space-y-6">
-        <div className="space-y-4">
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <label className="font-medium text-lg w-32 md:w-1/3 text-left">
-              닉네임
-            </label>
-            <input
-              type="text"
-              value={nickname}
-              onChange={e => setNickname(e.target.value)}
-              className="input input-bordered w-full md:w-2/3" // Adjust width for consistency
-            />
-            <button
-              onClick={handleNicknameButtonClick}
-              className="btn btn-primary w-full md:w-auto" // Ensure button width is consistent
-            >
-              닉네임 변경
-            </button>
-            {userInfo?.signinType === 'GENERAL' && (
-              <button
-                onClick={handlePasswordButtonClick}
-                className="btn btn-secondary w-full md:w-auto" // Ensure button width is consistent
-              >
-                비밀번호 변경
-              </button>
+          <div className="flex gap-2 w-full justify-between">
+            {!selectedImage ? (
+              <>
+                {profileImageUrl && (
+                  <button
+                    onClick={handleImageDeleteButtonClick}
+                    className="btn hover:border-2 border-black bg-white text-black w-1/2 hover:bg-red-50 hover:border-customRed hover:text-customRed"
+                  >
+                    삭제
+                  </button>
+                )}
+                <label className="btn hover:border-2 border-black bg-white text-black w-1/2 cursor-pointer hover:bg-teal-50 hover:border-teal-500 hover:text-teal-500">
+                  변경
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    accept="image/png, image/jpeg"
+                  />
+                </label>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={handleImageChangeCancelButtonClick}
+                  className="btn hover:border-2 border-customRed bg-white text-customRed w-1/2 hover:bg-red-50 hover:border-customRed hover:text-customRed"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleImageChangeConfirmButtonClick}
+                  className="btn hover:border-2 border-teal-500 bg-white text-teal-500 w-1/2 hover:bg-teal-50 hover:border-teal-500 hover:text-teal-500"
+                >
+                  완료
+                </button>
+              </>
             )}
           </div>
+        </div>
+      </div>
 
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <label className="font-medium text-lg w-32 md:w-1/3 text-left">
+      {/* 사용자 정보 섹션 */}
+      <div className="flex flex-col w-full md:w-2/3 space-y-6 flex-grow">
+        <div className="space-y-4">
+          {/* 입력 필드들을 감싸는 컨테이너에 일관된 구조 적용 */}
+          <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+            <label className="font-medium text-lg md:col-span-3 flex items-center">
+              <IoPerson className="text-xl mr-2" />
+              닉네임
+            </label>
+            <div className="md:col-span-6">
+              <input
+                type="text"
+                value={nickname}
+                onChange={e => setNickname(e.target.value)}
+                className="input input-bordered w-full focus:outline-teal-500"
+              />
+            </div>
+            <div className="md:col-span-3">
+              <button
+                onClick={handleNicknameButtonClick}
+                className="btn hover:border-2 border-black bg-white text-black w-full hover:bg-teal-50 hover:border-teal-500 hover:text-teal-500"
+              >
+                변경
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+            <label className="font-medium text-lg md:col-span-3 flex items-center">
+              <MdEmail className="text-xl mr-2" />
               이메일
             </label>
-            <div className="input input-bordered w-full cursor-not-allowed bg-gray-100 flex items-center justify-center">
-              {userInfo?.email}
+            <div className="md:col-span-9">
+              <input
+                type="email"
+                value={userInfo?.email}
+                className="input input-bordered w-full"
+                disabled
+              />
             </div>
-            <button
-              className="btn btn-accent w-full md:w-auto"
-              onClick={handleWithdrawalButtonClick}
-            >
-              회원 탈퇴
-            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
+            <label className="font-medium text-lg md:col-span-3 flex items-center">
+              <RiLockPasswordFill className="text-xl mr-2" />
+              비밀번호
+            </label>
+            <div className="md:col-span-6 relative">
+              <input
+                type="text"
+                className="input input-bordered w-full pl-10"
+                disabled
+              />
+              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center text-gray-700">
+                <FaCircle className="text-xs mr-1" />
+                <FaCircle className="text-xs mr-1" />
+                <FaCircle className="text-xs mr-1" />
+                <FaCircle className="text-xs mr-1" />
+                <FaCircle className="text-xs mr-1" />
+                <FaCircle className="text-xs mr-1" />
+                <FaCircle className="text-xs mr-1" />
+                <FaCircle className="text-xs" />
+              </div>
+            </div>
+            {userInfo?.signinType === 'GENERAL' && (
+              <div className="md:col-span-3">
+                <button
+                  onClick={handlePasswordButtonClick}
+                  className="btn hover:border-2 border-black bg-white text-black w-full hover:bg-teal-50 hover:border-teal-500 hover:text-teal-500"
+                >
+                  변경
+                </button>
+              </div>
+            )}
+          </div>
+          <div
+            onClick={handleWithdrawalButtonClick}
+            className="text-right mt-10"
+          >
+            <span className="text-sm font-semibold text-gray-500 rounded-full px-1 py-1 btn-ghost group-hover:bg-gray-300 group-hover:text-black transition-colors cursor-pointer">
+              회원 탈퇴 →
+            </span>
           </div>
         </div>
       </div>
+
       {showConfirm && (
         <CustomConfirm
           message={confirmMessage}
@@ -531,17 +591,18 @@ const UserInfoView = () => {
           }}
           requirePasswordInput={
             isPasswordRequired && userInfo?.signinType === 'GENERAL'
-          } // 회원탈퇴 시 비밀번호만 필요
-          requireNewPasswordInput={isNewPasswordRequired} // 비밀번호 변경 시 새 비밀번호 입력 필요
-          requireConfirmPasswordInput={isConfirmPasswordRequired} // 비밀번호 변경 시 비밀번호 확인 입력 필요
-          currentPasswordValue={password} // 비밀번호 state와 연결
-          onCurrentPasswordChange={setPassword} // 비밀번호 입력 핸들러
-          newPasswordValue={newPassword} // 비밀번호 변경 시 새 비밀번호
-          onNewPasswordChange={setNewPassword} // 비밀번호 변경 시 새 비밀번호 입력 핸들러
-          confirmPasswordValue={confirmPassword} // 비밀번호 변경 시 비밀번호 확인
-          onConfirmPasswordChange={setConfirmPassword} // 비밀번호 확인 입력 핸들러
+          }
+          requireNewPasswordInput={isNewPasswordRequired}
+          requireConfirmPasswordInput={isConfirmPasswordRequired}
+          currentPasswordValue={password}
+          onCurrentPasswordChange={setPassword}
+          newPasswordValue={newPassword}
+          onNewPasswordChange={setNewPassword}
+          confirmPasswordValue={confirmPassword}
+          onConfirmPasswordChange={setConfirmPassword}
         />
       )}
+
       {showAlert && (
         <CustomAlert
           message={alertMessage}

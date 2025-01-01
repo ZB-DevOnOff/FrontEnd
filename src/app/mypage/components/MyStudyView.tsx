@@ -165,17 +165,14 @@ const MyStudyView = () => {
 
   return (
     <div className="p-6 space-y-6 max-w-6xl mx-auto">
-      <div
-        role="tablist"
-        className="tabs tabs-lifted tabs-lg hover:tab-lifted "
-      >
+      <div role="tablist" className="tabs tabs-lifted tabs-lg hover:tab-lifted">
         {Object.keys(tabConfigs).map(tab => (
           <button
             key={tab}
             onClick={() => handleTabClick(tab as keyof typeof tabConfigs)}
             className={`tab tab-lg text-base hover:font-bold hover:text-lg hover:text-black hover:shadow-lg ${
               activeTab === tab
-                ? 'tab-active text-black font-bold text-lg'
+                ? 'tab-active text-black font-bold text-sm md:text-lg'
                 : 'bg-transparent text-gray-500'
             } `}
           >

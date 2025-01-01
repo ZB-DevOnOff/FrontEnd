@@ -51,7 +51,7 @@ const processRefreshToken = async (
 
       // return res;
       // return processAccessToken(request, accessToken);
-      return NextResponse.rewrite(request.url, { headers: res.headers });
+      return NextResponse.redirect(request.url, { headers: res.headers });
     }
     return NextResponse.json(response.data, { status: response.status });
   } catch (error: any) {
