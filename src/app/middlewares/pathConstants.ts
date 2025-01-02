@@ -14,4 +14,5 @@ export const IGNORED_PATHS = [
   '/api/auth/token-reissue',
   '/api/study/author/*',
   '/api/auth/withdrawal',
+  '/api/get-time',
 ];

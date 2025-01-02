@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
+import { FaCrown } from 'react-icons/fa';
+import CustomAlert from '@/components/common/Alert';
 
 interface ChatRoomProps {
   chatRoomId: string;
@@ -23,6 +25,10 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
   const isInitialLoad = useRef(true);
   const isLoadingPrevMessages = useRef(false);
   const lastMessageLength = useRef(0);
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage] = useState('');
+  const [alertCallback] = useState<() => void>(() => () => {});
 
   const [loadError, setLoadError] = useState<string | null>(null);
 
@@ -103,19 +109,35 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
     }
   }, [messages]);
 
-  // 새 메시지 추가 시 스크롤 처리
   useEffect(() => {
     if (
-      !isInitialLoad.current &&
-      !isLoadingPrevMessages.current &&
       chatContainerRef.current &&
       messages.length > lastMessageLength.current
     ) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
+      const container = chatContainerRef.current;
+      const isNearBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight <
+        500;
+
+      const lastMessage = messages[messages.length - 1];
+      const isMyMessage = lastMessage?.user.id === userId;
+
+      if (isNearBottom || isMyMessage) {
+        container.scrollTop = container.scrollHeight;
+      }
+
       lastMessageLength.current = messages.length;
     }
-  }, [messages]);
+  }, [messages, userId]);
+
+  const handleSendMessage = async (content: string, file?: File) => {
+    try {
+      await sendMessage(content, file);
+    } catch (error) {
+      console.error('메시지 전송에 실패했습니다:', error);
+      setShowAlert(true); // 전역적인 알림 표시 등으로 대체
+    }
+  };
 
   const isDateChanged = (
     currentTimestamp: string,
@@ -137,7 +159,7 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
         <button
           onClick={connect}
           disabled={isConnecting.current}
-          className="btn btn-primary"
+          className="btn bg-teal-500"
         >
           {isConnecting.current ? '연결 중...' : '채팅방 재연결'}
         </button>
@@ -146,8 +168,8 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
   }
 
   return (
-    <div className="flex justify-center items-start h-screen">
-      <div className="mt-4 w-[80%] max-w-5xl bg-white rounded-lg shadow-lg relative overflow-hidden">
+    <div className="flex justify-center items-start h-[screen]">
+      <div className="mt-1 w-[100%] max-w-5xl bg-white rounded-lg shadow-lg relative overflow-hidden">
         <div className="bg-gray-900 text-gray-100 p-4 flex items-center gap-2">
           <div className="bg-red-500 w-3 h-3 rounded-full"></div>
           <div className="bg-yellow-500 w-3 h-3 rounded-full"></div>
@@ -160,7 +182,7 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
         </div>
         <div
           ref={chatContainerRef}
-          className="flex-1 h-[500px] overflow-y-auto space-y-4 px-6 pb-6"
+          className="flex-1 h-[350px] sm:h-[400px] overflow-y-auto space-y-4 px-6 pb-6"
         >
           {hasNextPage && !isFetchingNextPage && (
             <div ref={ref} className="h-1" />
@@ -172,7 +194,7 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
             </div>
           )}
           {loadError && !isFetchingNextPage && (
-            <div className="text-center text-red-500">{loadError}</div>
+            <div className="text-center text-customRed">{loadError}</div>
           )}
 
           {messages.length === 0 && !isFetchingNextPage && (
@@ -188,7 +210,7 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
             return (
               <div className="mt-4" key={msg.timestamp || idx}>
                 {showDate && (
-                  <div className="text-center text-gray-500 text-sm">
+                  <div className="text-center mb-4 font-base text-gray-500 text-sm md:text-md">
                     {new Date(msg.timestamp).toLocaleDateString('ko-KR', {
                       year: 'numeric',
                       month: 'long',
@@ -203,17 +225,17 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
                   }`}
                 >
                   {msg.user.id !== userId && (
-                    <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center min-w-[70px]">
                       <img
                         src={
                           msg.user.profileImageUrl ||
                           'http://via.placeholder.com/150'
                         }
                         alt={`${msg.user.id}'s profile`}
-                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
+                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
                       />
                       <div
-                        className="text-xs text-gray-600 truncate max-w-[70px] nickname"
+                        className="text-xs sm:text-sm text-gray-600 truncate max-w-[70px] mt-1"
                         title={msg.user.nickname}
                       >
                         {msg.user.nickname}
@@ -226,9 +248,9 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
                       msg.user.id === userId
                         ? 'bg-blue-500 text-white self-end'
                         : 'bg-gray-200 text-black'
-                    }`}
+                    } break-words`}
                   >
-                    <div>{msg.content}</div>
+                    <div className="text-sm md:text-md">{msg.content}</div>
                     <div
                       className={`mt-2 text-xs sm:text-sm ${
                         msg.user.id === userId
@@ -241,15 +263,8 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
                         minute: '2-digit',
                       })}
                     </div>
-                    {/* {msg.imgUrl && (
-                    <img
-                      src={msg.imgUrl}
-                      alt="첨부 이미지"
-                      className="mt-2 rounded-lg max-w-[200px]"
-                    />
-                  )} */}
                     <div
-                      className={`absolute bottom-0 w-0 h-0 border-t-[10px] ${
+                      className={`absolute bottom-0 w-0 h-0 border-t-[20px] ${
                         msg.user.id === userId
                           ? 'border-blue-500 right-[-6px] border-r-[10px] border-r-transparent'
                           : 'border-gray-200 left-[-6px] border-l-[10px] border-l-transparent'
@@ -258,17 +273,19 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
                   </div>
 
                   {msg.user.id === userId && (
-                    <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center min-w-[70px]">
+                      {/* 실제 스터디장 프로필에 표시하는 것으로 수정 예정 */}
+                      <FaCrown size={20} className="text-teal-500" />
                       <img
                         src={
                           msg.user.profileImageUrl ||
                           'http://via.placeholder.com/150'
                         }
                         alt="My profile"
-                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
+                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
                       />
                       <div
-                        className="text-xs text-gray-600 truncate max-w-[70px] nickname"
+                        className="text-xs sm:text-sm text-gray-600 truncate max-w-[70px] mt-1"
                         title={msg.user.nickname}
                       >
                         {msg.user.nickname}
@@ -282,9 +299,18 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
         </div>
 
         <div className="p-6 border-t border-gray-300">
-          <MessageInput onSendMessage={sendMessage} />
+          <MessageInput onSendMessage={handleSendMessage} />
         </div>
       </div>
+      {showAlert && (
+        <CustomAlert
+          message={alertMessage}
+          onClose={() => {
+            setShowAlert(false);
+            alertCallback();
+          }}
+        />
+      )}
     </div>
   );
 };

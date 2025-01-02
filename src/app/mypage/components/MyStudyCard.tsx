@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import axios from 'axios';
 import Image from 'next/image';
 import {
   FaCrown,
@@ -22,6 +21,7 @@ import {
 } from '@/utils/study';
 import CustomAlert from '@/components/common/Alert';
 import { useState } from 'react';
+import axiosInstance from '@/utils/axios';
 
 interface MyStudyCardProps {
   post: MyStudyCardData;
@@ -141,12 +141,12 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
         <h2 className="card-title text-xl items-center">
           {truncateText(post.studyName, 20)}
           {userInfo?.id === post.studyLeaderId && (
-            <div className="absolute top-4 right-4 flex flex-col items-center space-y-1 bg-white border-2 border-black p-2 rounded-lg shadow-md">
-              <FaCrown className="text-black text-2xl" />
-              <span className="text-black text-xs font-bold">스터디장</span>
+            <div className="absolute top-4 right-4 flex flex-col items-center space-y-1 bg-white border-2 border-gray-800 p-2 rounded-lg shadow-md">
+              <FaCrown className="text-gray-800 text-2xl" />
+              <span className="text-gray-800 text-xs font-bold">스터디장</span>
             </div>
           )}
-          <div className="absolute top-4 left-4 flex flex-col items-center space-y-1 bg-black p-2 rounded-lg shadow-md">
+          <div className="absolute top-4 left-4 flex flex-col items-center space-y-1 bg-gray-800 p-2 rounded-lg shadow-md">
             <span className="text-white text-xs font-bold">
               {MEETING_TYPES[post.meetingType as keyof typeof MEETING_TYPES]}
             </span>
@@ -204,11 +204,11 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
 
         <div className="card-actions flex justify-between mt-2 space-x-2">
           <button
-            className="btn btn-base text-teal-50 bg-teal-500 text-sm hover:bg-teal-500 hover:border-teal-500 hover:text-black rounded-full flex-1 px-4 py-2 min-w-[120px] max-w-[140px]"
+            className="btn btn-base text-teal-50 bg-teal-500 text-sm hover:bg-teal-600 hover:border-teal-500 hover:text-black rounded-full flex-1 px-4 py-2 min-w-[120px] max-w-[140px] relative"
             onClick={async e => {
               e.stopPropagation();
               try {
-                const response = await axios.post(
+                const response = await axiosInstance.post(
                   `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/chat/study/${post.id}/participant/${userInfo?.id}`,
                   {},
                   {
@@ -237,6 +237,11 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
           >
             <FaCommentDots />
             채팅
+            {/* {unreadMessagesCount > 0 && (
+              <div className="absolute -top-1 -right-0.5 bg-customRed text-white rounded-full min-w-5 h-5 px-1 flex items-center justify-center text-xs">
+                {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
+              </div>
+            )} */}
           </button>
           <button
             className="btn btn-base border-2 border-teal-500 text-teal-500 text-sm hover:bg-teal-50 hover:border-teal-500 hover:text-black rounded-full flex-1 px-4 py-2 min-w-[120px] max-w-[140px]"

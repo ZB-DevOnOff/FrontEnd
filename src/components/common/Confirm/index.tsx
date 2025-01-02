@@ -139,7 +139,7 @@ const CustomConfirm = ({
             아니오
           </button>
           <button
-            className="btn text-teal-50 bg-teal-500 hover:bg-teal-500 hover:text-black"
+            className="btn text-teal-50 bg-teal-500 hover:bg-teal-600 hover:text-black"
             onClick={onConfirm}
           >
             네

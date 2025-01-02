@@ -20,7 +20,7 @@ export default function StudyList() {
         {isSignedIn && (
           <Link
             href={`/community/study/write?type=${studyType}`}
-            className="btn bg-teal-500 text-white hover:bg-teal-500 hover:text-black"
+            className="btn bg-teal-500 text-white hover:bg-teal-600 hover:text-black"
           >
             스터디 모집하기
           </Link>

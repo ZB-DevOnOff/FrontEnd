@@ -37,7 +37,7 @@ export function PostList<T extends InfoPost | QnAPost>({
         {onWrite && isSignedIn && (
           <button
             onClick={onWrite}
-            className="btn bg-teal-500 text-black hover:bg-teal-500 hover:text-white"
+            className="btn bg-teal-500 text-white hover:bg-teal-600 hover:text-black"
           >
             글쓰기
           </button>

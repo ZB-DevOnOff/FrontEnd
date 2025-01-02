@@ -4,6 +4,7 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import axios from 'axios';
 import { User } from '@/types/post';
+import axiosInstance from '@/utils/axios';
 
 interface UseGroupChatParams {
   chatRoomId: string;
@@ -50,7 +51,7 @@ export const useGroupChat = ({ chatRoomId, userId }: UseGroupChatParams) => {
     signal: AbortSignal;
   }) => {
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/chat/${chatRoomId}/messages`,
         {
           params: { page: pageParam },

@@ -32,13 +32,13 @@ export const POST = async (req: NextRequest) => {
       } else {
         return NextResponse.json(
           { errorMessage: '액세스 토큰 재발급 실패' },
-          { status: 500 },
+          { status: 403 },
         );
       }
     } catch (error) {
       return NextResponse.json(
         { errorMessage: '액세스 토큰 재발급 실패', error },
-        { status: 500 },
+        { status: 403 },
       );
     }
   }
