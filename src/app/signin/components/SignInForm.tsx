@@ -158,7 +158,7 @@ const SingInPage = () => {
         )}
         <button
           type="submit"
-          className="w-full btn bg-teal-500 text-teal-50 hover:text-black hover:bg-teal-500 text-sm sm:text-base"
+          className="w-full btn bg-teal-500 text-teal-50 hover:text-black hover:bg-teal-600 text-sm sm:text-base"
         >
           로그인
         </button>
