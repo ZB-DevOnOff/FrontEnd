@@ -25,16 +25,30 @@ axiosInstance.interceptors.response.use(
   response => response,
   async error => {
     const { resetStore } = useAuthStore.getState();
-    if (error.response && error.response.status === 401) {
-      console.log('토큰 문제 발생. 로그인이 필요합니다.');
+    if (error.response) {
+      const { status, data } = error.response;
+      if (status === 401 || status === 403) {
+        console.log('토큰 문제 발생. 로그인이 필요합니다.');
 
-      // 약간의 지연을 주어 alert가 보일 수 있도록 함
-      setTimeout(() => {
-        resetStore();
-        window.location.href = '/signin';
-      }, 3000);
+        // 약간의 지연을 주어 alert가 보일 수 있도록 함
+        setTimeout(() => {
+          resetStore();
+          window.location.href = '/signin';
+        }, 3000);
+      }
+      return Promise.reject({
+        status,
+        data,
+        errorCode: data?.errorCode,
+        errorMessage: data?.errorMessage || error.message,
+      });
     }
-    return Promise.reject(error);
+
+    return Promise.reject({
+      status: null,
+      errorCode: 'NETWORK_ERROR',
+      errorMessage: '네트워크 문제로 요청을 처리할 수 없습니다.',
+    });
   },
 );
 

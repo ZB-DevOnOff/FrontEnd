@@ -1,9 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { StudyPost, InfoPost, QnAPost } from '@/types/post';
 import { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import MyStudyCard from './MyStudyCard';
 import { MyStudyCardData } from './MyStudyCard';
@@ -11,9 +9,11 @@ import { StudyCard } from '@/app/community/study/components/StudyCard';
 import MyInfoPostCard from './MyInfoPostCard';
 import MyQnAPostCard from './MyQnAPostCard';
 import Pagination from './Pagination';
+import axiosInstance from '@/utils/axios';
+import { handleApiError } from '@/utils/handleApiError';
 
 const MyStudyView = () => {
-  const { userInfo, isSignedIn, resetStore } = useAuthStore();
+  const { userInfo, isSignedIn } = useAuthStore();
   const [activeTab, setActiveTab] = useState('myStudy'); // 기본값을 'myStudy'
   const [myStudies, setMyStudies] = useState<MyStudyCardData[]>([]);
   const [myStudyPosts, setMyStudyPosts] = useState<StudyPost[]>([]);
@@ -26,8 +26,6 @@ const MyStudyView = () => {
     totalElements: 0,
   });
 
-  const router = useRouter();
-
   const tabConfigs = {
     myStudy: {
       url: `/study/author/${userInfo?.id}`,
@@ -37,7 +35,7 @@ const MyStudyView = () => {
     myStudyPost: {
       url: `/study-posts/author/${userInfo?.id}`,
       setData: setMyStudyPosts,
-      logMessage: '나의 스터디 모집글 불러오기 성공',
+      logMessage: '나의 스터디 모집 글 불러오기 성공',
     },
     myInfoPost: {
       url: `/info-posts/author/${userInfo?.id}`,
@@ -69,11 +67,7 @@ const MyStudyView = () => {
           const url = `${apiRouteUrl}${config.url.startsWith('/') ? config.url : `/${config.url}`}?page=${page}`;
 
           console.log('Request URL: ', url); // URL 로그로 확인
-
-          // const response = await axios.get(
-          //   `${process.env.NEXT_PUBLIC_API_ROUTE_URL}${config.url}?page=${page}`,
-          // );
-          const response = await axios.get(url);
+          const response = await axiosInstance.get(url);
 
           if (response.status === 200 && response.data) {
             config.setData(response.data.content);
@@ -86,31 +80,12 @@ const MyStudyView = () => {
             console.log(config.logMessage);
           }
         } catch (error: any) {
-          handleApiError(error);
+          handleApiError(error, setError);
         }
       }
     },
     [userInfo?.id],
   );
-
-  const handleApiError = (error: any) => {
-    console.log('에러 상태코드', error.response.status);
-    if (error.response) {
-      const { status, data } = error.response;
-      console.log('error:' + error.response);
-      const message =
-        data?.errorMessage || '오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
-      if (status === 401) {
-        console.log('토큰 문제 발생. 로그인이 필요합니다.');
-        router.push('/signin');
-        resetStore();
-      } else {
-        setError(message);
-      }
-    } else {
-      setError('게시글 목록을 불러오는 데 실패했습니다.');
-    }
-  };
 
   useEffect(() => {
     if (isSignedIn && userInfo?.id) {
@@ -170,14 +145,14 @@ const MyStudyView = () => {
           <button
             key={tab}
             onClick={() => handleTabClick(tab as keyof typeof tabConfigs)}
-            className={`tab tab-lg text-base hover:font-bold hover:text-lg hover:text-black hover:shadow-lg ${
+            className={`tab tab-lg text-xs md:text-base hover:font-bold hover:text-md hover:text-black hover:shadow-lg ${
               activeTab === tab
-                ? 'tab-active text-black font-bold text-sm md:text-lg'
-                : 'bg-transparent text-gray-500'
+                ? 'tab-active text-black font-bold text-xs md:text-base'
+                : 'bg-white text-gray-500'
             } `}
           >
             {tab === 'myStudy' && '내가 속한 스터디'}
-            {tab === 'myStudyPost' && '나의 스터디 모집글'}
+            {tab === 'myStudyPost' && '나의 스터디 모집 글'}
             {tab === 'myInfoPost' && '나의 정보 공유'}
             {tab === 'myQnAPost' && '나의 Q&A'}
           </button>

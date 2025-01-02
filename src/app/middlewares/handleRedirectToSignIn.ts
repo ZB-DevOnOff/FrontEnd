@@ -5,13 +5,18 @@ const handleRedirectToSignIn = (request: NextRequest) => {
 
   const isApiRequest = request.nextUrl.pathname.startsWith('/api/');
   if (isApiRequest) {
-    // API 요청일 경우 JSON 형식의 401 응답 반환
-    return new NextResponse(JSON.stringify({ message: '인증이 필요합니다.' }), {
-      status: 401,
-      headers: {
-        'Content-Type': 'application/json',
+    // API 요청일 경우 JSON 형식의 403 응답 반환
+    return new NextResponse(
+      JSON.stringify({
+        errorMessage: '인증이 만료되었습니다. 다시 로그인해 주세요.',
+      }),
+      {
+        status: 403,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-    });
+    );
   }
 
   // 페이지 요청일 경우 로그인 페이지로 리다이렉트
