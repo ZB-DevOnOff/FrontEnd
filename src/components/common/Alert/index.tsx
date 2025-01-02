@@ -20,7 +20,7 @@ const CustomAlert = ({ message, onClose, onConfirm }: CustomAlertProps) => {
         <p className="text-lg font-semibold text-center">{message}</p>
         <div className="mt-6 flex justify-center">
           <button
-            className="btn text-teal-50 bg-teal-500 hover:bg-teal-500 hover:text-black"
+            className="btn text-teal-50 bg-teal-500 hover:bg-teal-600 hover:text-black"
             onClick={handleConfirm}
           >
             확인

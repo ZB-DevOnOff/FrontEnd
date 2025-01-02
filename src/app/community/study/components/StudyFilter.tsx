@@ -10,9 +10,9 @@ type FilterType = 'subjects' | 'status' | 'difficulty' | 'dayType';
 
 // 영어 Enum -> 한글 표시용 매핑
 export const STATUS_DISPLAY = {
-  RECRUITING: { label: '모집 중', color: 'bg-customRed text-red-50' },
-  CLOSED: { label: '모집 완료', color: 'bg-teal-500 text-teal-50' },
-  CANCELED: { label: '모집 취소', color: 'bg-gray-500 text-gray-50' },
+  RECRUITING: { label: '모집 중', color: 'bg-gray-800' },
+  CLOSED: { label: '모집 완료', color: 'bg-teal-500' },
+  CANCELED: { label: '모집 취소', color: 'bg-gray-500' },
 };
 
 const DIFFICULTY_DISPLAY = {
