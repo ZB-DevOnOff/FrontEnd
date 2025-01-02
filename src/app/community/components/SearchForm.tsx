@@ -40,9 +40,12 @@ export default function SearchForm({
         value={keyword}
         onChange={e => setKeyword(e.target.value)}
         placeholder={placeholder}
-        className="input input-bordered flex-1"
+        className="input input-bordered flex-1 focus:outline-teal-500"
       />
-      <button type="submit" className="btn btn-primary">
+      <button
+        type="submit"
+        className="btn bg-white text-gray-800 border-gray-800 hover:bg-teal-50 hover:text-teal-500 hover:border-teal-500"
+      >
         검색
       </button>
     </form>

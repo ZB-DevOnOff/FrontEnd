@@ -35,7 +35,10 @@ export function PostList<T extends InfoPost | QnAPost>({
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{title}</h1>
         {onWrite && isSignedIn && (
-          <button onClick={onWrite} className="btn btn-primary">
+          <button
+            onClick={onWrite}
+            className="btn bg-teal-500 text-white hover:bg-teal-600 hover:text-black"
+          >
             글쓰기
           </button>
         )}

@@ -1,13 +1,15 @@
 'use client';
 
-import { useAuthStore } from '@/store/authStore';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useAuthStore } from '@/store/authStore';
 import { usePathname } from 'next/navigation';
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import CustomConfirm from '@/components/common/Confirm';
 import CustomAlert from '@/components/common/Alert';
+import { FiBell } from 'react-icons/fi';
+import axiosInstance from '@/utils/axios';
 
 const Header = () => {
   const { isSignedIn, setIsSignedIn, userInfo, resetStore } = useAuthStore();
@@ -21,6 +23,8 @@ const Header = () => {
   const [, setIsLoading] = useState(true);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string>('');
+
+  const [notificationCount] = useState(99);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -52,6 +56,17 @@ const Header = () => {
   useEffect(() => {
     document.body.style.overflow = 'auto';
   }, []);
+
+  const NotificationButton = () => (
+    <button className="btn btn-ghost relative">
+      <FiBell size={24} />
+      {notificationCount > 0 && (
+        <div className="absolute -top-1 -right-0.5 bg-customRed text-white rounded-full min-w-5 h-5 px-1 flex items-center justify-center text-xs">
+          {notificationCount > 99 ? '99+' : notificationCount}
+        </div>
+      )}
+    </button>
+  );
 
   const toggleNav = () => {
     setIsNavOpen(!isNavOpen);
@@ -89,7 +104,7 @@ const Header = () => {
 
   const handleSignOutClick = async () => {
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/auth/sign-out`,
         {},
         {
@@ -135,10 +150,18 @@ const Header = () => {
       <div className="navbar-start">
         <Link href="/" className="btn btn-ghost text-base-content text-center">
           <div>
-            <span className="block text-xs text-gray-600">
+            <span className="block text-xs text-black">
               스마트한 개발 스터디 플랫폼
             </span>
-            <span className="block text-xl font-bold text-black">DevOnOff</span>
+            <span className="block text-xl font-bold text-teal-500">
+              <Image
+                src={'/devonoff-logo.png'}
+                alt={'DevOnOff logo'}
+                width={190}
+                height={190}
+                className="object-contain -mt-20"
+              />
+            </span>
           </div>
         </Link>
       </div>
@@ -177,6 +200,10 @@ const Header = () => {
       </div>
 
       <div className="navbar-end hidden lg:flex space-x-2">
+        {/* <button className="btn btn-ghost">
+          <FiBell size={24} />
+        </button> */}
+        <NotificationButton />
         {isSignedIn ? (
           <>
             <Link
@@ -203,6 +230,10 @@ const Header = () => {
       </div>
 
       <div className="navbar-end lg:hidden">
+        {/* <button className="btn btn-ghost">
+          <FiBell size={24} />
+        </button> */}
+        <NotificationButton />
         <button className="btn btn-ghost" onClick={toggleNav}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -265,7 +296,7 @@ const Header = () => {
               </Link>
               <Link
                 href="/community/ranking"
-                className={`block py-2 ${activeMenu === 'ranking' ? 'text-primary' : ''}`}
+                className={`btn ${activeMenu === 'ranking' ? 'btn-active' : ''}`}
                 onClick={() => handleMenuClick('ranking')}
               >
                 랭킹

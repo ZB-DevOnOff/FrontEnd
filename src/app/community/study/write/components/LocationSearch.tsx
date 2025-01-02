@@ -179,7 +179,7 @@ export default function LocationSearch({
         <button
           type="button"
           onClick={handleSearch}
-          className="btn btn-primary"
+          className="btn bg-white text-gray-800 border-gray-800 hover:bg-teal-50 hover:text-teal-500 hover:border-teal-500"
         >
           검색
         </button>

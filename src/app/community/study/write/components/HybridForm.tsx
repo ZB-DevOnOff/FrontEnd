@@ -397,8 +397,10 @@ export default function HybridForm({ initialData, isEdit }: HybridFormProps) {
             <button
               key={day}
               type="button"
-              className={`btn btn-sm ${
-                selectedDays.includes(day) ? 'btn-primary' : 'btn-outline'
+              className={`btn btn-sm border-black ${
+                selectedDays.includes(day)
+                  ? 'border-teal-500 text-teal-500 bg-white'
+                  : 'bg-white hover:bg-white hover:border-teal-500 hover:text-teal-500'
               }`}
               onClick={() => handleDayToggle(day)}
             >
@@ -435,7 +437,7 @@ export default function HybridForm({ initialData, isEdit }: HybridFormProps) {
 
       <button
         type="submit"
-        className="btn btn-primary w-full"
+        className="btn w-full bg-teal-500 text-white hover:bg-teal-600 hover:text-black"
         disabled={isLoading || !selectedLocation}
       >
         {isLoading

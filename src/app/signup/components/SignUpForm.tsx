@@ -2,8 +2,9 @@
 import CustomAlert from '@/components/common/Alert';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
+import { AuthTimer } from './AuthTimer';
 
 const SignUpForm = () => {
   const [email, setEmail] = useState('');
@@ -36,37 +37,15 @@ const SignUpForm = () => {
     'success' | 'error' | ''
   >('');
 
-  const [timer, setTimer] = useState(180);
-  const [, setIsTimerRunning] = useState(false);
-
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordCheckVisible, setPasswordCheckVisible] = useState(false);
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
 
+  const [isTimerActive, setIsTimerActive] = useState(false);
+
   const router = useRouter();
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-
-    if (emailSent && timer > 0) {
-      setIsTimerRunning(true);
-
-      interval = setInterval(() => {
-        setTimer(prev => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            setIsTimerRunning(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    return () => clearInterval(interval);
-  }, [emailSent, timer]);
 
   // 이메일 형식 확인
   const isValidEmail = (email: string) =>
@@ -76,12 +55,6 @@ const SignUpForm = () => {
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&#^])[A-Za-z\d@$!%*?&]{8,}$/.test(
       password,
     );
-
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -107,7 +80,7 @@ const SignUpForm = () => {
         setEmailSent(true);
         setEmailMessage('인증번호가 발송되었습니다.');
         setEmailMessageType('success');
-        setTimer(180);
+        setIsTimerActive(true);
       } else {
         setEmailMessage('인증번호 전송에 실패했습니다.');
         setEmailMessageType('error');
@@ -160,6 +133,7 @@ const SignUpForm = () => {
         setAuthCodeVerified(true);
         setAuthCodeMessage('인증되었습니다.');
         setAuthCodeMessageType('success');
+        setIsTimerActive(false);
       }
     } catch (error: any) {
       if (error.response) {
@@ -194,6 +168,13 @@ const SignUpForm = () => {
         setAuthCodeMessageType('error');
       }
     }
+  };
+
+  // 타이머 종료 시
+  const handleTimerEnd = () => {
+    setIsTimerActive(false);
+    setEmailMessage('인증번호가 만료되었습니다. 재발송해 주세요.');
+    setEmailMessageType('error');
   };
 
   // 닉네임 중복 확인
@@ -250,11 +231,15 @@ const SignUpForm = () => {
     } else {
       setPasswordError('');
     }
+    handlePasswordCheck(passwordCheck, password);
   };
 
   // 비밀번호 확인
-  const handlePasswordCheck = (value: string) => {
-    if (value !== password) {
+  const handlePasswordCheck = (
+    checkValue: string,
+    currentPassword: string = password,
+  ) => {
+    if (checkValue !== currentPassword) {
       setPasswordCheckMessage('비밀번호가 일치하지 않습니다.');
       setPasswordCheckMessageType('error');
     } else {
@@ -282,6 +267,7 @@ const SignUpForm = () => {
     if (!nickname.trim()) {
       setNicknameMessage('닉네임을 입력해 주세요.');
       setNicknameMessageType('error');
+      return;
     } else if (!nicknameAvailable) {
       setNicknameMessage('닉네임 중복 확인을 완료해 주세요.');
       setNicknameMessageType('error');
@@ -291,11 +277,13 @@ const SignUpForm = () => {
       setPasswordError(
         '비밀번호는 최소 8자 이상이며, 하나 이상의 영문자, 숫자, 특수문자가 포함되어야 합니다.',
       );
+      return;
     }
 
     if (password !== passwordCheck) {
       setPasswordCheckMessage('비밀번호가 일치하지 않습니다.');
       setPasswordCheckMessageType('error');
+      return;
     } else {
       setPasswordCheckMessage('비밀번호가 일치합니다.');
       setPasswordCheckMessageType('success');
@@ -345,15 +333,15 @@ const SignUpForm = () => {
                 setEmailMessageType('');
               }}
               required
-              className="w-full flex-grow input input-bordered px-4 py-2 focus:outline-indigo-500 text-sm sm:text-base"
+              className="w-full flex-grow input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
             />
             <button
               type="button"
               onClick={handleAuthCodeSendClick}
               className={`ml-2 px-4 py-2 ${
                 isValidEmail(email)
-                  ? 'btn btn-secondary text-sm sm:text-base hover:text-white'
-                  : 'btn bg-gray-400 hover:bg-gray-500 hover:text-white text-sm sm:text-base'
+                  ? 'btn bg-white border-teal-500 text-teal-500 hover:text-teal-50 hover:bg-teal-500 text-sm sm:text-base hover:text-teal-50'
+                  : 'btn bg-gray-100 border-gray-400 text-gray-400 text-sm sm:text-base'
               }`}
             >
               {emailSent ? '재발송' : '인증번호 전송'}
@@ -365,7 +353,7 @@ const SignUpForm = () => {
               <p
                 className={`text-sm sm:text-base ${
                   emailMessageType === 'success'
-                    ? 'text-green-500'
+                    ? 'text-teal-500'
                     : 'text-red-500'
                 }`}
               >
@@ -387,19 +375,14 @@ const SignUpForm = () => {
                 value={authCode}
                 onChange={e => setAuthCode(e.target.value.trim())}
                 required
-                className="w-full flex-grow input input-bordered px-4 py-2 focus:outline-indigo-500 text-sm sm:text-base"
+                className="w-full flex-grow input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
               />
-              {/* 타이머 표시 */}
-              {timer > 0 && (
-                <span className="ml-4 text-red-500 text-sm sm:text-base">
-                  {formatTime(timer)}
-                </span>
-              )}
+              <AuthTimer isActive={isTimerActive} onTimerEnd={handleTimerEnd} />
               <button
                 type="button"
                 onClick={handleAuthCodeVerifyClick}
                 disabled={authCodeVerified}
-                className="ml-2 px-4 py-2 btn btn-secondary hover:text-white text-sm sm:text-base"
+                className="ml-2 px-4 py-2 btn bg-white border-teal-500 text-teal-500 hover:text-teal-50 hover:bg-teal-500 text-sm sm:text-base hover:text-teal-50"
               >
                 {authCodeVerified ? '완료' : '확인'}
               </button>
@@ -408,7 +391,7 @@ const SignUpForm = () => {
               <p
                 className={`mt-2 ${
                   authCodeMessageType === 'success'
-                    ? 'text-green-500'
+                    ? 'text-teal-500'
                     : 'text-red-500'
                 }`}
               >
@@ -438,13 +421,13 @@ const SignUpForm = () => {
               }}
               placeholder="닉네임을 입력해 주세요."
               required
-              className="w-full flex-grow input input-bordered px-4 py-2 focus:outline-indigo-500 text-sm sm:text-base"
+              className="w-full flex-grow input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
             />
             <button
               type="button"
               onClick={handleNicknameAvailabilityCheckClick}
               disabled={nicknameAvailable}
-              className="ml-2 px-4 py-2 btn btn-secondary hover:text-white text-sm sm:text-base"
+              className="ml-2 px-4 py-2 btn bg-white border-teal-500 text-teal-500 hover:text-teal-50 hover:bg-teal-500 text-sm sm:text-base hover:text-teal-50"
             >
               중복 확인
             </button>
@@ -454,7 +437,7 @@ const SignUpForm = () => {
               <p
                 className={`text-sm sm:text-base ${
                   nicknameMessageType === 'success'
-                    ? 'text-green-500'
+                    ? 'text-teal-500'
                     : 'text-red-500'
                 }`}
               >
@@ -481,7 +464,7 @@ const SignUpForm = () => {
               }}
               placeholder="비밀번호를 입력해 주세요."
               required
-              className="w-full input input-bordered px-4 py-2 focus:outline-indigo-500 text-sm sm:text-base"
+              className="w-full input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
             />
             <button
               type="button"
@@ -517,7 +500,7 @@ const SignUpForm = () => {
               }}
               placeholder="비밀번호를 한 번 더 입력해 주세요."
               required
-              className="w-full input input-bordered px-4 py-2 focus:outline-indigo-500 text-sm sm:text-base"
+              className="w-full input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
             />
             <button
               type="button"
@@ -535,7 +518,7 @@ const SignUpForm = () => {
             <p
               className={`mt-2 text-sm sm:text-base ${
                 passwordCheckMessageType === 'success'
-                  ? 'text-green-500'
+                  ? 'text-teal-500'
                   : 'text-red-500'
               }`}
             >
@@ -546,7 +529,7 @@ const SignUpForm = () => {
 
         <button
           type="submit"
-          className="w-full btn btn-secondary hover:text-white text-sm sm:text-base"
+          className="w-full btn bg-teal-500 text-teal-50 hover:text-black hover:bg-teal-600 text-sm sm:text-base"
         >
           회원가입
         </button>

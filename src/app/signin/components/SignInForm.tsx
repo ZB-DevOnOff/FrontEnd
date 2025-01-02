@@ -116,7 +116,7 @@ const SingInPage = () => {
                 setEmail(e.target.value);
                 setError('');
               }}
-              className="w-full flex-grow input input-bordered px-4 py-2 focus:outline-indigo-500 text-sm sm:text-base"
+              className="w-full flex-grow input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
             />
           </div>
         </div>
@@ -138,7 +138,7 @@ const SingInPage = () => {
                 setError('');
               }}
               placeholder="비밀번호를 입력해 주세요."
-              className="w-full input input-bordered px-4 py-2 focus:outline-indigo-500 text-sm sm:text-base"
+              className="w-full input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
             />
             <button
               type="button"
@@ -158,7 +158,7 @@ const SingInPage = () => {
         )}
         <button
           type="submit"
-          className="w-full btn btn-secondary hover:text-white text-sm sm:text-base"
+          className="w-full btn bg-teal-500 text-teal-50 hover:text-black hover:bg-teal-600 text-sm sm:text-base"
         >
           로그인
         </button>

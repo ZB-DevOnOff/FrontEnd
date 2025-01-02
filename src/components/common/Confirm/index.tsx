@@ -73,7 +73,7 @@ const CustomConfirm = ({
               value={currentPasswordValue}
               onChange={e => onCurrentPasswordChange(e.target.value)}
               placeholder="현재 비밀번호를 입력해주세요"
-              className="w-full input input-bordered px-4 py-2 focus:outline-indigo-500 text-sm sm:text-base"
+              className="w-full input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
             />
             <button
               type="button"
@@ -96,7 +96,7 @@ const CustomConfirm = ({
               value={newPasswordValue}
               onChange={e => onNewPasswordChange(e.target.value)}
               placeholder="새 비밀번호를 입력해주세요"
-              className="w-full input input-bordered px-4 py-2 focus:outline-indigo-500 text-sm sm:text-base"
+              className="w-full input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
             />
             <button
               type="button"
@@ -119,7 +119,7 @@ const CustomConfirm = ({
               value={confirmPasswordValue}
               onChange={e => onConfirmPasswordChange(e.target.value)}
               placeholder="새 비밀번호 확인"
-              className="w-full input input-bordered px-4 py-2 focus:outline-indigo-500 text-sm sm:text-base"
+              className="w-full input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
             />
             <button
               type="button"
@@ -135,10 +135,13 @@ const CustomConfirm = ({
           </div>
         )}
         <div className="mt-6 flex justify-center space-x-4">
-          <button className="btn btn-ghost" onClick={onCancel}>
+          <button className="btn text-black" onClick={onCancel}>
             아니오
           </button>
-          <button className="btn btn-primary" onClick={onConfirm}>
+          <button
+            className="btn text-teal-50 bg-teal-500 hover:bg-teal-600 hover:text-black"
+            onClick={onConfirm}
+          >
             네
           </button>
         </div>

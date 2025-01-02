@@ -1,9 +1,9 @@
 'use client';
 import { useSearchParams, useRouter } from 'next/navigation';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import CustomAlert from '@/components/common/Alert';
+import axiosInstance from '@/utils/axios';
 
 const KakaoCallbackClient = () => {
   const searchParams = useSearchParams();
@@ -25,7 +25,7 @@ const KakaoCallbackClient = () => {
       }
 
       try {
-        const response = await axios.post(
+        const response = await axiosInstance.post(
           `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/auth/sign-in/kakao`,
           {
             code,
@@ -44,15 +44,11 @@ const KakaoCallbackClient = () => {
           router.push('/community/study');
         }
       } catch (error: any) {
-        if (error.response) {
-          const { status, data } = error.response;
-          const errorCode = data?.errorCode;
-          const message =
-            data?.errorMessage ||
-            '오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+        if (error) {
+          const { status, errorMessage, errorCode } = error;
 
           if (status === 500 && errorCode === 'INTERNAL_SERVER_ERROR') {
-            setAlertMessage(message);
+            setAlertMessage(errorMessage);
             setShowAlert(true);
           } else {
             setAlertMessage(
