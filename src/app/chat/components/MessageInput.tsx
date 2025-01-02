@@ -48,6 +48,7 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (error) {
       console.error('메시지 전송에 실패했습니다.', error);
+      throw new Error('메시지 전송에 실패했습니다.');
     } finally {
       setIsLoading(false);
 
@@ -126,7 +127,7 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
         />
         <button
           type="submit"
-          className="btn btn-base bg-teal-500 text-white text-base hover:bg-teal-500 hover:text-black rounded-full flex items-center gap-2 px-8 py-2"
+          className="btn btn-base bg-teal-500 text-white text-base hover:bg-teal-600 hover:text-black rounded-full flex items-center gap-2 px-8 py-2"
           disabled={isLoading || byteExceeded}
         >
           {isLoading ? '전송 중...' : '전송'}
