@@ -1,4 +1,4 @@
-export default function Home() {
+const Home = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
       <h1 className="text-4xl font-bold">DevOnOff</h1>
@@ -7,4 +7,6 @@ export default function Home() {
       <p>개발자들과 함께 성장하는 공간입니다.</p>
     </div>
   );
-}
+};
+
+export default Home;
