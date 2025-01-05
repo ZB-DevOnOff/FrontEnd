@@ -117,7 +117,10 @@ export default function InfoWritePage() {
         />
       </div>
 
-      <button type="submit" className="btn btn-primary w-full">
+      <button
+        type="submit"
+        className="btn w-full bg-teal-500 text-white hover:bg-teal-600 hover:text-black"
+      >
         작성하기
       </button>
       {showAlert && (

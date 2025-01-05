@@ -169,7 +169,7 @@ export function StudyApplication({
           {study.status === 'RECRUITING' && (
             <button
               onClick={handleCloseRecruitment}
-              className="btn btn-secondary"
+              className="btn bg-teal-500 text-white hover:bg-teal-600 hover:text-black"
             >
               모집 마감하기
             </button>
@@ -279,7 +279,7 @@ export function StudyApplication({
   return (
     <div className="mt-4">
       <button
-        className="btn btn-primary w-full"
+        className="btn w-full bg-teal-500 text-white text-md hover:bg-teal-600 hover:text-black"
         onClick={handleApply}
         disabled={isLoading}
       >

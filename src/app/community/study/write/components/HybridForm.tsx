@@ -215,7 +215,7 @@ export default function HybridForm({ initialData, isEdit }: HybridFormProps) {
                 );
                 setSelectedFile(null);
               }}
-              className="btn btn-secondary"
+              className="btn border-gray-800 bg-white text-gray-800 hover:bg-teal-50 hover:border-teal-500 hover:text-teal-500"
             >
               기본 이미지로 변경
             </button>
@@ -416,8 +416,11 @@ export default function HybridForm({ initialData, isEdit }: HybridFormProps) {
         </label>
         <LocationSearch onLocationSelect={setSelectedLocation} />
         {selectedLocation && (
-          <div className="alert alert-info mt-2">
-            <span>선택된 위치: {selectedLocation.address}</span>
+          <div className="alert border-teal-500 bg-teal-50 mt-2">
+            <span className="text-gray-800">선택된 위치:</span>
+            <span className="font-semibold text-teal-500">
+              {selectedLocation.address}
+            </span>
           </div>
         )}
       </div>
