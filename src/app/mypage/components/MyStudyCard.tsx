@@ -22,6 +22,7 @@ import {
 import CustomAlert from '@/components/common/Alert';
 import { useState } from 'react';
 import axiosInstance from '@/utils/axios';
+import handleApiError from '@/utils/handleApiError';
 
 interface MyStudyCardProps {
   post: MyStudyCardData;
@@ -56,6 +57,14 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+
+  const showChatRoomErrorAlert = (errorMessage: string | null) => {
+    setAlertMessage(
+      errorMessage ||
+        '채팅방 참가 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+    );
+    setShowAlert(true);
+  };
 
   // 텍스트 길이 제한 함수
   const truncateText = (text: string, maxLength: number) => {
@@ -113,8 +122,39 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
     return true;
   };
 
-  // 스터디룸 버튼의 onClick 핸들러 수정
-  const handleStudyRoomClick = (e: React.MouseEvent) => {
+  const handleChatRoomButtonClick = async (
+    postId: number,
+    userId: number,
+    e: React.MouseEvent,
+  ) => {
+    {
+      e.stopPropagation();
+      try {
+        const response = await axiosInstance.post(
+          `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/chat/study/${post.id}/participant/${userInfo?.id}`,
+          {},
+          {
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
+        if (response.status === 200) {
+          const { chatRoomId, studyId, studyName } = response.data;
+          router.push(
+            `/chat/${chatRoomId}/study/${studyId}?studyName=${studyName}`,
+          );
+        } else {
+          setAlertMessage(
+            '채팅방 참가 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+          );
+          setShowAlert(true);
+        }
+      } catch (error) {
+        handleApiError(error, showChatRoomErrorAlert);
+      }
+    }
+  };
+
+  const handleStudyRoomButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (checkStudyTime()) {
       router.push(
@@ -205,35 +245,34 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
         <div className="card-actions flex justify-between mt-2 space-x-2">
           <button
             className="btn btn-base text-teal-50 bg-teal-500 text-sm hover:bg-teal-600 hover:border-teal-500 hover:text-black rounded-full flex-1 px-4 py-2 min-w-[120px] max-w-[140px] relative"
-            onClick={async e => {
-              e.stopPropagation();
-              try {
-                const response = await axiosInstance.post(
-                  `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/chat/study/${post.id}/participant/${userInfo?.id}`,
-                  {},
-                  {
-                    headers: { 'Content-Type': 'application/json' },
-                  },
-                );
-                if (response.status === 200) {
-                  const { chatRoomId, studyId, studyName } = response.data;
-                  router.push(
-                    `/chat/${chatRoomId}/study/${studyId}?studyName=${studyName}`,
-                  );
-                } else {
-                  setAlertMessage(
-                    '채팅방에 참여할 수 없습니다. 잠시 후 다시 시도해주세요.',
-                  );
-                  setShowAlert(true);
-                }
-              } catch (error) {
-                console.error('채팅방 참가 중 오류 발생:', error);
-                setAlertMessage(
-                  '채팅방 참가 중 오류가 발생했습니다. 관리자에게 문의하세요.',
-                );
-                setShowAlert(true);
-              }
-            }}
+            onClick={e =>
+              handleChatRoomButtonClick(post?.id, userInfo?.id || 0, e)
+            }
+            // onClick={async e => {
+            //   e.stopPropagation();
+            //   try {
+            //     const response = await axiosInstance.post(
+            //       `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/chat/study/${post.id}/participant/${userInfo?.id}`,
+            //       {},
+            //       {
+            //         headers: { 'Content-Type': 'application/json' },
+            //       },
+            //     );
+            //     if (response.status === 200) {
+            //       const { chatRoomId, studyId, studyName } = response.data;
+            //       router.push(
+            //         `/chat/${chatRoomId}/study/${studyId}?studyName=${studyName}`,
+            //       );
+            //     } else {
+            //       setAlertMessage(
+            //         '채팅방 참가 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+            //       );
+            //       setShowAlert(true);
+            //     }
+            //   } catch (error) {
+            //     handleApiError(error, showErrorAlert);
+            //   }
+            // }}
           >
             <FaCommentDots />
             채팅
@@ -245,7 +284,7 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
           </button>
           <button
             className="btn btn-base border-2 border-teal-500 text-teal-500 text-sm hover:bg-teal-50 hover:border-teal-500 hover:text-black rounded-full flex-1 px-4 py-2 min-w-[120px] max-w-[140px]"
-            onClick={handleStudyRoomClick}
+            onClick={handleStudyRoomButtonClick}
           >
             <FaChalkboardTeacher /> 스터디룸
           </button>

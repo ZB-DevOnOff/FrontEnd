@@ -10,6 +10,7 @@ import CustomConfirm from '@/components/common/Confirm';
 import CustomAlert from '@/components/common/Alert';
 import { FiBell } from 'react-icons/fi';
 import axiosInstance from '@/utils/axios';
+import handleApiError from '@/utils/handleApiError';
 
 const Header = () => {
   const { isSignedIn, setIsSignedIn, userInfo, resetStore } = useAuthStore();
@@ -102,6 +103,14 @@ const Header = () => {
     setShowConfirm(true);
   };
 
+  const showErrorAlert = (errorMessage: string | null) => {
+    setAlertMessage(
+      errorMessage ||
+        '로그아웃에 실패했습니다. 잠시 후 다시 시도해 주세요. 잠시 후 다시 시도해 주세요.',
+    );
+    setShowAlert(true);
+  };
+
   const handleSignOutClick = async () => {
     try {
       const response = await axiosInstance.post(
@@ -121,25 +130,26 @@ const Header = () => {
         setShowAlert(true);
       }
     } catch (error: any) {
-      const { status } = error.response;
-      if (error.response) {
-        if (status === 401) {
-          setAlertMessage('액세스 토큰이 없어 로그아웃을 할 수 없습니다.');
-        } else if (status === 400) {
-          setAlertMessage('로그아웃에 실패했습니다. 다시 시도해 주세요.');
-        } else if (status === 404) {
-          setAlertMessage('사용자를 찾을 수 없습니다.');
-        } else {
-          setAlertMessage(
-            '서버에 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-          );
-        }
-      } else {
-        setAlertMessage(
-          '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
-        );
-      }
-      setShowAlert(true);
+      handleApiError(error, showErrorAlert);
+      // const { status } = error.response;
+      // if (error.response) {
+      //   if (status === 401) {
+      //     setAlertMessage('액세스 토큰이 없어 로그아웃을 할 수 없습니다.');
+      //   } else if (status === 400) {
+      //     setAlertMessage('로그아웃에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+      //   } else if (status === 404) {
+      //     setAlertMessage('사용자를 찾을 수 없습니다.');
+      //   } else {
+      //     setAlertMessage(
+      //       '서버에 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+      //     );
+      //   }
+      // } else {
+      //   setAlertMessage(
+      //     '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
+      //   );
+      // }
+      // setShowAlert(true);
     } finally {
       setShowConfirm(false);
     }
