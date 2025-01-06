@@ -10,11 +10,12 @@ import MyInfoPostCard from './MyInfoPostCard';
 import MyQnAPostCard from './MyQnAPostCard';
 import Pagination from './Pagination';
 import axiosInstance from '@/utils/axios';
-import { handleApiError } from '@/utils/handleApiError';
+import handleApiError from '@/utils/handleApiError';
 
 const MyStudyView = () => {
   const { userInfo, isSignedIn } = useAuthStore();
   const [activeTab, setActiveTab] = useState('myStudy'); // 기본값을 'myStudy'
+  const [, setIsLoading] = useState(false);
   const [myStudies, setMyStudies] = useState<MyStudyCardData[]>([]);
   const [myStudyPosts, setMyStudyPosts] = useState<StudyPost[]>([]);
   const [myInfoPosts, setMyInfoPosts] = useState<InfoPost[]>([]);
@@ -49,10 +50,44 @@ const MyStudyView = () => {
     },
   };
 
+  const getTabText = (tab: string) => {
+    const texts = {
+      myStudy: {
+        mobile: '내가\n속한\n스터디',
+        desktop: '내가 속한 스터디',
+      },
+      myStudyPost: {
+        mobile: '나의\n스터디\n모집 글',
+        desktop: '나의 스터디 모집 글',
+      },
+      myInfoPost: {
+        mobile: '나의\n정보\n공유',
+        desktop: '나의 정보 공유',
+      },
+      myQnAPost: {
+        mobile: '나의\nQ&A',
+        desktop: '나의 Q&A',
+      },
+    };
+
+    return (
+      <span>
+        <span className="hidden sm:inline">
+          {texts[tab as keyof typeof texts].desktop}
+        </span>
+        <span className="inline sm:hidden whitespace-pre-line">
+          {texts[tab as keyof typeof texts].mobile}
+        </span>
+      </span>
+    );
+  };
+
   const handleTabClick = useCallback(
     async (tab: keyof typeof tabConfigs, page = 0) => {
       setActiveTab(tab);
       setError(null);
+      setIsLoading(true);
+
       const config = tabConfigs[tab];
 
       if (userInfo?.id) {
@@ -81,6 +116,8 @@ const MyStudyView = () => {
           }
         } catch (error: any) {
           handleApiError(error, setError);
+        } finally {
+          setIsLoading(false);
         }
       }
     },
@@ -145,16 +182,13 @@ const MyStudyView = () => {
           <button
             key={tab}
             onClick={() => handleTabClick(tab as keyof typeof tabConfigs)}
-            className={`tab tab-lg text-xs md:text-base hover:font-bold hover:text-md hover:text-black hover:shadow-lg ${
+            className={`tab tab-lg text-xs sm:text-sm md:text-base hover:font-bold hover:text-md hover:text-black hover:shadow-lg ${
               activeTab === tab
-                ? 'tab-active text-black font-bold text-xs md:text-base'
+                ? 'tab-active text-black font-bold text-xs sm:text-sm md:text-base'
                 : 'bg-white text-gray-500'
             } `}
           >
-            {tab === 'myStudy' && '내가 속한 스터디'}
-            {tab === 'myStudyPost' && '나의 스터디 모집 글'}
-            {tab === 'myInfoPost' && '나의 정보 공유'}
-            {tab === 'myQnAPost' && '나의 Q&A'}
+            {getTabText(tab)}
           </button>
         ))}
       </div>

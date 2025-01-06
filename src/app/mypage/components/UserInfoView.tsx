@@ -10,7 +10,7 @@ import { IoPerson } from 'react-icons/io5';
 import { MdEmail } from 'react-icons/md';
 import { FaCircle } from 'react-icons/fa';
 import { RiLockPasswordFill } from 'react-icons/ri';
-import { handleApiError } from '@/utils/handleApiError';
+import handleApiError from '@/utils/handleApiError';
 
 const UserInfoView = () => {
   const { userInfo, setUserInfo, resetStore } = useAuthStore();
@@ -40,7 +40,10 @@ const UserInfoView = () => {
   );
 
   const showErrorAlert = (errorMessage: string | null) => {
-    setAlertMessage(errorMessage || '알 수 없는 오류가 발생했습니다.');
+    setAlertMessage(
+      errorMessage ||
+        '알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+    );
     setShowAlert(true);
   };
 
@@ -73,6 +76,7 @@ const UserInfoView = () => {
     }
   }, [userInfo]);
 
+  // 프로필 이미지 삭제
   const handleImageDeleteButtonClick = async () => {
     setConfirmMessage('프로필 이미지를 삭제하시겠습니까?');
     setConfirmCallback(() => async () => {
@@ -123,6 +127,8 @@ const UserInfoView = () => {
     });
     setShowConfirm(true);
   };
+
+  // 프로필 이미지 변경
   const handleImageChangeConfirmButtonClick = async () => {
     if (!selectedImage) {
       setAlertMessage('이미지를 선택해주세요.');
@@ -220,6 +226,7 @@ const UserInfoView = () => {
     );
   };
 
+  // 닉네임 변경
   const handleNicknameButtonClick = async () => {
     setConfirmMessage('닉네임을 변경하시겠습니까?');
     setConfirmCallback(() => async () => {
@@ -274,80 +281,7 @@ const UserInfoView = () => {
     setShowConfirm(true);
   };
 
-  useEffect(() => {
-    const withdrawal = async () => {
-      if (!shouldWithdrawal) return;
-
-      try {
-        if (userInfo?.signinType === 'GENERAL' && !password) {
-          setAlertMessage('현재 비밀번호를 입력해주세요.');
-          setShowAlert(true);
-          setShouldWithdrawal(false);
-          return;
-        }
-
-        const body =
-          userInfo?.signinType === 'GENERAL'
-            ? { password } // 일반 로그인 시 비밀번호 포함
-            : ''; // 소셜 로그인 시 빈 객체
-
-        const response = await axiosInstance.post(
-          `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/auth/withdrawal`,
-          body,
-          {
-            headers: { 'Content-Type': 'application/json' },
-          },
-        );
-
-        if (response.status === 200) {
-          resetStore();
-          setAlertMessage(
-            '회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.',
-          );
-          setAlertCallback(() => () => router.push('/'));
-          setShowAlert(true);
-        } else {
-          setAlertMessage('회원 탈퇴에 실패하셨습니다. 다시 시도해 주세요.');
-          setShowAlert(true);
-        }
-      } catch (error: any) {
-        // if (error.response) {
-        //   const { status, errorCode } = error;
-        //   console.log('error:' + error.response);
-        //   if (status === 400) {
-        //     if (errorCode === 'INVALID_PASSWORD') {
-        //       setAlertMessage(
-        //         '비밀번호가 일치하지 않습니다. 입력한 내용을 다시 확인해 주세요.',
-        //       );
-        //     } else {
-        //       setAlertMessage('비밀번호 형식이 올바르지 않습니다.');
-        //     }
-        //   } else if (status === 404) {
-        //     setAlertMessage('사용자를 찾을 수 없습니다.');
-        //   } else {
-        //     setAlertMessage(
-        //       '서버에 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
-        //     );
-        //   }
-        // } else {
-        //   setAlertMessage(
-        //     '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        //   );
-        // }
-        // setShowAlert(true);
-        handleApiError(error, showErrorAlert, withdrawalErrorCodeHandlers);
-      } finally {
-        setShouldWithdrawal(false);
-        setShowConfirm(false);
-        setPassword('');
-        setIsPasswordRequired(false);
-      }
-    };
-
-    withdrawal();
-  }, [shouldWithdrawal, password, resetStore, router]);
-
-  // 비밀번호 변경 요청을 처리하는 useEffect
+  // 비밀번호 변경
   useEffect(() => {
     const changePassword = async () => {
       if (!shouldChangePassword) return;
@@ -386,6 +320,7 @@ const UserInfoView = () => {
           setShowAlert(true);
         }
       } catch (error: any) {
+        handleApiError(error, showErrorAlert, changePasswordErrorCodeHandlers);
         // if (error.response) {
         //   const { status, errorMessage } = error;
         //   if (status === 400) {
@@ -403,7 +338,6 @@ const UserInfoView = () => {
         //   );
         // }
         // setShowAlert(true);
-        handleApiError(error, showErrorAlert, changePasswordErrorCodeHandlers);
       } finally {
         setShouldChangePassword(false);
         setShowConfirm(false);
@@ -424,6 +358,80 @@ const UserInfoView = () => {
     confirmPassword,
     userInfo?.id,
   ]);
+
+  // 회원 탈퇴
+  useEffect(() => {
+    const withdrawal = async () => {
+      if (!shouldWithdrawal) return;
+
+      try {
+        if (userInfo?.signinType === 'GENERAL' && !password) {
+          setAlertMessage('현재 비밀번호를 입력해주세요.');
+          setShowAlert(true);
+          setShouldWithdrawal(false);
+          return;
+        }
+
+        const body =
+          userInfo?.signinType === 'GENERAL'
+            ? { password } // 일반 로그인 시 비밀번호 포함
+            : ''; // 소셜 로그인 시 빈 객체
+
+        const response = await axiosInstance.post(
+          `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/auth/withdrawal`,
+          body,
+          {
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
+
+        if (response.status === 200) {
+          resetStore();
+          setAlertMessage(
+            '회원 탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.',
+          );
+          setAlertCallback(() => () => router.push('/'));
+          setShowAlert(true);
+        } else {
+          setAlertMessage('회원 탈퇴에 실패하셨습니다. 다시 시도해 주세요.');
+          setShowAlert(true);
+        }
+      } catch (error: any) {
+        handleApiError(error, showErrorAlert, withdrawalErrorCodeHandlers);
+        // if (error.response) {
+        //   const { status, errorCode } = error;
+        //   console.log('error:' + error.response);
+        //   if (status === 400) {
+        //     if (errorCode === 'INVALID_PASSWORD') {
+        //       setAlertMessage(
+        //         '비밀번호가 일치하지 않습니다. 입력한 내용을 다시 확인해 주세요.',
+        //       );
+        //     } else {
+        //       setAlertMessage('비밀번호 형식이 올바르지 않습니다.');
+        //     }
+        //   } else if (status === 404) {
+        //     setAlertMessage('사용자를 찾을 수 없습니다.');
+        //   } else {
+        //     setAlertMessage(
+        //       '서버에 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+        //     );
+        //   }
+        // } else {
+        //   setAlertMessage(
+        //     '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+        //   );
+        // }
+        // setShowAlert(true);
+      } finally {
+        setShouldWithdrawal(false);
+        setShowConfirm(false);
+        setPassword('');
+        setIsPasswordRequired(false);
+      }
+    };
+
+    withdrawal();
+  }, [shouldWithdrawal, password, resetStore, router]);
 
   const handlePasswordButtonClick = () => {
     setConfirmMessage('비밀번호를 변경하시겠습니까?');
@@ -552,7 +560,7 @@ const UserInfoView = () => {
               </label>
               <div className="md:col-span-6 relative">
                 <input
-                  type="text"
+                  type="password"
                   className="input input-bordered w-full pl-10"
                   disabled
                 />

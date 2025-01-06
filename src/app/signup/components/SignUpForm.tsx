@@ -2,9 +2,10 @@
 import CustomAlert from '@/components/common/Alert';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
+import { useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import { AuthTimer } from './AuthTimer';
+import handleApiErrorWithoutInterceptor from '@/utils/handleApiErrorWithoutInterceptor';
 
 const SignUpForm = () => {
   const [email, setEmail] = useState('');
@@ -47,9 +48,46 @@ const SignUpForm = () => {
 
   const router = useRouter();
 
+  const showEmailErrorAlert = (errorMessage: string | null) => {
+    setEmailMessage(
+      errorMessage ||
+        '인증 번호 전송에 실패했습니다. 잠시 후 다시 시도해 주세요.',
+    );
+    setEmailMessageType('error');
+  };
+
+  const showAuthCodeErrorAlert = (errorMessage: string | null) => {
+    setAuthCodeMessage(
+      errorMessage ||
+        '인증 번호 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.',
+    );
+    setAuthCodeMessageType('error');
+  };
+
+  const showNickNameAlert = (errorMessage: string | null) => {
+    setNicknameMessage(
+      errorMessage ||
+        '닉네임 중복 확인에 실패했습니다. 잠시 후 다시 시도해 주세요.',
+    );
+    setNicknameMessageType('error');
+    setNicknameAvailable(false);
+  };
+
+  const showSignUpErrorAlert = (errorMessage: string | null) => {
+    setAlertMessage(
+      errorMessage || '회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요.',
+    );
+    setShowAlert(true);
+  };
+
   // 이메일 형식 확인
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+    // 이메일이 .com, .co.kr 같은 형식만 허용되도록 정교하게 확장
+    const domainRegex = /\.(com|co\.kr|net|org|io|ai|gov|edu|info|biz)$/;
+    return emailRegex.test(email) && domainRegex.test(email);
+  };
+
   // 비밀번호 형식 확인 (비밀번호는 최소 8자 이상이며, 하나 이상의 영문자, 숫자, 특수문자가 포함되어야 함)
   const isValidPassword = (password: string) =>
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&#^])[A-Za-z\d@$!%*?&]{8,}$/.test(
@@ -65,6 +103,12 @@ const SignUpForm = () => {
   };
 
   const handleAuthCodeSendClick = async () => {
+    if (!isValidEmail(email)) {
+      setEmailMessage('유효한 이메일 형식이 아닙니다.');
+      setEmailMessageType('error');
+      return;
+    }
+
     try {
       const authCodeResponse = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/email-send`,
@@ -78,45 +122,52 @@ const SignUpForm = () => {
 
       if (authCodeResponse.status === 200) {
         setEmailSent(true);
-        setEmailMessage('인증번호가 발송되었습니다.');
+        setEmailMessage('인증 번호가 발송되었습니다.');
         setEmailMessageType('success');
-        setIsTimerActive(true);
+        setIsTimerActive(false);
+
+        // 타이머를 초기화하고 다시 시작
+        setIsTimerActive(false);
+        setTimeout(() => {
+          setIsTimerActive(true);
+        }, 0);
       } else {
-        setEmailMessage('인증번호 전송에 실패했습니다.');
+        setEmailMessage('인증 번호 전송에 실패했습니다.');
         setEmailMessageType('error');
       }
     } catch (error: any) {
-      if (error.response) {
-        const { status, data } = error.response;
-        console.log(`status: ${status}`);
-        const errorCode = data?.errorCode;
-        console.log(`errorRes: ${errorCode}`);
+      handleApiErrorWithoutInterceptor(error, showEmailErrorAlert);
+      // if (error.response) {
+      //   const { status, data } = error.response;
+      //   console.log(`status: ${status}`);
+      //   const errorCode = data?.errorCode;
+      //   console.log(`errorRes: ${errorCode}`);
 
-        if (status === 400) {
-          if (errorCode === 'EMAIL_ALREADY_REGISTERED') {
-            setEmailMessage('이미 사용 중인 이메일입니다.');
-            setEmailMessageType('error');
-          } else {
-            setEmailMessage('잘못된 요청입니다. 다시 시도해주세요.');
-            setEmailMessageType('error');
-          }
-        } else if (status === 500 && errorCode === 'EMAIL_SEND_FAILED') {
-          setEmailMessage('인증번호 전송에 실패했습니다.');
-          setEmailMessageType('error');
-        } else {
-          setEmailMessage('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-          setEmailMessageType('error');
-        }
-      } else {
-        setEmailMessage(
-          '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
-        );
-        setEmailMessageType('error');
-      }
+      //   if (status === 400) {
+      //     if (errorCode === 'EMAIL_ALREADY_REGISTERED') {
+      //       setEmailMessage('이미 사용 중인 이메일입니다.');
+      //       setEmailMessageType('error');
+      //     } else {
+      //       setEmailMessage('잘못된 요청입니다. 다시 시도해주세요.');
+      //       setEmailMessageType('error');
+      //     }
+      //   } else if (status === 500 && errorCode === 'EMAIL_SEND_FAILED') {
+      //     setEmailMessage('인증번호 전송에 실패했습니다.');
+      //     setEmailMessageType('error');
+      //   } else {
+      //     setEmailMessage('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      //     setEmailMessageType('error');
+      //   }
+      // } else {
+      //   setEmailMessage(
+      //     '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
+      //   );
+      //   setEmailMessageType('error');
+      // }
     }
   };
 
-  // 인증번호 확인
+  // 인증 번호 확인
   const handleAuthCodeVerifyClick = async () => {
     try {
       const response = await axios.post(
@@ -136,45 +187,26 @@ const SignUpForm = () => {
         setIsTimerActive(false);
       }
     } catch (error: any) {
-      if (error.response) {
-        const { data } = error.response;
-        const message = data?.errorMessage;
-
-        // const { status, data } = error.response;
-        // const errorCode = data?.errorCode;
-        // const message = data?.errorMessage
-
-        // if (status === 400) {
-        //   if (errorCode === 'EMAIL_VERIFICATION_FAILED') {
-        //     setAuthCodeMessage('인증 코드가 만료되었습니다.');
-        //     setAuthCodeMessageType('error');
-        //   } else if (errorCode === 'VALIDATION_FAILED') {
-        //     setAuthCodeMessage('인증 코드가 일치하지 않습니다.');
-        //     setAuthCodeMessageType('error');
-        //   } else {
-        //     setAuthCodeMessage('잘못된 요청입니다. 다시 시도해주세요.');
-        //     setAuthCodeMessageType('error');
-        //   }
-        // } else {
-        //   setAuthCodeMessage('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-        //   setAuthCodeMessageType('error');
-        // }
-        setAuthCodeMessage(message);
-        setAuthCodeMessageType('error');
-      } else {
-        setAuthCodeMessage(
-          '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
-        );
-        setAuthCodeMessageType('error');
-      }
+      handleApiErrorWithoutInterceptor(error, showAuthCodeErrorAlert);
+      // if (error.response) {
+      //   const { data } = error.response;
+      //   const message = data?.errorMessage;
+      //   setAuthCodeMessage(message);
+      //   setAuthCodeMessageType('error');
+      // } else {
+      //   setAuthCodeMessage(
+      //     '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
+      //   );
+      //   setAuthCodeMessageType('error');
+      // }
     }
   };
 
   // 타이머 종료 시
   const handleTimerEnd = () => {
     setIsTimerActive(false);
-    setEmailMessage('인증번호가 만료되었습니다. 재발송해 주세요.');
-    setEmailMessageType('error');
+    setAuthCodeMessage('인증 번호가 만료되었습니다. 재발송해 주세요.');
+    setAuthCodeMessageType('error');
   };
 
   // 닉네임 중복 확인
@@ -196,29 +228,30 @@ const SignUpForm = () => {
         setNicknameAvailable(true);
       }
     } catch (error: any) {
-      if (error.response) {
-        const { status, data } = error.response;
-        const errorCode = data?.errorCode;
+      handleApiErrorWithoutInterceptor(error, showNickNameAlert);
+      // if (error.response) {
+      //   const { status, data } = error.response;
+      //   const errorCode = data?.errorCode;
 
-        if (status === 400) {
-          if (errorCode === 'NICKNAME_ALREADY_REGISTERED') {
-            setNicknameMessage('이미 사용 중인 닉네임입니다.');
-            setNicknameMessageType('error');
-            setNicknameAvailable(false);
-          } else {
-            setNicknameMessage('잘못된 요청입니다. 다시 시도해주세요.');
-            setNicknameMessageType('error');
-          }
-        } else {
-          setNicknameMessage('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-          setNicknameMessageType('error');
-        }
-      } else {
-        setNicknameMessage(
-          '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
-        );
-        setNicknameMessageType('error');
-      }
+      //   if (status === 400) {
+      //     if (errorCode === 'NICKNAME_ALREADY_REGISTERED') {
+      //       setNicknameMessage('이미 사용 중인 닉네임입니다.');
+      //       setNicknameMessageType('error');
+      //       setNicknameAvailable(false);
+      //     } else {
+      //       setNicknameMessage('잘못된 요청입니다. 다시 시도해주세요.');
+      //       setNicknameMessageType('error');
+      //     }
+      //   } else {
+      //     setNicknameMessage('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      //     setNicknameMessageType('error');
+      //   }
+      // } else {
+      //   setNicknameMessage(
+      //     '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
+      //   );
+      //   setNicknameMessageType('error');
+      // }
     }
   };
 
@@ -249,7 +282,7 @@ const SignUpForm = () => {
   };
 
   // 회원가입 제출
-  const handleSignUpSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSignUpSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!isValidEmail(email)) {
@@ -305,8 +338,7 @@ const SignUpForm = () => {
       }
     } catch (error) {
       console.error('회원가입 요청 중 오류', error);
-      setAlertMessage('회원가입 요청 중 오류가 발생했습니다.');
-      setShowAlert(true);
+      handleApiErrorWithoutInterceptor(error, showSignUpErrorAlert);
     }
   };
 
@@ -344,7 +376,7 @@ const SignUpForm = () => {
                   : 'btn bg-gray-100 border-gray-400 text-gray-400 text-sm sm:text-base'
               }`}
             >
-              {emailSent ? '재발송' : '인증번호 전송'}
+              {emailSent ? '재발송' : '인증 번호 전송'}
             </button>
           </div>
           <div className="mt-2 min-h-[20px]">

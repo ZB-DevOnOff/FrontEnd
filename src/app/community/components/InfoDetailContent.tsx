@@ -91,11 +91,14 @@ export default function InfoDetailContent({ postId }: InfoDetailContentProps) {
           <div className="flex gap-2 mt-4">
             <button
               onClick={() => router.push(`/community/info/edit/${post.id}`)}
-              className="btn btn-primary"
+              className="btn border-gray-800 bg-white text-gray-800 hover:bg-teal-50 hover:border-teal-500 hover:text-teal-500"
             >
               수정
             </button>
-            <button onClick={handleDelete} className="btn btn-error">
+            <button
+              onClick={handleDelete}
+              className="btn border-gray-800 bg-white text-gray-780 hover:bg-red-50 hover:border-customRed hover:text-customRed"
+            >
               삭제
             </button>
           </div>
