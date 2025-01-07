@@ -1,9 +1,10 @@
 import { Suspense } from 'react';
 import NaverCallbackClient from '../components/NaverCallbackClient';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 const NaverCallbackPage = () => {
   return (
-    <Suspense fallback={<div>로딩 중...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <NaverCallbackClient />
     </Suspense>
   );
