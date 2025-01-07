@@ -5,6 +5,9 @@ import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import CustomAlert from '@/components/common/Alert';
+import { RiMicFill, RiMicOffFill } from 'react-icons/ri';
+import { BiSolidCamera, BiSolidCameraOff } from 'react-icons/bi';
+import { TbScreenShare, TbScreenShareOff } from 'react-icons/tb';
 
 export default function VideoRoomComponent() {
   const router = useRouter();
@@ -583,35 +586,50 @@ export default function VideoRoomComponent() {
           onClick={toggleAudio}
           className={`px-4 py-2 rounded transition-colors ${
             isAudioEnabled
-              ? 'bg-blue-500 hover:bg-blue-600 text-white'
-              : 'bg-red-500 hover:bg-red-600 text-white'
-          }`}
+              ? 'bg-teal-500 hover:bg-gray-400 text-white'
+              : 'bg-gray-400 hover:bg-teal-500 text-white'
+          } flex items-center justify-center`}
         >
-          {isAudioEnabled ? '마이크 끄기' : '마이크 켜기'}
+          {isAudioEnabled ? (
+            <RiMicFill className="mr-2" />
+          ) : (
+            <RiMicOffFill className="mr-2" />
+          )}
+          마이크
         </button>
         <button
           onClick={toggleVideo}
           className={`px-4 py-2 rounded transition-colors ${
             isVideoEnabled
-              ? 'bg-blue-500 hover:bg-blue-600 text-white'
-              : 'bg-red-500 hover:bg-red-600 text-white'
-          }`}
+              ? 'bg-teal-500 hover:bg-gray-400 text-white'
+              : 'bg-gray-400 hover:bg-teal-500 text-white'
+          } flex items-center justify-center`}
         >
-          {isVideoEnabled ? '카메라 끄기' : '카메라 켜기'}
+          {isVideoEnabled ? (
+            <BiSolidCamera className="mr-2" />
+          ) : (
+            <BiSolidCameraOff className="mr-2" />
+          )}
+          카메라
         </button>
         <button
           onClick={toggleScreenShare}
           className={`px-4 py-2 rounded transition-colors ${
             isScreenSharing
-              ? 'bg-red-500 hover:bg-red-600 text-white'
-              : 'bg-blue-500 hover:bg-blue-600 text-white'
-          }`}
+              ? 'bg-teal-500 hover:bg-gray-400 text-white'
+              : 'bg-gray-400 hover:bg-teal-500 text-white'
+          } flex items-center justify-center`}
         >
-          {isScreenSharing ? '화면 공유 중지' : '화면 공유'}
+          {isScreenSharing ? (
+            <TbScreenShareOff className="mr-2" />
+          ) : (
+            <TbScreenShare className="mr-2" />
+          )}
+          화면 공유
         </button>
         <button
           onClick={handleDisconnectClick}
-          className="px-4 py-2 rounded transition-colors bg-red-500 hover:bg-red-600 text-white"
+          className="px-4 py-2 rounded transition-colors bg-customRed hover:bg-red-600 text-white"
         >
           나가기
         </button>
