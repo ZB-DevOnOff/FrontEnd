@@ -166,10 +166,11 @@ const Header = () => {
             <span className="block text-xl font-bold text-teal-500">
               <Image
                 src={'/devonoff-logo.png'}
-                alt={'DevOnOff logo'}
+                alt={'DevOnOff 로고'}
                 width={190}
                 height={190}
                 className="object-contain -mt-20"
+                priority
               />
             </span>
           </div>
@@ -244,7 +245,11 @@ const Header = () => {
           <FiBell size={24} />
         </button> */}
         <NotificationButton />
-        <button className="btn btn-ghost" onClick={toggleNav}>
+        <button
+          className="btn btn-ghost"
+          onClick={toggleNav}
+          aria-label={isNavOpen ? '메뉴 닫기' : '메뉴 열기'}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6"
@@ -265,7 +270,11 @@ const Header = () => {
       {isNavOpen && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-end">
           <div className="w-2/3 max-w-xs bg-white h-full p-6">
-            <button className="btn btn-ghost" onClick={toggleNav}>
+            <button
+              className="btn btn-ghost"
+              onClick={toggleNav}
+              aria-label={isNavOpen ? '메뉴 닫기' : '메뉴 열기'}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"

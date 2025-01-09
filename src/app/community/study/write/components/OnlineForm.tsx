@@ -177,7 +177,7 @@ export default function OnlineForm({ initialData, isEdit }: OnlineFormProps) {
         } catch (error: any) {
           console.error('스터디 글 작성/수정 실패:', error);
           setAlertMessage(
-            error.response?.data?.message ||
+            error.response?.data?.errorMessage ||
               '스터디 글 작성/수정에 실패했습니다. 다시 시도해주세요.',
           );
           setShowAlert(true);

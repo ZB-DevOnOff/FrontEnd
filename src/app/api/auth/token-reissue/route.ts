@@ -52,6 +52,9 @@ export const POST = async (req: NextRequest) => {
         status: error.response.status,
       });
     }
-    return NextResponse.json({ message: '서버 오류' }, { status: 500 });
+    return NextResponse.json(
+      { errorMessage: '서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.' },
+      { status: 500 },
+    );
   }
 };

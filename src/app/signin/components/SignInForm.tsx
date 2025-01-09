@@ -122,7 +122,7 @@ const SingInPage = () => {
               id="email"
               type="email"
               value={email}
-              placeholder="이메일을 입력해 주세요."
+              placeholder="example@example.com"
               onChange={e => {
                 setEmail(e.target.value);
                 setError('');
@@ -155,6 +155,9 @@ const SingInPage = () => {
               type="button"
               onClick={togglePasswordVisibility}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 mr-2"
+              aria-label={
+                passwordVisible ? '비밀번호 숨기기' : '비밀번호 보이기'
+              }
             >
               {passwordVisible ? (
                 <FaRegEye size={20} />
