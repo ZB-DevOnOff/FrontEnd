@@ -122,6 +122,11 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
     return true;
   };
 
+  const handleDetailButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    router.push(`/community/study/${post.studyPostId}`);
+  };
+
   const handleChatRoomButtonClick = async (
     postId: number,
     userId: number,
@@ -138,10 +143,14 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
           },
         );
         if (response.status === 200) {
-          const { chatRoomId, studyId, studyName } = response.data;
+          const { chatRoomId, studyId, studyName, leaderId } = response.data;
           router.push(
-            `/chat/${chatRoomId}/study/${studyId}?studyName=${studyName}`,
+            `/chat/${chatRoomId}/study/${studyId}?studyName=${studyName}&studyLeaderId=${leaderId}`,
           );
+          // const { chatRoomId, studyId, studyName } = response.data;
+          // router.push(
+          //   `/chat/${chatRoomId}/study/${studyId}?studyName=${studyName}`,
+          // );
         } else {
           setAlertMessage(
             '채팅방 참가 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
@@ -166,7 +175,7 @@ const MyStudyCard = ({ post }: MyStudyCardProps) => {
   return (
     <div
       className="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl transition-shadow w-full min-w-[330px] max-w-[330px] group h-[548px]"
-      onClick={() => router.push(`/community/study/${post.studyPostId}`)}
+      onClick={handleDetailButtonClick}
     >
       <figure className="px-4 pt-4">
         <Image

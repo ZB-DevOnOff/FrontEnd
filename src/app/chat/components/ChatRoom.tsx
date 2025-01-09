@@ -14,9 +14,26 @@ interface ChatRoomProps {
   // studyId: string;
 }
 
+// interface Message {
+//   timestamp: string;
+//   content: string;
+//   user: {
+//     id: number;
+//     nickname: string;
+//     profileImageUrl: string;
+//   };
+// }
+
+// const ChatHeader = ({ studyName }: { studyName: string | null }) => {
+//   <>
+//     <div></div>
+//   </>;
+// };
+
 const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
   const searchParams = useSearchParams();
   const studyName = searchParams.get('studyName');
+  const studyLeaderId = Number(searchParams.get('studyLeaderId'));
 
   const { userInfo } = useAuthStore();
   const userId = userInfo?.id || 111;
@@ -226,6 +243,9 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
                 >
                   {msg.user.id !== userId && (
                     <div className="flex flex-col items-center min-w-[70px]">
+                      {msg.user.id === studyLeaderId && (
+                        <FaCrown size={20} className="text-teal-500" />
+                      )}
                       <img
                         src={
                           msg.user.profileImageUrl ||
@@ -275,7 +295,10 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
                   {msg.user.id === userId && (
                     <div className="flex flex-col items-center min-w-[70px]">
                       {/* 실제 스터디장 프로필에 표시하는 것으로 수정 예정 */}
-                      <FaCrown size={20} className="text-teal-500" />
+                      {msg.user.id === studyLeaderId && (
+                        <FaCrown size={20} className="text-teal-500" />
+                      )}
+                      {/* <FaCrown size={20} className="text-teal-500" /> */}
                       <img
                         src={
                           msg.user.profileImageUrl ||
