@@ -177,10 +177,18 @@ const MyStudyView = () => {
 
   return (
     <div className="p-6 space-y-6 max-w-6xl mx-auto">
-      <div role="tablist" className="tabs tabs-lifted tabs-lg hover:tab-lifted">
+      <div
+        role="tablist"
+        aria-label=""
+        className="tabs tabs-lifted tabs-lg hover:tab-lifted"
+      >
         {Object.keys(tabConfigs).map(tab => (
           <button
             key={tab}
+            id={`tab-${tab}`}
+            role="tab"
+            aria-selected={activeTab === tab}
+            aria-controls={`tabpanel-${tab}`}
             onClick={() => handleTabClick(tab as keyof typeof tabConfigs)}
             className={`tab tab-lg text-xs sm:text-sm md:text-base hover:font-bold hover:text-md hover:text-black hover:shadow-lg ${
               activeTab === tab

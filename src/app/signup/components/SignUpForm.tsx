@@ -357,7 +357,7 @@ const SignUpForm = () => {
               id="email"
               type="email"
               value={email}
-              placeholder="이메일을 입력해 주세요."
+              placeholder="example@example.com"
               onChange={e => {
                 setEmail(e.target.value);
                 setAuthCodeVerified(false); // 이메일 수정 시 인증 초기화
@@ -502,6 +502,9 @@ const SignUpForm = () => {
               type="button"
               onClick={togglePasswordVisibility}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 mr-2"
+              aria-label={
+                passwordVisible ? '비밀번호 숨기기' : '비밀번호 보이기'
+              }
             >
               {passwordVisible ? (
                 <FaRegEye size={20} />
@@ -518,6 +521,11 @@ const SignUpForm = () => {
           <label
             htmlFor="passwordCheck"
             className="block mb-2 font-semibold text-sm sm:text-base"
+            aria-label={
+              passwordCheckVisible
+                ? '비밀번호 확인 숨기기'
+                : '비밀번호 확인 보이기'
+            }
           >
             비밀번호 확인
           </label>
