@@ -14,6 +14,10 @@ export default {
         foreground: 'var(--foreground)',
         customRed: '#FF364A ',
       },
+      boxShadow: {
+        'custom-strong':
+          '0 -2px 8px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.2)',
+      },
     },
   },
   daisyui: {
