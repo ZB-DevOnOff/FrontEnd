@@ -22,11 +22,15 @@ export default async function RootLayout({
         <Providers>
           {process.env.NEXT_PUBLIC_API_MOCKING === 'enabled' && <MSWProvider />}
           <div className="flex flex-col min-h-screen">
-            <Header />
-            <main className="flex-1 container mx-auto px-4 py-8 pt-[4rem]">
+            <div className="h-16">
+              <Header />
+            </div>
+            <main className="flex-1 container mx-auto px-4 py-8 pt-16 min-h-[calc(100vh-16rem)]">
               {children}
             </main>
-            <Footer />
+            <div className="h-48">
+              <Footer />
+            </div>
           </div>
         </Providers>
       </body>

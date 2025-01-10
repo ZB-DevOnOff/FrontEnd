@@ -51,6 +51,7 @@ const Pagination = ({
           disabled={currentPage === 1}
           onClick={() => onPageChange(0)}
           className={'join-item btn text-gray-700'}
+          aria-label={'첫 페이지로 이동'}
         >
           <FaAngleDoubleLeft size={24} />
         </button>
@@ -58,6 +59,7 @@ const Pagination = ({
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPageZeroBased - 1)}
           className={'join-item btn text-gray-700'}
+          aria-label={'이전 페이지로 이동'}
         >
           <FaAngleLeft size={24} />
         </button>
@@ -76,6 +78,7 @@ const Pagination = ({
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPageZeroBased + 1)}
           className={'join-item btn text-gray-700'}
+          aria-label={'다음 페이지로 이동'}
         >
           <FaAngleRight size={24} />
         </button>
@@ -83,6 +86,7 @@ const Pagination = ({
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(totalPages - 1)}
           className={'join-item btn text-gray-700'}
+          aria-label={'마지막 페이지로 이동'}
         >
           <FaAngleDoubleRight size={24} />
         </button>

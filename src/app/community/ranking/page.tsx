@@ -71,7 +71,7 @@ export default function RankingPage() {
                 <td>
                   <div className="flex items-center gap-2">
                     <progress
-                      className="progress progress-primary w-full"
+                      className="progress w-full"
                       value={rank.percent}
                       max="100"
                     ></progress>

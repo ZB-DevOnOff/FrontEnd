@@ -2,7 +2,7 @@
 
 import { useGroupChat } from '@/hooks/useGroupChat';
 import MessageInput from './MessageInput';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
@@ -11,12 +11,110 @@ import CustomAlert from '@/components/common/Alert';
 
 interface ChatRoomProps {
   chatRoomId: string;
-  // studyId: string;
 }
+
+interface Message {
+  timestamp: string;
+  content: string;
+  user: {
+    id: number;
+    nickname: string;
+    profileImageUrl: string;
+  };
+}
+
+const ChatHeader = ({ studyName }: { studyName: string | null }) => (
+  <>
+    <div className="bg-gray-900 text-gray-100 p-4 flex items-center gap-2">
+      {['red', 'yellow', 'green'].map(color => (
+        <div key={color} className={`bg-${color}-500 w-3 h-3 rounded-full`} />
+      ))}
+    </div>
+    <div className="flex items-center bg-gray-100 p-3 border-b border-gray-300">
+      <div className="w-full text-lg text-center font-bold focus:outline-none bg-white border border-gray-300 rounded-md p-2">
+        {studyName}
+      </div>
+    </div>
+  </>
+);
+
+const UserProfile = memo(
+  ({
+    user,
+    isStudyLeader,
+  }: {
+    user: Message['user'];
+    isStudyLeader?: boolean;
+  }) => (
+    <div className="flex flex-col items-center min-w-[70px]">
+      {isStudyLeader && <FaCrown size={20} className="text-teal-500" />}
+      <img
+        src={user.profileImageUrl || 'http://via.placeholder.com/150'}
+        alt={`${user.nickname}'s profile`}
+        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
+      />
+      <div
+        className="text-xs sm:text-sm text-gray-600 truncate max-w-[70px] mt-1"
+        title={user.nickname}
+      >
+        {user.nickname}
+      </div>
+    </div>
+  ),
+);
+
+const MessageBubble = memo(
+  ({ message, isOwnMessage }: { message: Message; isOwnMessage: boolean }) => {
+    const bubbleStyle = isOwnMessage
+      ? 'bg-blue-500 text-white self-end'
+      : 'bg-gray-200 text-black';
+    const timeStyle = isOwnMessage ? 'text-gray-300' : 'text-gray-500';
+    const arrowStyle = isOwnMessage
+      ? 'border-blue-500 right-[-6px] border-r-[10px] border-r-transparent'
+      : 'border-gray-200 left-[-6px] border-l-[10px] border-l-transparent';
+
+    return (
+      <div
+        className={`relative max-w-[70%] px-4 py-2 rounded-lg ${bubbleStyle} break-words`}
+      >
+        <div className="text-sm md:text-md">{message.content}</div>
+        <div className={`mt-2 text-xs sm:text-sm ${timeStyle}`}>
+          {new Date(message.timestamp).toLocaleTimeString('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </div>
+        <div
+          className={`absolute bottom-0 w-0 h-0 border-t-[20px] ${arrowStyle}`}
+        />
+      </div>
+    );
+  },
+);
+
+const formatDate = (timestamp: string) => {
+  return new Date(timestamp).toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
+const isDateChanged = (
+  currentTimestamp: string,
+  prevTimestamp: string | null,
+) => {
+  const currentDate = new Date(currentTimestamp).toDateString();
+  const prevDate = prevTimestamp
+    ? new Date(prevTimestamp).toDateString()
+    : null;
+  return currentDate !== prevDate;
+};
 
 const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
   const searchParams = useSearchParams();
   const studyName = searchParams.get('studyName');
+  const studyLeaderId = Number(searchParams.get('studyLeaderId')) || null;
 
   const { userInfo } = useAuthStore();
   const userId = userInfo?.id || 111;
@@ -47,41 +145,6 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
     threshold: 0,
     rootMargin: '50px 0px 0px 0px', // 상단 50px 이전에 트리거
   });
-
-  const handleFetchPreviousMessages = async () => {
-    if (
-      !hasNextPage ||
-      isFetchingNextPage ||
-      !chatContainerRef.current ||
-      isLoadingPrevMessages.current
-    )
-      return;
-
-    try {
-      isLoadingPrevMessages.current = true;
-      // const currentScrollHeight = chatContainerRef.current.scrollHeight;
-
-      await fetchNextPage();
-
-      // 스크롤 위치 유지를 위한 처리는 useEffect에서 수행
-    } catch (error) {
-      console.error('이전 메시지 로드 실패:', error);
-      setLoadError('이전 메시지를 가져오는 데 실패했습니다.');
-      isLoadingPrevMessages.current = false;
-    }
-  };
-
-  // Intersection Observer를 통한 이전 메시지 로드
-  useEffect(() => {
-    if (
-      inView &&
-      hasNextPage &&
-      !isFetchingNextPage &&
-      !isInitialLoad.current
-    ) {
-      handleFetchPreviousMessages();
-    }
-  }, [inView, hasNextPage, isFetchingNextPage]);
 
   // 최초 로드 시 스크롤을 맨 아래로
   useEffect(() => {
@@ -130,6 +193,41 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
     }
   }, [messages, userId]);
 
+  // Intersection Observer를 통한 이전 메시지 로드
+  useEffect(() => {
+    if (
+      inView &&
+      hasNextPage &&
+      !isFetchingNextPage &&
+      !isInitialLoad.current
+    ) {
+      handleFetchPreviousMessages();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage]);
+
+  const handleFetchPreviousMessages = async () => {
+    if (
+      !hasNextPage ||
+      isFetchingNextPage ||
+      !chatContainerRef.current ||
+      isLoadingPrevMessages.current
+    )
+      return;
+
+    try {
+      isLoadingPrevMessages.current = true;
+      // const currentScrollHeight = chatContainerRef.current.scrollHeight;
+
+      await fetchNextPage();
+
+      // 스크롤 위치 유지를 위한 처리는 useEffect에서 수행
+    } catch (error) {
+      console.error('이전 메시지 로드 실패:', error);
+      setLoadError('이전 메시지를 가져오는 데 실패했습니다.');
+      isLoadingPrevMessages.current = false;
+    }
+  };
+
   const handleSendMessage = async (content: string, file?: File) => {
     try {
       await sendMessage(content, file);
@@ -137,17 +235,6 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
       console.error('메시지 전송에 실패했습니다:', error);
       setShowAlert(true); // 전역적인 알림 표시 등으로 대체
     }
-  };
-
-  const isDateChanged = (
-    currentTimestamp: string,
-    prevTimestamp: string | null,
-  ) => {
-    const currentDate = new Date(currentTimestamp).toDateString();
-    const prevDate = prevTimestamp
-      ? new Date(prevTimestamp).toDateString()
-      : null;
-    return currentDate !== prevDate;
   };
 
   if (chatState.error) {
@@ -170,16 +257,7 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
   return (
     <div className="flex justify-center items-start h-[screen]">
       <div className="mt-1 w-[100%] max-w-5xl bg-white rounded-lg shadow-lg relative overflow-hidden">
-        <div className="bg-gray-900 text-gray-100 p-4 flex items-center gap-2">
-          <div className="bg-red-500 w-3 h-3 rounded-full"></div>
-          <div className="bg-yellow-500 w-3 h-3 rounded-full"></div>
-          <div className="bg-green-500 w-3 h-3 rounded-full"></div>
-        </div>
-        <div className="flex items-center bg-gray-100 p-3 border-b border-gray-300">
-          <div className="w-full text-lg text-center font-bold focus:outline-none bg-white border border-gray-300 rounded-md p-2">
-            {studyName}
-          </div>
-        </div>
+        <ChatHeader studyName={studyName} />
         <div
           ref={chatContainerRef}
           className="flex-1 h-[350px] sm:h-[400px] overflow-y-auto space-y-4 px-6 pb-6"
@@ -206,91 +284,33 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
             const showDate =
               !prevMessage ||
               isDateChanged(msg.timestamp, prevMessage?.timestamp);
+            const isOwnMessage = msg.user.id === userId;
 
             return (
               <div className="mt-4" key={msg.timestamp || idx}>
                 {showDate && (
                   <div className="text-center mb-4 font-base text-gray-500 text-sm md:text-md">
-                    {new Date(msg.timestamp).toLocaleDateString('ko-KR', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
+                    {formatDate(msg.timestamp)}
                   </div>
                 )}
 
                 <div
                   className={`flex items-end ${
-                    msg.user.id === userId ? 'justify-end' : 'justify-start'
+                    isOwnMessage ? 'justify-end' : 'justify-start'
                   }`}
                 >
-                  {msg.user.id !== userId && (
-                    <div className="flex flex-col items-center min-w-[70px]">
-                      <img
-                        src={
-                          msg.user.profileImageUrl ||
-                          'http://via.placeholder.com/150'
-                        }
-                        alt={`${msg.user.id}'s profile`}
-                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
-                      />
-                      <div
-                        className="text-xs sm:text-sm text-gray-600 truncate max-w-[70px] mt-1"
-                        title={msg.user.nickname}
-                      >
-                        {msg.user.nickname}
-                      </div>
-                    </div>
-                  )}
-
-                  <div
-                    className={`relative max-w-[70%] px-4 py-2 rounded-lg ${
-                      msg.user.id === userId
-                        ? 'bg-blue-500 text-white self-end'
-                        : 'bg-gray-200 text-black'
-                    } break-words`}
-                  >
-                    <div className="text-sm md:text-md">{msg.content}</div>
-                    <div
-                      className={`mt-2 text-xs sm:text-sm ${
-                        msg.user.id === userId
-                          ? 'text-gray-300'
-                          : 'text-gray-500'
-                      }`}
-                    >
-                      {new Date(msg.timestamp).toLocaleTimeString('ko-KR', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </div>
-                    <div
-                      className={`absolute bottom-0 w-0 h-0 border-t-[20px] ${
-                        msg.user.id === userId
-                          ? 'border-blue-500 right-[-6px] border-r-[10px] border-r-transparent'
-                          : 'border-gray-200 left-[-6px] border-l-[10px] border-l-transparent'
-                      }`}
+                  {!isOwnMessage && (
+                    <UserProfile
+                      user={msg.user}
+                      isStudyLeader={msg.user.id === studyLeaderId}
                     />
-                  </div>
-
-                  {msg.user.id === userId && (
-                    <div className="flex flex-col items-center min-w-[70px]">
-                      {/* 실제 스터디장 프로필에 표시하는 것으로 수정 예정 */}
-                      <FaCrown size={20} className="text-teal-500" />
-                      <img
-                        src={
-                          msg.user.profileImageUrl ||
-                          'http://via.placeholder.com/150'
-                        }
-                        alt="My profile"
-                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
-                      />
-                      <div
-                        className="text-xs sm:text-sm text-gray-600 truncate max-w-[70px] mt-1"
-                        title={msg.user.nickname}
-                      >
-                        {msg.user.nickname}
-                      </div>
-                    </div>
+                  )}
+                  <MessageBubble message={msg} isOwnMessage={isOwnMessage} />
+                  {isOwnMessage && (
+                    <UserProfile
+                      user={msg.user}
+                      isStudyLeader={msg.user.id === studyLeaderId}
+                    />
                   )}
                 </div>
               </div>

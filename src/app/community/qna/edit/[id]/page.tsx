@@ -130,7 +130,7 @@ export default function QnAEditPage() {
               );
               setSelectedFile(null);
             }}
-            className="btn btn-secondary"
+            className="btn border-gray-800 bg-white text-gray-800 hover:bg-teal-50 hover:border-teal-500 hover:text-teal-500"
           >
             기본 이미지로 변경
           </button>
@@ -171,7 +171,10 @@ export default function QnAEditPage() {
         />
       </div>
 
-      <button type="submit" className="btn btn-primary w-full">
+      <button
+        type="submit"
+        className="btn w-full bg-teal-500 text-white hover:bg-teal-600 hover:text-black"
+      >
         수정하기
       </button>
       {showAlert && (

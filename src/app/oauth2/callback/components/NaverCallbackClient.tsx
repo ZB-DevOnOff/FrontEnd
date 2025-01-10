@@ -3,7 +3,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import CustomAlert from '@/components/common/Alert';
-import axiosInstance from '@/utils/axios';
+import axios from 'axios';
+import handleApiErrorWithoutInterceptor from '@/utils/handleApiErrorWithoutInterceptor';
 
 const NaverCallbackClient = () => {
   const searchParams = useSearchParams();
@@ -15,6 +16,11 @@ const NaverCallbackClient = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
 
+  const showErrorAlert = (errorMessage: string | null) => {
+    setAlertMessage(errorMessage || '알 수 없는 오류가 발생했습니다.');
+    setShowAlert(true);
+  };
+
   useEffect(() => {
     const sendNaverAuthCode = async () => {
       if (!code) {
@@ -25,7 +31,7 @@ const NaverCallbackClient = () => {
       }
 
       try {
-        const response = await axiosInstance.post(
+        const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/auth/sign-in/naver`,
           {
             code,
@@ -44,24 +50,25 @@ const NaverCallbackClient = () => {
           router.push('/community/study');
         }
       } catch (error: any) {
-        if (error) {
-          const { status, errorMessage, errorCode } = error;
+        handleApiErrorWithoutInterceptor(error, showErrorAlert);
+        // if (error) {
+        //   const { status, errorMessage, errorCode } = error;
 
-          if (status === 500 && errorCode === 'INTERNAL_SERVER_ERROR') {
-            setAlertMessage(errorMessage);
-            setShowAlert(true);
-          } else {
-            setAlertMessage(
-              '네이버 로그인에 실패했습니다. 다시 시도해 주세요.',
-            );
-            setShowAlert(true);
-          }
-        } else {
-          setAlertMessage(
-            '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
-          );
-          setShowAlert(true);
-        }
+        //   if (status === 500 && errorCode === 'INTERNAL_SERVER_ERROR') {
+        //     setAlertMessage(errorMessage);
+        //     setShowAlert(true);
+        //   } else {
+        //     setAlertMessage(
+        //       '네이버 로그인에 실패했습니다. 다시 시도해 주세요.',
+        //     );
+        //     setShowAlert(true);
+        //   }
+        // } else {
+        //   setAlertMessage(
+        //     '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
+        //   );
+        //   setShowAlert(true);
+        // }
       }
     };
 

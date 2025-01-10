@@ -271,12 +271,15 @@ export default function Comments({ studyId, postType }: CommentsProps) {
                 className="w-full p-2 border rounded"
               />
               <div className="flex gap-2 mt-2">
-                <button onClick={handleEdit} className="btn btn-primary btn-sm">
-                  저장
+                <button
+                  onClick={handleEdit}
+                  className="btn btn-sm text-teal-50 bg-teal-500 hover:bg-teal-600 hover:text-black"
+                >
+                  수정
                 </button>
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="btn btn-ghost btn-sm"
+                  className="btn btn-sm text-black"
                 >
                   취소
                 </button>
@@ -296,7 +299,7 @@ export default function Comments({ studyId, postType }: CommentsProps) {
                           '',
                       )
                     }
-                    className="text-sm text-primary hover:underline"
+                    className="text-sm text-gray-500 hover:underline"
                   >
                     답글 달기
                   </button>
@@ -305,13 +308,13 @@ export default function Comments({ studyId, postType }: CommentsProps) {
                   <>
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="text-sm text-blue-500 hover:underline"
+                      className="text-sm text-teal-500 hover:underline"
                     >
                       수정
                     </button>
                     <button
                       onClick={handleDelete}
-                      className="text-sm text-red-500 hover:underline"
+                      className="text-sm text-customRed hover:underline"
                     >
                       삭제
                     </button>
@@ -341,7 +344,7 @@ export default function Comments({ studyId, postType }: CommentsProps) {
           <textarea
             value={content}
             onChange={e => setContent(e.target.value)}
-            className="w-full p-4 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full p-4 border rounded-lg resize-none focus:outline-teal-500"
             placeholder="댓글을 입력하세요..."
             rows={3}
           />
@@ -363,7 +366,10 @@ export default function Comments({ studyId, postType }: CommentsProps) {
                 </button>
               </>
             )}
-            <button type="submit" className="btn btn-primary">
+            <button
+              type="submit"
+              className="btn border-gray-800 bg-white text-gray-800 hover:bg-teal-50 hover:border-teal-500 hover:text-teal-500"
+            >
               {replyTo ? '답글 작성' : '댓글 작성'}
             </button>
           </div>

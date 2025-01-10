@@ -91,10 +91,16 @@ export default function StudyDetailContent({
             </span>
             {isAuthor && study.status === 'RECRUITING' && (
               <div className="flex gap-2">
-                <button onClick={handleEdit} className="btn btn-primary">
-                  수정하기
+                <button
+                  onClick={handleEdit}
+                  className="btn border-gray-800 bg-white text-gray-800 hover:bg-teal-50 hover:border-teal-500 hover:text-teal-500"
+                >
+                  수정
                 </button>
-                <button onClick={handleCancel} className="btn btn-error">
+                <button
+                  onClick={handleCancel}
+                  className="btn border-gray-800 bg-white text-gray-780 hover:bg-red-50 hover:border-customRed hover:text-customRed"
+                >
                   모집 취소
                 </button>
               </div>

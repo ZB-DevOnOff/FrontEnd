@@ -1,4 +1,4 @@
-import { useState, useRef, FormEvent } from 'react';
+import { useState, useRef } from 'react';
 import { FiSend } from 'react-icons/fi';
 
 interface MessageInputProps {
@@ -84,7 +84,7 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
     }
   };
 
-  const handleTextareaInput = (e: FormEvent<HTMLTextAreaElement>) => {
+  const handleTextareaInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
     const target = e.target as HTMLTextAreaElement;
     target.style.height = 'auto';
     target.style.height = `${target.scrollHeight}px`;
