@@ -1,12 +1,16 @@
+import { Suspense } from 'react';
 import MyStudyView from '../components/MyStudyView';
 import UserInfoView from '../components/UserInfoView';
+import LoadingSpinner from '@/components/common/LoadingSpinner';
 
 const MyPage = async () => {
   try {
     return (
       <>
-        <UserInfoView />
-        <MyStudyView />
+        <Suspense fallback={<LoadingSpinner />}>
+          <UserInfoView />
+          <MyStudyView />
+        </Suspense>
       </>
     );
   } catch (error) {

@@ -57,7 +57,7 @@ const MyStudyView = () => {
         desktop: '내가 속한 스터디',
       },
       myStudyPost: {
-        mobile: '나의\n스터디\n모집 글',
+        mobile: '나의\n스터디\n모집글',
         desktop: '나의 스터디 모집 글',
       },
       myInfoPost: {
@@ -179,16 +179,16 @@ const MyStudyView = () => {
     <div className="p-6 space-y-6 max-w-6xl mx-auto">
       <div
         role="tablist"
-        aria-label=""
+        aria-label="내 활동 탭 메뉴"
         className="tabs tabs-lifted tabs-lg hover:tab-lifted"
       >
         {Object.keys(tabConfigs).map(tab => (
           <button
             key={tab}
-            id={`tab-${tab}`}
             role="tab"
             aria-selected={activeTab === tab}
-            aria-controls={`tabpanel-${tab}`}
+            aria-controls={`panel-${tab}`}
+            tabIndex={activeTab === tab ? 0 : -1}
             onClick={() => handleTabClick(tab as keyof typeof tabConfigs)}
             className={`tab tab-lg text-xs sm:text-sm md:text-base hover:font-bold hover:text-md hover:text-black hover:shadow-lg ${
               activeTab === tab
@@ -200,8 +200,19 @@ const MyStudyView = () => {
           </button>
         ))}
       </div>
+
       <div className="p-4">
-        {renderTabContent()}
+        {Object.keys(tabConfigs).map(tab => (
+          <div
+            key={tab}
+            role="tabpanel"
+            id={`panel-${tab}`}
+            aria-labelledby={`tab-${tab}`}
+            hidden={activeTab !== tab}
+          >
+            {activeTab === tab && renderTabContent()}
+          </div>
+        ))}
         <Pagination
           totalElements={pagination.totalElements}
           pageSize={pagination.pageSize}
