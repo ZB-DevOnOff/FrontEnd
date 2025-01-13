@@ -8,13 +8,15 @@ import { useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import { FaCrown } from 'react-icons/fa';
 import CustomAlert from '@/components/common/Alert';
+import Image from 'next/image';
 
 interface ChatRoomProps {
   chatRoomId: string;
 }
 
 interface Message {
-  timestamp: string;
+  id: number;
+  createdAt: string;
   content: string;
   user: {
     id: number;
@@ -48,10 +50,17 @@ const UserProfile = memo(
   }) => (
     <div className="flex flex-col items-center min-w-[70px]">
       {isStudyLeader && <FaCrown size={20} className="text-teal-500" />}
-      <img
+      {/* <img
         src={user.profileImageUrl || 'http://via.placeholder.com/150'}
         alt={`${user.nickname}'s profile`}
-        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full"
+        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
+      /> */}
+      <Image
+        src={user.profileImageUrl || 'http://via.placeholder.com/150'}
+        alt={`${user.nickname}'s profile`}
+        width={48}
+        height={48}
+        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
       />
       <div
         className="text-xs sm:text-sm text-gray-600 truncate max-w-[70px] mt-1"
@@ -62,6 +71,8 @@ const UserProfile = memo(
     </div>
   ),
 );
+
+UserProfile.displayName = 'UserProfile';
 
 const MessageBubble = memo(
   ({ message, isOwnMessage }: { message: Message; isOwnMessage: boolean }) => {
@@ -79,7 +90,7 @@ const MessageBubble = memo(
       >
         <div className="text-sm md:text-md">{message.content}</div>
         <div className={`mt-2 text-xs sm:text-sm ${timeStyle}`}>
-          {new Date(message.timestamp).toLocaleTimeString('ko-KR', {
+          {new Date(message.createdAt).toLocaleTimeString('ko-KR', {
             hour: '2-digit',
             minute: '2-digit',
           })}
@@ -92,8 +103,10 @@ const MessageBubble = memo(
   },
 );
 
-const formatDate = (timestamp: string) => {
-  return new Date(timestamp).toLocaleDateString('ko-KR', {
+MessageBubble.displayName = 'MessageBubble';
+
+const formatDate = (createdAt: string) => {
+  return new Date(createdAt).toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -101,12 +114,12 @@ const formatDate = (timestamp: string) => {
 };
 
 const isDateChanged = (
-  currentTimestamp: string,
-  prevTimestamp: string | null,
+  currentCreatedAt: string,
+  prevCreatedAt: string | null,
 ) => {
-  const currentDate = new Date(currentTimestamp).toDateString();
-  const prevDate = prevTimestamp
-    ? new Date(prevTimestamp).toDateString()
+  const currentDate = new Date(currentCreatedAt).toDateString();
+  const prevDate = prevCreatedAt
+    ? new Date(prevCreatedAt).toDateString()
     : null;
   return currentDate !== prevDate;
 };
@@ -172,6 +185,7 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
     }
   }, [messages]);
 
+  // 새 메시지 추가 시 스크롤 위치
   useEffect(() => {
     if (
       chatContainerRef.current &&
@@ -283,14 +297,14 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
             const prevMessage = messages[idx - 1] || null;
             const showDate =
               !prevMessage ||
-              isDateChanged(msg.timestamp, prevMessage?.timestamp);
+              isDateChanged(msg.createdAt, prevMessage?.createdAt);
             const isOwnMessage = msg.user.id === userId;
 
             return (
-              <div className="mt-4" key={msg.timestamp || idx}>
+              <div className="mt-4" key={msg.id || idx}>
                 {showDate && (
                   <div className="text-center mb-4 font-base text-gray-500 text-sm md:text-md">
-                    {formatDate(msg.timestamp)}
+                    {formatDate(msg.createdAt)}
                   </div>
                 )}
 
