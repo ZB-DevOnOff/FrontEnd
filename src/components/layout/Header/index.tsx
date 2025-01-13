@@ -334,10 +334,12 @@ const Header = () => {
       </div>
 
       <div className="navbar-end hidden lg:flex space-x-2">
-        <NotificationButton
-          count={notificationCount}
-          onClick={toggleNotificationModal}
-        />
+        {isSignedIn && (
+          <NotificationButton
+            count={notificationCount}
+            onClick={toggleNotificationModal}
+          />
+        )}
         <AuthLinks
           isSignedIn={isSignedIn}
           userInfo={userInfo}
@@ -351,10 +353,12 @@ const Header = () => {
 
       {/* 모바일 네브바 */}
       <div className="navbar-end lg:hidden">
-        <NotificationButton
-          count={notificationCount}
-          onClick={toggleNotificationModal}
-        />
+        {isSignedIn && (
+          <NotificationButton
+            count={notificationCount}
+            onClick={toggleNotificationModal}
+          />
+        )}
         <button
           className="btn btn-ghost"
           onClick={toggleNav}

@@ -16,7 +16,7 @@ interface ChatMessage {
   chatRoomId: number;
   content: string;
   createdAt: string;
-  timestamp: string;
+  // timestamp: string;
   user: User;
 }
 
@@ -65,7 +65,7 @@ export const useGroupChat = ({ chatRoomId, userId }: UseGroupChatParams) => {
       return {
         messages: content.map((msg: ChatMessage) => ({
           ...msg,
-          timestamp: msg.createdAt,
+          createdAt: msg.createdAt,
         })),
         page: pageable.pageNumber,
         hasNextPage: hasMorePages,
@@ -161,7 +161,7 @@ export const useGroupChat = ({ chatRoomId, userId }: UseGroupChatParams) => {
           onConnect: () => {
             client.subscribe(`/topic/chat/${chatRoomId}`, messageOutput => {
               const newMessage = JSON.parse(messageOutput.body) as ChatMessage;
-              newMessage.timestamp = newMessage.createdAt;
+              newMessage.createdAt = newMessage.createdAt;
               // addNewMessage(newMessage);
               // 현재 캐시된 데이터 확인
               console.log('보낸 메시지', newMessage);
@@ -273,7 +273,7 @@ export const useGroupChat = ({ chatRoomId, userId }: UseGroupChatParams) => {
   const uniqueMessages = Array.from(
     new Map(messages.map(m => [m.id, m])).values(),
   ).sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
   );
 
   return {
