@@ -9,6 +9,11 @@ export const GET = async (request: NextRequest) => {
   try {
     const response = await axios.get(
       `${process.env.API_URL}/study/author/${userId}?page=${page}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
     );
 
     if (response.status === 200) {
