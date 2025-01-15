@@ -22,6 +22,14 @@ const SingInPage = () => {
 
   const { setIsSignedIn, setUserInfo } = useAuthStore();
   const router = useRouter();
+  // const [userId, setUserId] = useState<number | null>(null);
+  // const { connect } = useNotification(userId || 0);
+
+  // useEffect(() => {
+  //   if (userId) {
+  //     connect(); // userInfo.id가 설정되었을 때 WebSocket 연결
+  //   }
+  // }, [userId, connect]);
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -55,6 +63,9 @@ const SingInPage = () => {
 
         console.log('현재 사용자 정보: ', response.data.userInfo);
         console.log('현재 로그인 상태: ', true);
+
+        // setUserId(response.data.userInfo.id); // userId 설정
+        // connect(); // WebSocket 연결 시작
 
         router.push('/community/study');
       }

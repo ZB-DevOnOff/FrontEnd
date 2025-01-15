@@ -56,7 +56,7 @@ const UserProfile = memo(
         className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
       /> */}
       <Image
-        src={user.profileImageUrl || 'http://via.placeholder.com/150'}
+        src={user.profileImageUrl || '/default-profile-image.png'}
         alt={`${user.nickname}'s profile`}
         width={48}
         height={48}
