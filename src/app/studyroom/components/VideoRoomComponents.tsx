@@ -586,8 +586,8 @@ export default function VideoRoomComponent() {
           onClick={toggleAudio}
           className={`px-4 py-2 rounded transition-colors ${
             isAudioEnabled
-              ? 'bg-teal-500 hover:bg-gray-400 text-white'
-              : 'bg-gray-400 hover:bg-teal-500 text-white'
+              ? 'bg-teal-500 hover:bg-teal-600 text-white'
+              : 'bg-gray-400 hover:bg-gray-500 text-white'
           } flex items-center justify-center`}
         >
           {isAudioEnabled ? (
@@ -601,8 +601,8 @@ export default function VideoRoomComponent() {
           onClick={toggleVideo}
           className={`px-4 py-2 rounded transition-colors ${
             isVideoEnabled
-              ? 'bg-teal-500 hover:bg-gray-400 text-white'
-              : 'bg-gray-400 hover:bg-teal-500 text-white'
+              ? 'bg-teal-500 hover:bg-teal-600 text-white'
+              : 'bg-gray-400 hover:bg-gray-500 text-white'
           } flex items-center justify-center`}
         >
           {isVideoEnabled ? (
@@ -616,8 +616,8 @@ export default function VideoRoomComponent() {
           onClick={toggleScreenShare}
           className={`px-4 py-2 rounded transition-colors ${
             isScreenSharing
-              ? 'bg-teal-500 hover:bg-gray-400 text-white'
-              : 'bg-gray-400 hover:bg-teal-500 text-white'
+              ? 'bg-teal-500 hover:bg-teal-600 text-white'
+              : 'bg-gray-400 hover:bg-gray-500 text-white'
           } flex items-center justify-center`}
         >
           {isScreenSharing ? (
