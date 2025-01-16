@@ -12,6 +12,8 @@ import { FaCircle } from 'react-icons/fa';
 import { RiLockPasswordFill } from 'react-icons/ri';
 import handleApiError from '@/utils/handleApiError';
 
+const MAX_NICKNAME_LENGTH = 20;
+
 const UserInfoView = () => {
   const { userInfo, setUserInfo, resetStore } = useAuthStore();
   const [nickname, setNickname] = useState('');
@@ -100,27 +102,6 @@ const UserInfoView = () => {
         }
       } catch (error: any) {
         handleApiError(error, showErrorAlert);
-        // if (error.response) {
-        //   const { status, errorMessage } = error;
-
-        //   if (status === 404) {
-        //     setAlertMessage(errorMessage);
-        //     setShowAlert(true);
-        //   } else if (status === 500) {
-        //     setAlertMessage(errorMessage);
-        //     setShowAlert(true);
-        //   } else {
-        //     setAlertMessage(
-        //       '프로필 이미지를 삭제하지 못했습니다. 잠시 후 다시 시도해주세요.',
-        //     );
-        //     setShowAlert(true);
-        //   }
-        // } else {
-        //   setAlertMessage(
-        //     '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        //   );
-        //   setShowAlert(true);
-        // }
       } finally {
         setShowConfirm(false);
       }
@@ -168,37 +149,6 @@ const UserInfoView = () => {
         }
       } catch (error: any) {
         handleApiError(error, showErrorAlert);
-        // if (error.response) {
-        //   const { status, errorMessage } = error;
-        //   console.log(`error: ${error.response.data}`);
-
-        //   if (status === 404) {
-        //     setAlertMessage(errorMessage);
-        //     setShowAlert(true);
-        //   } else if (status === 500) {
-        //     setAlertMessage(errorMessage);
-        //     setShowAlert(true);
-        //   }
-        //   // else if (status === 401) {
-        //   //   console.log('토큰 문제 발생. 로그인이 필요합니다.');
-        //   //   router.push('/signin');
-        //   //   resetStore();
-        //   // }
-        //   // else if (status === 401) {
-        //   //   setAlertMessage('로그인이 필요합니다.');
-        //   // }
-        //   else {
-        //     setAlertMessage(
-        //       '프로필 이미지를 변경하지 못했습니다. 잠시 후 다시 시도해주세요.',
-        //     );
-        //     setShowAlert(true);
-        //   }
-        // } else {
-        //   setAlertMessage(
-        //     '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        //   );
-        //   setShowAlert(true);
-        // }
       } finally {
         setShowConfirm(false);
       }
@@ -233,6 +183,26 @@ const UserInfoView = () => {
       try {
         if (!nickname || nickname.trim().length === 0) {
           setAlertMessage('닉네임을 입력해주세요.');
+          setShowAlert(true);
+          return;
+        }
+
+        // 닉네임 길이 검증 (2-20자)
+        if (nickname.length < 2) {
+          setAlertMessage('닉네임은 최소 2자 이상이어야 합니다.');
+          setShowAlert(true);
+          return;
+        }
+
+        if (nickname.length > MAX_NICKNAME_LENGTH) {
+          setAlertMessage('닉네임은 최대 20자까지 입력 가능합니다.');
+          setShowAlert(true);
+          return;
+        }
+
+        if (nickname === '탈퇴한 회원') {
+          setAlertMessage('사용할 수 없는 닉네임입니다.');
+          setShowAlert(true);
           return;
         }
 
@@ -252,28 +222,6 @@ const UserInfoView = () => {
         }
       } catch (error: any) {
         handleApiError(error, showErrorAlert);
-        // if (error) {
-        //   const { status, errorMessage, errorCode } = error;
-
-        //   if (status === 404) {
-        //     setAlertMessage(errorMessage);
-        //     setShowAlert(true);
-        //   } else if (
-        //     status === 400 &&
-        //     errorCode === 'NICKNAME_ALREADY_REGISTERED'
-        //   ) {
-        //     setAlertMessage('이미 사용 중인 닉네임입니다.');
-        //     setShowAlert(true);
-        //   } else {
-        //     setAlertMessage('닉네임 변경에 실패했습니다. 다시 시도해주세요.');
-        //     setShowAlert(true);
-        //   }
-        // } else {
-        //   setAlertMessage(
-        //     '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        //   );
-        //   setShowAlert(true);
-        // }
       } finally {
         setShowConfirm(false);
       }
@@ -321,23 +269,6 @@ const UserInfoView = () => {
         }
       } catch (error: any) {
         handleApiError(error, showErrorAlert, changePasswordErrorCodeHandlers);
-        // if (error.response) {
-        //   const { status, errorMessage } = error;
-        //   if (status === 400) {
-        //     setAlertMessage(
-        //       errorMessage || '현재 비밀번호가 올바르지 않습니다.',
-        //     );
-        //   } else {
-        //     setAlertMessage(
-        //       '서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
-        //     );
-        //   }
-        // } else {
-        //   setAlertMessage(
-        //     '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        //   );
-        // }
-        // setShowAlert(true);
       } finally {
         setShouldChangePassword(false);
         setShowConfirm(false);
@@ -398,30 +329,6 @@ const UserInfoView = () => {
         }
       } catch (error: any) {
         handleApiError(error, showErrorAlert, withdrawalErrorCodeHandlers);
-        // if (error.response) {
-        //   const { status, errorCode } = error;
-        //   console.log('error:' + error.response);
-        //   if (status === 400) {
-        //     if (errorCode === 'INVALID_PASSWORD') {
-        //       setAlertMessage(
-        //         '비밀번호가 일치하지 않습니다. 입력한 내용을 다시 확인해 주세요.',
-        //       );
-        //     } else {
-        //       setAlertMessage('비밀번호 형식이 올바르지 않습니다.');
-        //     }
-        //   } else if (status === 404) {
-        //     setAlertMessage('사용자를 찾을 수 없습니다.');
-        //   } else {
-        //     setAlertMessage(
-        //       '서버에 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
-        //     );
-        //   }
-        // } else {
-        //   setAlertMessage(
-        //     '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        //   );
-        // }
-        // setShowAlert(true);
       } finally {
         setShouldWithdrawal(false);
         setShowConfirm(false);

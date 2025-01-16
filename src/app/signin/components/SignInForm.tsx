@@ -22,6 +22,14 @@ const SingInPage = () => {
 
   const { setIsSignedIn, setUserInfo } = useAuthStore();
   const router = useRouter();
+  // const [userId, setUserId] = useState<number | null>(null);
+  // const { connect } = useNotification(userId || 0);
+
+  // useEffect(() => {
+  //   if (userId) {
+  //     connect(); // userInfo.id가 설정되었을 때 WebSocket 연결
+  //   }
+  // }, [userId, connect]);
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -56,6 +64,9 @@ const SingInPage = () => {
         console.log('현재 사용자 정보: ', response.data.userInfo);
         console.log('현재 로그인 상태: ', true);
 
+        // setUserId(response.data.userInfo.id); // userId 설정
+        // connect(); // WebSocket 연결 시작
+
         router.push('/community/study');
       }
     } catch (error: any) {
@@ -64,25 +75,6 @@ const SingInPage = () => {
         setError,
         signInErrorCodeHandlers,
       );
-      // if (error.response) {
-      //   const { status, data } = error.response;
-      //   console.log(`status: ${status}`);
-      //   const errorCode = data?.errorCode;
-      //   console.log(`errorRes: ${errorCode}`);
-      //   if (status === 401) {
-      //     setError(
-      //       '이메일 혹은 비밀번호가 일치하지 않습니다. 입력한 내용을 다시 확인해 주세요.',
-      //     );
-      //   } else if (status === 403) {
-      //     setError('탈퇴한 계정입니다.');
-      //   } else if (status === 404) {
-      //     setError('사용자를 찾을 수 없습니다.');
-      //   } else {
-      //     setError('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-      //   }
-      // } else {
-      //   setError('서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.');
-      // }
     }
   };
 

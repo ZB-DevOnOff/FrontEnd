@@ -7,6 +7,8 @@ import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 import { AuthTimer } from './AuthTimer';
 import handleApiErrorWithoutInterceptor from '@/utils/handleApiErrorWithoutInterceptor';
 
+const MAX_NICKNAME_LENGTH = 20;
+
 const SignUpForm = () => {
   const [email, setEmail] = useState('');
   const [authCode, setAuthCode] = useState('');
@@ -137,33 +139,6 @@ const SignUpForm = () => {
       }
     } catch (error: any) {
       handleApiErrorWithoutInterceptor(error, showEmailErrorAlert);
-      // if (error.response) {
-      //   const { status, data } = error.response;
-      //   console.log(`status: ${status}`);
-      //   const errorCode = data?.errorCode;
-      //   console.log(`errorRes: ${errorCode}`);
-
-      //   if (status === 400) {
-      //     if (errorCode === 'EMAIL_ALREADY_REGISTERED') {
-      //       setEmailMessage('이미 사용 중인 이메일입니다.');
-      //       setEmailMessageType('error');
-      //     } else {
-      //       setEmailMessage('잘못된 요청입니다. 다시 시도해주세요.');
-      //       setEmailMessageType('error');
-      //     }
-      //   } else if (status === 500 && errorCode === 'EMAIL_SEND_FAILED') {
-      //     setEmailMessage('인증번호 전송에 실패했습니다.');
-      //     setEmailMessageType('error');
-      //   } else {
-      //     setEmailMessage('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-      //     setEmailMessageType('error');
-      //   }
-      // } else {
-      //   setEmailMessage(
-      //     '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
-      //   );
-      //   setEmailMessageType('error');
-      // }
     }
   };
 
@@ -188,17 +163,6 @@ const SignUpForm = () => {
       }
     } catch (error: any) {
       handleApiErrorWithoutInterceptor(error, showAuthCodeErrorAlert);
-      // if (error.response) {
-      //   const { data } = error.response;
-      //   const message = data?.errorMessage;
-      //   setAuthCodeMessage(message);
-      //   setAuthCodeMessageType('error');
-      // } else {
-      //   setAuthCodeMessage(
-      //     '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
-      //   );
-      //   setAuthCodeMessageType('error');
-      // }
     }
   };
 
@@ -209,12 +173,35 @@ const SignUpForm = () => {
     setAuthCodeMessageType('error');
   };
 
+  // 닉네임 길이 제한
+
   // 닉네임 중복 확인
   const handleNicknameAvailabilityCheckClick = async () => {
-    if (!nickname.trim()) {
-      setNicknameMessage('닉네임을 입력하세요.');
+    if (!nickname || nickname.trim().length === 0) {
+      setNicknameMessage('닉네임을 입력해 주세요.');
       setNicknameMessageType('error');
     }
+
+    // 닉네임 길이 검증 (2-20자)
+    if (nickname.length < 2) {
+      setNicknameMessage('닉네임은 최소 2자 이상이어야 합니다.');
+      setNicknameMessageType('error');
+      return;
+    }
+
+    if (nickname.length > MAX_NICKNAME_LENGTH) {
+      setNicknameMessage('닉네임은 최대 20자까지 입력 가능합니다.');
+      setNicknameMessageType('error');
+      return;
+    }
+
+    if (nickname === '탈퇴한 회원') {
+      setNicknameMessage('사용할 수 없는 닉네임입니다.');
+      setNicknameMessageType('error');
+      setNicknameAvailable(false);
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/check-nickname`,
@@ -229,29 +216,6 @@ const SignUpForm = () => {
       }
     } catch (error: any) {
       handleApiErrorWithoutInterceptor(error, showNickNameAlert);
-      // if (error.response) {
-      //   const { status, data } = error.response;
-      //   const errorCode = data?.errorCode;
-
-      //   if (status === 400) {
-      //     if (errorCode === 'NICKNAME_ALREADY_REGISTERED') {
-      //       setNicknameMessage('이미 사용 중인 닉네임입니다.');
-      //       setNicknameMessageType('error');
-      //       setNicknameAvailable(false);
-      //     } else {
-      //       setNicknameMessage('잘못된 요청입니다. 다시 시도해주세요.');
-      //       setNicknameMessageType('error');
-      //     }
-      //   } else {
-      //     setNicknameMessage('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-      //     setNicknameMessageType('error');
-      //   }
-      // } else {
-      //   setNicknameMessage(
-      //     '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
-      //   );
-      //   setNicknameMessageType('error');
-      // }
     }
   };
 
@@ -297,15 +261,29 @@ const SignUpForm = () => {
       return;
     }
 
-    if (!nickname.trim()) {
+    if (!nickname || nickname.trim().length === 0) {
       setNicknameMessage('닉네임을 입력해 주세요.');
       setNicknameMessageType('error');
+      return;
+    } else if (nickname.length < 2) {
+      setNicknameMessage('닉네임은 최소 2자 이상이어야 합니다.');
+      setNicknameMessageType('error');
+      return;
+    } else if (nickname.length > MAX_NICKNAME_LENGTH) {
+      setNicknameMessage('닉네임은 최대 20자까지 입력 가능합니다.');
+      setNicknameMessageType('error');
+      return;
+    } else if (nickname === '탈퇴한 회원') {
+      setNicknameMessage('사용할 수 없는 닉네임입니다.');
+      setNicknameMessageType('error');
+      setNicknameAvailable(false);
       return;
     } else if (!nicknameAvailable) {
       setNicknameMessage('닉네임 중복 확인을 완료해 주세요.');
       setNicknameMessageType('error');
       return;
     }
+
     if (!isValidPassword(password)) {
       setPasswordError(
         '비밀번호는 최소 8자 이상이며, 하나 이상의 영문자, 숫자, 특수문자가 포함되어야 합니다.',
