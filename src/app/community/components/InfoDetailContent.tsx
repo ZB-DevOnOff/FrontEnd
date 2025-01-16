@@ -43,7 +43,7 @@ export default function InfoDetailContent({ postId }: InfoDetailContentProps) {
     if (window.confirm('정말로 삭제하시겠습니까?')) {
       try {
         await axios.delete(
-          `${process.env.NEXT_PUBLIC_API_URL}/info-posts/${postId}`,
+          `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/info-posts/${postId}`,
         );
         await queryClient.invalidateQueries({ queryKey: ['info-posts'] });
         setAlertMessage('게시글이 삭제되었습니다.');
