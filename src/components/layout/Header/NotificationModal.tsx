@@ -260,6 +260,20 @@ const NotificationModal = ({
     setConfirmMessage('모든 알림을 삭제하시겠습니까?');
     setOnConfirmCallback(() => async () => {
       try {
+        const unreadNotifications = notifications.filter(
+          notification => !notification.read,
+        );
+
+        if (unreadNotifications.length > 0) {
+          for (const notification of unreadNotifications) {
+            await markNotificationAsRead(notification.id);
+          }
+
+          // const updatedNotifications = notifications.map(notification => ({
+          //   ...notification,
+          //   read: true,
+          // }));
+        }
         const response = await axiosInstance.delete(
           `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/user/${userId}`,
           {
@@ -321,7 +335,7 @@ const NotificationModal = ({
           )}
 
           {notifications.length > 0 ? (
-            <ul className="space-y-2 text-md">
+            <ul className="space-y-2 text-md overflow-y-auto md:max-h-[600px] max-h-[350px]">
               {notifications
                 .slice()
                 .sort(
