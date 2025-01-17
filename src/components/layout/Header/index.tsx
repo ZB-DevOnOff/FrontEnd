@@ -273,23 +273,6 @@ const Header = () => {
     fetchNotifications(); // 컴포넌트가 마운트될 때 알림 조회
   }, [isSignedIn, userInfo]);
 
-  // useEffect(() => {
-  //   if (userInfo?.id && userInfo?.id > 0) {
-  //     setUserId(userInfo.id);
-  //   } else {
-  //     setUserId(null);
-  //   }
-  // }, [userInfo]);
-
-  // useEffect(() => {
-  //   if (isSignedIn && userInfo?.id) {
-  //     connect();
-  //   } else {
-  //     setUserId(null);
-  //     disconnect();
-  //   }
-  // }, [isSignedIn, connect, disconnect]);
-
   // pathname이 변경될 때마다 현재 활성화된 메뉴 설정
   useEffect(() => {
     const handleRouteChange = () => {
