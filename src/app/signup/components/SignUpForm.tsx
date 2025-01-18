@@ -383,7 +383,12 @@ const SignUpForm = () => {
                 id="authCode"
                 type="text"
                 value={authCode}
-                onChange={e => setAuthCode(e.target.value.trim())}
+                onChange={e => {
+                  setAuthCode(e.target.value.trim());
+                  setAuthCodeVerified(false); // 인증 번호 수정 시 인증 상태 초기화
+                  setAuthCodeMessage(''); // 메시지 초기화
+                  setAuthCodeMessageType('');
+                }}
                 required
                 className="w-full flex-grow input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
               />
