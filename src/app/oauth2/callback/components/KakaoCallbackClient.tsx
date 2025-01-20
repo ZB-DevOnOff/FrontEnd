@@ -51,25 +51,6 @@ const KakaoCallbackClient = () => {
         }
       } catch (error: any) {
         handleApiErrorWithoutInterceptor(error, showErrorAlert);
-
-        // if (error) {
-        //   const { status, errorMessage, errorCode } = error;
-
-        //   if (status === 500 && errorCode === 'INTERNAL_SERVER_ERROR') {
-        //     setAlertMessage(errorMessage);
-        //     setShowAlert(true);
-        //   } else {
-        //     setAlertMessage(
-        //       '카카오 로그인에 실패했습니다. 다시 시도해 주세요.',
-        //     );
-        //     setShowAlert(true);
-        //   }
-        // } else {
-        //   setAlertMessage(
-        //     '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
-        //   );
-        //   setShowAlert(true);
-        // }
       }
     };
 

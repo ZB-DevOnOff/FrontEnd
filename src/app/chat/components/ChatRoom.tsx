@@ -132,7 +132,6 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
   const { userInfo } = useAuthStore();
   const userId = userInfo?.id || 111;
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const isConnecting = useRef(false);
   const isInitialLoad = useRef(true);
   const isLoadingPrevMessages = useRef(false);
   const lastMessageLength = useRef(0);
@@ -149,8 +148,6 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
     hasNextPage,
     isFetchingNextPage,
     sendMessage,
-    chatState,
-    connect,
   } = useGroupChat({ chatRoomId, userId });
 
   // Intersection Observer 설정
@@ -250,23 +247,6 @@ const ChatRoom = ({ chatRoomId }: ChatRoomProps) => {
       setShowAlert(true); // 전역적인 알림 표시 등으로 대체
     }
   };
-
-  if (chatState.error) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4">
-        <div className="alert alert-error">
-          <span>{chatState.error}</span>
-        </div>
-        <button
-          onClick={connect}
-          disabled={isConnecting.current}
-          className="btn bg-teal-500"
-        >
-          {isConnecting.current ? '연결 중...' : '채팅방 재연결'}
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="flex justify-center items-start h-[screen]">
