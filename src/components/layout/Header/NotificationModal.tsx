@@ -8,6 +8,7 @@ import axios from 'axios';
 import { ReactNode, useEffect, useState } from 'react';
 import { FaCheck, FaTrashAlt } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
+import { useInView } from 'react-intersection-observer';
 
 export type Notification = {
   id: number;
@@ -27,11 +28,11 @@ export type Notification = {
 
 type NotificationModalProps = {
   notifications: Notification[];
-  setNotifications: (notifications: Notification[]) => void;
-  setNotificationCount: (notificationCount: number) => void;
-  onDeleteNotification: (updatedNotifications: Notification[]) => void;
+  onUpdateNotifications: (notifications: Notification[]) => void;
+  hasNextPage?: boolean;
+  fetchNextPage: () => void;
+  isFetchingNextPage?: boolean;
   onClose: () => void;
-  // onAllMessagesRead: () => void
 };
 
 // 시간 차이를 계산하는 함수
@@ -69,16 +70,15 @@ const calculateTimeDifference = (createdAt: string, serverTime: string) => {
 
 const NotificationModal = ({
   notifications,
-  setNotifications,
+  onUpdateNotifications,
+  hasNextPage,
+  fetchNextPage,
+  isFetchingNextPage,
   onClose,
-  onDeleteNotification,
-  // onAllMessagesRead,
 }: NotificationModalProps) => {
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
+  const { ref: infiniteScrollRef, inView } = useInView({
+    threshold: 0.1,
+  });
 
   const router = useRouter();
   const { userInfo } = useAuthStore();
@@ -92,6 +92,12 @@ const NotificationModal = ({
     () => () => {},
   );
 
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   const showErrorAlert = (errorMessage: string | null) => {
     setAlertMessage(
       errorMessage ||
@@ -101,6 +107,13 @@ const NotificationModal = ({
   };
 
   useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  useEffect(() => {
+    console.log('NotificationModal에 전달된 notifications:', notifications);
     // 서버에서 현재 시간을 가져오는 API 호출
     const fetchServerTime = async () => {
       try {
@@ -148,11 +161,9 @@ const NotificationModal = ({
         const updatedNotifications = notifications.map(notification =>
           notification.id === updatedNotification.id
             ? { ...notification, read: true }
-            : // updatedNotification
-              notification,
+            : notification,
         );
-        onDeleteNotification(updatedNotifications);
-        setNotifications(updatedNotifications);
+        onUpdateNotifications(updatedNotifications);
       }
     }
 
@@ -202,8 +213,7 @@ const NotificationModal = ({
             ...notification,
             read: true,
           }));
-          setNotifications(updatedNotifications);
-          onDeleteNotification(updatedNotifications);
+          onUpdateNotifications(updatedNotifications);
         }
       } catch (error: any) {
         handleApiError(error, showErrorAlert);
@@ -237,8 +247,7 @@ const NotificationModal = ({
           const updatedNotifications = notifications.filter(
             notification => notification.id !== notificationId,
           );
-          onDeleteNotification(updatedNotifications);
-          setNotifications(updatedNotifications); // 알림 상태 갱신
+          onUpdateNotifications(updatedNotifications);
         }
       } catch (error: any) {
         handleApiError(error, showErrorAlert);
@@ -260,20 +269,6 @@ const NotificationModal = ({
     setConfirmMessage('모든 알림을 삭제하시겠습니까?');
     setOnConfirmCallback(() => async () => {
       try {
-        const unreadNotifications = notifications.filter(
-          notification => !notification.read,
-        );
-
-        if (unreadNotifications.length > 0) {
-          for (const notification of unreadNotifications) {
-            await markNotificationAsRead(notification.id);
-          }
-
-          // const updatedNotifications = notifications.map(notification => ({
-          //   ...notification,
-          //   read: true,
-          // }));
-        }
         const response = await axiosInstance.delete(
           `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/user/${userId}`,
           {
@@ -287,8 +282,7 @@ const NotificationModal = ({
           setShowAlert(true);
 
           // 알림 삭제 후 상태 갱신
-          setNotifications([]);
-          onDeleteNotification([]);
+          onUpdateNotifications([]);
         }
       } catch (error: any) {
         handleApiError(error, showErrorAlert);
@@ -335,135 +329,147 @@ const NotificationModal = ({
           )}
 
           {notifications.length > 0 ? (
-            <ul className="space-y-2 text-md overflow-y-auto md:max-h-[600px] max-h-[350px]">
-              {notifications
-                .slice()
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime(),
-                )
-                .map((notification, index) => {
-                  let message: ReactNode = '';
+            <div className="overflow-y-auto max-h-[60vh]">
+              <ul className="space-y-2 text-md">
+                {notifications
+                  .slice()
+                  .sort(
+                    (a, b) =>
+                      new Date(b.createdAt).getTime() -
+                      new Date(a.createdAt).getTime(),
+                  )
+                  .map((notification, index) => {
+                    let message: ReactNode = '';
 
-                  switch (notification.type) {
-                    case 'COMMENT_ADDED':
-                      message = (
-                        <>
-                          [🔔 댓글]{' '}
-                          <strong className="text-semibold text-gray-800">
-                            {notification.sender.nickname}
-                          </strong>
-                          님이{' '}
-                          <strong className="text-semibold text-gray-800">
-                            {notification.postTitle}
-                          </strong>{' '}
-                          게시글에 댓글을 남겼습니다.
-                        </>
-                      );
-                      break;
-                    case 'REPLY_ADDED':
-                      message = (
-                        <>
-                          [🔔 답글]{' '}
-                          <strong className="text-semibold text-gray-800">
-                            {notification.sender.nickname}
-                          </strong>
-                          님이 당신의 댓글에 답글을 남겼습니다.
-                        </>
-                      );
-                      break;
-                    case 'STUDY_SIGNUP_ADDED':
-                      message = (
-                        <>
-                          [🔥 스터디]{' '}
-                          <strong className="text-semibold text-gray-800">
-                            {notification.sender.nickname}
-                          </strong>
-                          님이{' '}
-                          <strong className="text-semibold text-gray-800">
-                            {notification.studyName}
-                          </strong>{' '}
-                          스터디 신청 요청을 보냈습니다.
-                        </>
-                      );
-                      break;
-                    case 'STUDY_SIGNUP_APPROVED':
-                      message = (
-                        <>
-                          [🔥 스터디]{' '}
-                          <strong className="text-semibold text-gray-800">
-                            {notification.sender.nickname}
-                          </strong>
-                          님이{' '}
-                          <strong className="text-semibold text-gray-800">
-                            {notification.studyName}
-                          </strong>{' '}
-                          스터디 신청을 수락했습니다.
-                        </>
-                      );
-                      break;
-                    case 'STUDY_SIGNUP_REJECTED':
-                      message = (
-                        <>
-                          [🔥 스터디]{' '}
-                          <strong className="text-semibold text-gray-800">
-                            {notification.sender.nickname}
-                          </strong>
-                          님이{' '}
-                          <strong className="text-semibold text-gray-800">
-                            {notification.studyName}
-                          </strong>{' '}
-                          스터디 신청을 거절했습니다.
-                        </>
-                      );
-                      break;
-                    case 'STUDY_CREATED':
-                      message = (
-                        <>
-                          [🔥 스터디]{' '}
-                          <strong className="text-semibold text-gray-800">
-                            {notification.sender.nickname}
-                          </strong>
-                          님이{' '}
-                          <strong className="text-semibold text-gray-800">
-                            {notification.studyName}
-                          </strong>{' '}
-                          스터디를 개설했습니다. 마이페이지에서 채팅 및 스터디룸
-                          이용이 가능합니다!
-                        </>
-                      );
-                      break;
-                  }
-                  return (
-                    <li
-                      key={index}
-                      onClick={() => handleNotificationClick(notification.id)}
-                      className={`p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-200 ${notification.read ? 'bg-gray-100 text-gray-700 opacity-70' : 'text-gray-800'}`}
-                    >
-                      {message}
-                      <div className="flex justify-between items-center mt-2">
-                        <div className="text-gray-500 text-sm text-right">
-                          {serverTime
-                            ? calculateTimeDifference(
-                                notification.createdAt,
-                                serverTime,
-                              )
-                            : '로딩 중...'}
+                    switch (notification.type) {
+                      case 'COMMENT_ADDED':
+                        message = (
+                          <>
+                            [🔔 댓글]{' '}
+                            <strong className="text-semibold text-gray-800">
+                              {notification.sender.nickname}
+                            </strong>
+                            님이{' '}
+                            <strong className="text-semibold text-gray-800">
+                              {notification.postTitle}
+                            </strong>{' '}
+                            게시글에 댓글을 남겼습니다.
+                          </>
+                        );
+                        break;
+                      case 'REPLY_ADDED':
+                        message = (
+                          <>
+                            [🔔 답글]{' '}
+                            <strong className="text-semibold text-gray-800">
+                              {notification.sender.nickname}
+                            </strong>
+                            님이 당신의 댓글에 답글을 남겼습니다.
+                          </>
+                        );
+                        break;
+                      case 'STUDY_SIGNUP_ADDED':
+                        message = (
+                          <>
+                            [🔥 스터디]{' '}
+                            <strong className="text-semibold text-gray-800">
+                              {notification.sender.nickname}
+                            </strong>
+                            님이{' '}
+                            <strong className="text-semibold text-gray-800">
+                              {notification.studyName}
+                            </strong>{' '}
+                            스터디 신청 요청을 보냈습니다.
+                          </>
+                        );
+                        break;
+                      case 'STUDY_SIGNUP_APPROVED':
+                        message = (
+                          <>
+                            [🔥 스터디]{' '}
+                            <strong className="text-semibold text-gray-800">
+                              {notification.sender.nickname}
+                            </strong>
+                            님이{' '}
+                            <strong className="text-semibold text-gray-800">
+                              {notification.studyName}
+                            </strong>{' '}
+                            스터디 신청을 수락했습니다.
+                          </>
+                        );
+                        break;
+                      case 'STUDY_SIGNUP_REJECTED':
+                        message = (
+                          <>
+                            [🔥 스터디]{' '}
+                            <strong className="text-semibold text-gray-800">
+                              {notification.sender.nickname}
+                            </strong>
+                            님이{' '}
+                            <strong className="text-semibold text-gray-800">
+                              {notification.studyName}
+                            </strong>{' '}
+                            스터디 신청을 거절했습니다.
+                          </>
+                        );
+                        break;
+                      case 'STUDY_CREATED':
+                        message = (
+                          <>
+                            [🔥 스터디]{' '}
+                            <strong className="text-semibold text-gray-800">
+                              {notification.sender.nickname}
+                            </strong>
+                            님이{' '}
+                            <strong className="text-semibold text-gray-800">
+                              {notification.studyName}
+                            </strong>{' '}
+                            스터디를 개설했습니다. 마이페이지에서 채팅 및
+                            스터디룸 이용이 가능합니다!
+                          </>
+                        );
+                        break;
+                    }
+                    return (
+                      <li
+                        key={notification.id}
+                        onClick={() => handleNotificationClick(notification.id)}
+                        className={`p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-200 ${notification.read ? 'bg-gray-100 text-gray-700 opacity-70' : 'text-gray-800'}`}
+                        ref={
+                          index === notifications.length - 1
+                            ? infiniteScrollRef
+                            : null
+                        }
+                      >
+                        {message}
+                        <div className="flex justify-between items-center mt-2">
+                          <div className="text-gray-500 text-sm text-right">
+                            {serverTime
+                              ? calculateTimeDifference(
+                                  notification.createdAt,
+                                  serverTime,
+                                )
+                              : '로딩 중...'}
+                          </div>
+                          <button
+                            onClick={e =>
+                              handleNotificationDeleteClick(notification.id, e)
+                            }
+                            className="text-sm text-red-500 hover:text-red-700"
+                          >
+                            삭제
+                          </button>
                         </div>
-                        <button
-                          onClick={e =>
-                            handleNotificationDeleteClick(notification.id, e)
-                          }
-                          className="text-sm text-red-500 hover:text-red-700"
-                        >
-                          삭제
-                        </button>
-                      </div>
-                    </li>
-                  );
-                })}
-            </ul>
+                      </li>
+                    );
+                  })}
+              </ul>
+              {isFetchingNextPage && (
+                <div className="text-center py-4 text-gray-500">
+                  알림을 불러오는 중..
+                </div>
+              )}
+            </div>
           ) : (
             <p className="text-gray-500">새로운 알림이 없습니다.</p>
           )}
