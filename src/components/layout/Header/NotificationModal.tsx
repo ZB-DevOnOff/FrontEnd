@@ -1,72 +1,17 @@
+'use client';
+
 import CustomAlert from '@/components/common/Alert';
 import CustomConfirm from '@/components/common/Confirm';
 import { useAuthStore } from '@/store/authStore';
-import { User } from '@/types/post';
 import axiosInstance from '@/utils/axios';
 import handleApiError from '@/utils/handleApiError';
 import axios from 'axios';
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaCheck, FaTrashAlt } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
-
-export type Notification = {
-  id: number;
-  userId: number;
-  sender: User;
-  type: string;
-  createdAt: string;
-  postType: string;
-  postTitle: string | null;
-  postContent: string | null;
-  commentContent: string | null;
-  replyContent: string | null;
-  studyName: string | null;
-  targetId: number;
-  read: boolean;
-};
-
-type NotificationModalProps = {
-  notifications: Notification[];
-  onUpdateNotifications: (notifications: Notification[]) => void;
-  hasNextPage?: boolean;
-  fetchNextPage: () => void;
-  isFetchingNextPage?: boolean;
-  onClose: () => void;
-};
-
-// 시간 차이를 계산하는 함수
-const calculateTimeDifference = (createdAt: string, serverTime: string) => {
-  const serverDate = new Date(serverTime); // 서버 시간 UTC -> KST 변환
-  const createdDate = new Date(createdAt); // 알림 시간 (이미 KST)
-
-  const diffInSeconds = Math.floor(
-    (serverDate.getTime() - createdDate.getTime()) / 1000,
-  );
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  const diffInDays = Math.floor(diffInHours / 24);
-  const diffInMonths = Math.floor(diffInDays / 30);
-  const diffInYears = Math.floor(diffInDays / 365);
-
-  // 차이 계산 후 결과 반환
-  if (diffInYears >= 1) {
-    return `${diffInYears}년 전`;
-  }
-  if (diffInMonths >= 1) {
-    return `${diffInMonths}개월 전`;
-  }
-  if (diffInDays >= 1) {
-    return `${diffInDays}일 전`;
-  }
-  if (diffInHours >= 1) {
-    return `${diffInHours}시간 전`;
-  }
-  if (diffInMinutes >= 1) {
-    return `${diffInMinutes}분 전`;
-  }
-  return '방금 전';
-};
+import NotificationItem from './NotificationItem';
+import { NotificationModalProps } from '@/types/notification';
 
 const NotificationModal = ({
   notifications,
@@ -122,7 +67,6 @@ const NotificationModal = ({
         );
         if (response.status === 200) {
         }
-        console.log('현재 시간은', response.data.currentTime);
         setServerTime(response.data.currentTime);
       } catch (error) {
         console.error('서버 시간을 가져오는 데 실패하였습니다.', error);
@@ -338,131 +282,17 @@ const NotificationModal = ({
                       new Date(b.createdAt).getTime() -
                       new Date(a.createdAt).getTime(),
                   )
-                  .map((notification, index) => {
-                    let message: ReactNode = '';
-
-                    switch (notification.type) {
-                      case 'COMMENT_ADDED':
-                        message = (
-                          <>
-                            [🔔 댓글]{' '}
-                            <strong className="text-semibold text-gray-800">
-                              {notification.sender.nickname}
-                            </strong>
-                            님이{' '}
-                            <strong className="text-semibold text-gray-800">
-                              {notification.postTitle}
-                            </strong>{' '}
-                            게시글에 댓글을 남겼습니다.
-                          </>
-                        );
-                        break;
-                      case 'REPLY_ADDED':
-                        message = (
-                          <>
-                            [🔔 답글]{' '}
-                            <strong className="text-semibold text-gray-800">
-                              {notification.sender.nickname}
-                            </strong>
-                            님이 당신의 댓글에 답글을 남겼습니다.
-                          </>
-                        );
-                        break;
-                      case 'STUDY_SIGNUP_ADDED':
-                        message = (
-                          <>
-                            [🔥 스터디]{' '}
-                            <strong className="text-semibold text-gray-800">
-                              {notification.sender.nickname}
-                            </strong>
-                            님이{' '}
-                            <strong className="text-semibold text-gray-800">
-                              {notification.studyName}
-                            </strong>{' '}
-                            스터디 신청 요청을 보냈습니다.
-                          </>
-                        );
-                        break;
-                      case 'STUDY_SIGNUP_APPROVED':
-                        message = (
-                          <>
-                            [🔥 스터디]{' '}
-                            <strong className="text-semibold text-gray-800">
-                              {notification.sender.nickname}
-                            </strong>
-                            님이{' '}
-                            <strong className="text-semibold text-gray-800">
-                              {notification.studyName}
-                            </strong>{' '}
-                            스터디 신청을 수락했습니다.
-                          </>
-                        );
-                        break;
-                      case 'STUDY_SIGNUP_REJECTED':
-                        message = (
-                          <>
-                            [🔥 스터디]{' '}
-                            <strong className="text-semibold text-gray-800">
-                              {notification.sender.nickname}
-                            </strong>
-                            님이{' '}
-                            <strong className="text-semibold text-gray-800">
-                              {notification.studyName}
-                            </strong>{' '}
-                            스터디 신청을 거절했습니다.
-                          </>
-                        );
-                        break;
-                      case 'STUDY_CREATED':
-                        message = (
-                          <>
-                            [🔥 스터디]{' '}
-                            <strong className="text-semibold text-gray-800">
-                              {notification.sender.nickname}
-                            </strong>
-                            님이{' '}
-                            <strong className="text-semibold text-gray-800">
-                              {notification.studyName}
-                            </strong>{' '}
-                            스터디를 개설했습니다. 마이페이지에서 채팅 및
-                            스터디룸 이용이 가능합니다!
-                          </>
-                        );
-                        break;
-                    }
-                    return (
-                      <li
-                        key={notification.id}
-                        onClick={() => handleNotificationClick(notification.id)}
-                        className={`p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-200 ${notification.read ? 'bg-gray-100 text-gray-700 opacity-70' : 'text-gray-800'}`}
-                        ref={
-                          index === notifications.length - 1
-                            ? infiniteScrollRef
-                            : null
-                        }
-                      >
-                        {message}
-                        <div className="flex justify-between items-center mt-2">
-                          <div className="text-gray-500 text-sm text-right">
-                            {serverTime
-                              ? calculateTimeDifference(
-                                  notification.createdAt,
-                                  serverTime,
-                                )
-                              : '로딩 중...'}
-                          </div>
-                          <button
-                            onClick={e =>
-                              handleNotificationDeleteClick(notification.id, e)
-                            }
-                            className="text-sm text-red-500 hover:text-red-700"
-                          >
-                            삭제
-                          </button>
-                        </div>
-                      </li>
-                    );
-                  })}
+                  .map((notification, index) => (
+                    <NotificationItem
+                      key={notification.id}
+                      notification={notification}
+                      serverTime={serverTime}
+                      onClick={handleNotificationClick}
+                      onDelete={handleNotificationDeleteClick}
+                      isLast={index === notifications.length - 1}
+                      lastItemRef={infiniteScrollRef}
+                    />
+                  ))}
               </ul>
               {isFetchingNextPage && (
                 <div className="text-center py-4 text-gray-500">
