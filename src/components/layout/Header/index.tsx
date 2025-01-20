@@ -11,8 +11,10 @@ import CustomAlert from '@/components/common/Alert';
 import { FiBell } from 'react-icons/fi';
 import axiosInstance from '@/utils/axios';
 import handleApiError from '@/utils/handleApiError';
-import NotificationModal, { Notification } from './NotificationModal';
+import NotificationModal from './NotificationModal';
 import useNotification from '@/hooks/useNotification';
+import useWebSocket from '@/hooks/useWebSocket';
+import { Notification } from '@/types/notification';
 
 type NavigationItem = {
   path: string;
@@ -222,9 +224,8 @@ const Header = () => {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-    connect,
-    disconnect,
   } = useNotification(userId || 0);
+  const { connect, disconnect } = useWebSocket(userId || 0);
   const { notifications }: { notifications: Notification[] } = useNotification(
     userId || 0,
   );

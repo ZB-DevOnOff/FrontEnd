@@ -1,24 +1,13 @@
-import { Client } from '@stomp/stompjs';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import SockJS from 'sockjs-client';
-import { Notification } from '@/components/layout/Header/NotificationModal';
+import { useCallback, useEffect } from 'react';
 import { useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import axiosInstance from '@/utils/axios';
+import useWebSocket from './useWebSocket';
+import { Notification } from '@/types/notification';
 
 const NOTIFICATION_QUERY_KEY = 'notifications';
 
-// 알림 데이터 타입 정의
-// interface NotificationResponse {
-//   content: Notification[];
-//   last: boolean;
-//   totalElements: number;
-//   totalPages: number;
-// }
-
 const useNotification = (userId: number) => {
   const queryClient = useQueryClient();
-  const stompClient = useRef<Client | null>(null);
-  const [, setIsConnected] = useState(false);
 
   // 알림 쿼리 키 생성 함수
   const getNotificationsQueryKey = useCallback(
@@ -96,55 +85,39 @@ const useNotification = (userId: number) => {
     [updateNotificationCache],
   );
 
-  // WebSocket 연결 함수
-  const connect = useCallback(() => {
-    if (!userId || stompClient.current?.connected) return;
+  // 웹소켓 메시지 처리 함수
+  const onMessageReceived = useCallback(
+    (newNotification: Notification) => {
+      addNewNotification(newNotification);
+    },
+    [addNewNotification],
+  );
 
-    const socket = new SockJS(
-      `${process.env.NEXT_PUBLIC_CHAT_SOCKET_URL}/ws` as string,
-    );
-    const client = new Client({
-      webSocketFactory: () => socket,
-      reconnectDelay: 5000,
-      onConnect: () => {
-        setIsConnected(true);
-        console.log('알림 WebSocket 연결 성공');
-        client.subscribe(`/topic/notifications/${userId}`, message => {
-          try {
-            const notification = JSON.parse(message.body);
-            addNewNotification(notification);
-          } catch (error) {
-            console.error('알림 메시지 파싱 오류:', error);
-          }
-        });
-      },
-      onDisconnect: () => {
-        setIsConnected(false);
-        console.log('알림 WebSocket 연결 해제됨');
-      },
-      onStompError: error => {
-        console.error('WebSocket 오류:', error);
-      },
-    });
+  // 웹소켓 연결 관리
+  const { webSocketState, subscribe, unsubscribe } = useWebSocket(userId);
 
-    stompClient.current = client;
-    client.activate();
-  }, [userId, addNewNotification]);
-
-  // WebSocket 연결 해제 함수
-  const disconnect = useCallback(() => {
-    if (stompClient.current?.connected) {
-      stompClient.current.deactivate();
-      stompClient.current = null;
-      setIsConnected(false);
-    }
-  }, []);
-
-  // WebSocket 연결 관리
+  // 알림 구독 설정
   useEffect(() => {
-    if (userId) connect();
-    return () => disconnect();
-  }, [userId, connect, disconnect]);
+    if (webSocketState.isConnected && userId) {
+      try {
+        subscribe(`/topic/notifications/${userId}`, onMessageReceived);
+      } catch (error) {
+        console.error('알림 구독 실패', error);
+      }
+    }
+
+    return () => {
+      if (userId) {
+        unsubscribe(`/topic/notifications/${userId}`);
+      }
+    };
+  }, [
+    userId,
+    webSocketState.isConnected,
+    subscribe,
+    unsubscribe,
+    onMessageReceived,
+  ]);
 
   return {
     notifications,
@@ -152,8 +125,7 @@ const useNotification = (userId: number) => {
     fetchNextPage,
     isFetchingNextPage,
     status,
-    connect,
-    disconnect,
+    isConnected: webSocketState.isConnected,
     updateNotificationCache,
   };
 };
