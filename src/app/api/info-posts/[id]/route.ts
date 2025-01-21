@@ -51,7 +51,11 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const id = request.nextUrl.pathname.split('/')[3];
-    await axios.delete(`${process.env.API_BASE_URL}/info-posts/${id}`);
+    await axios.delete(`${process.env.API_URL}/info-posts/${id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     return NextResponse.json({ message: '게시글이 삭제되었습니다.' });
   } catch (error) {
     console.error('게시글 삭제 실패:', error);

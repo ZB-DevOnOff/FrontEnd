@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { MEETING_TYPE } from '@/types/study';
 import OnlineForm from './OnlineForm';
 import HybridForm from './HybridForm';
-import { MEETING_TYPE } from '@/types/study';
 
 type StudyType = 'ONLINE' | 'HYBRID';
 

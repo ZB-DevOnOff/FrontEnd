@@ -1,10 +1,9 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
 import axios from 'axios';
 import { User } from '@/types/post';
 import axiosInstance from '@/utils/axios';
+import useWebSocket from './useWebSocket';
 
 interface UseGroupChatParams {
   chatRoomId: string;
@@ -20,21 +19,18 @@ interface ChatMessage {
   user: User;
 }
 
-interface ChatState {
-  isConnected: boolean;
-  error: string | null;
-}
-
 const MESSAGES_QUERY_KEY = 'chatMessages';
 
 export const useGroupChat = ({ chatRoomId, userId }: UseGroupChatParams) => {
   const queryClient = useQueryClient();
-  const stompClient = useRef<Client | null>(null);
-  const [chatState, setChatState] = useState<ChatState>({
-    isConnected: false,
-    error: null,
-  });
-  const isConnecting = useRef(false);
+  // const stompClient = useRef<Client | null>(null);
+  // const [chatState, setChatState] = useState<ChatState>({
+  //   isConnected: false,
+  //   error: null,
+  // });
+  // const isConnecting = useRef(false);
+  const { webSocketState, subscribe, unsubscribe, publish } =
+    useWebSocket(userId);
 
   // 메시지 쿼리 키 생성 함수
   const getMessagesQueryKey = useCallback(
@@ -124,105 +120,48 @@ export const useGroupChat = ({ chatRoomId, userId }: UseGroupChatParams) => {
     [queryClient, getMessagesQueryKey],
   );
 
-  // 연결 해제 함수
-  const disconnect = useCallback(() => {
-    if (stompClient.current?.connected) {
-      stompClient.current.deactivate();
-      stompClient.current = null;
-      setChatState(prev => ({ ...prev, isConnected: false }));
-      console.log('WebSocket 연결 해제됨');
+  // 채팅방 구독 설정
+  useEffect(() => {
+    if (webSocketState.isConnected && chatRoomId) {
+      try {
+        subscribe(`/topic/chat/${chatRoomId}`, (newMessage: ChatMessage) => {
+          newMessage.createdAt = newMessage.createdAt;
+          const currentData = queryClient.getQueryData(
+            getMessagesQueryKey(),
+          ) as any;
 
-      // 캐시 무효화
-      queryClient.invalidateQueries({ queryKey: getMessagesQueryKey() });
-    }
-  }, [queryClient, getMessagesQueryKey]);
+          const isDuplicate = currentData?.pages.some((page: any) =>
+            page.messages.some((msg: ChatMessage) => msg.id === newMessage.id),
+          );
 
-  // 연결 함수
-  const connect = useCallback(async () => {
-    if (isConnecting.current || stompClient.current?.connected) {
-      return;
-    }
-
-    isConnecting.current = true;
-    setChatState(prev => ({ ...prev, error: null }));
-
-    try {
-      const socket = new SockJS(
-        `${process.env.NEXT_PUBLIC_CHAT_SOCKET_URL}/ws` as string,
-      );
-
-      await new Promise<void>((resolve, reject) => {
-        const client = new Client({
-          webSocketFactory: () => socket,
-          reconnectDelay: 5000,
-          heartbeatIncoming: 4000,
-          heartbeatOutgoing: 4000,
-
-          onConnect: () => {
-            client.subscribe(`/topic/chat/${chatRoomId}`, messageOutput => {
-              const newMessage = JSON.parse(messageOutput.body) as ChatMessage;
-              newMessage.createdAt = newMessage.createdAt;
-              // addNewMessage(newMessage);
-              // 현재 캐시된 데이터 확인
-              console.log('보낸 메시지', newMessage);
-              const currentData = queryClient.getQueryData(
-                getMessagesQueryKey(),
-              ) as any;
-
-              // 중복 체크
-              const isDuplicate = currentData?.pages.some((page: any) =>
-                page.messages.some(
-                  (msg: ChatMessage) => msg.id === newMessage.id,
-                ),
-              );
-
-              // 중복이 아닌 경우만 추가
-              if (!isDuplicate) {
-                addNewMessage(newMessage);
-              }
-            });
-
-            setChatState({
-              isConnected: true,
-              error: null,
-            });
-            isConnecting.current = false;
-            resolve();
-          },
-
-          onDisconnect: () => {
-            setChatState(prev => ({ ...prev, isConnected: false }));
-            // 연결이 끊겼을 때 캐시 무효화
-            queryClient.invalidateQueries({ queryKey: getMessagesQueryKey() });
-          },
-
-          onStompError: frame => {
-            reject(
-              new Error(frame.headers.message || '연결 오류가 발생했습니다.'),
-            );
-          },
+          if (!isDuplicate) {
+            addNewMessage(newMessage);
+          }
         });
-
-        stompClient.current = client;
-        client.activate();
-      });
-    } catch (error) {
-      setChatState(prev => ({
-        ...prev,
-        error:
-          error instanceof Error
-            ? error.message
-            : '알 수 없는 오류가 발생했습니다.',
-      }));
-      isConnecting.current = false;
-      throw error;
+      } catch (error) {
+        console.error('채팅방 구독 실패:', error);
+      }
     }
-  }, [chatRoomId, addNewMessage, queryClient, getMessagesQueryKey]);
+
+    return () => {
+      if (chatRoomId) {
+        unsubscribe(`/topic/chat/${chatRoomId}`);
+      }
+    };
+  }, [
+    chatRoomId,
+    webSocketState.isConnected,
+    subscribe,
+    unsubscribe,
+    queryClient,
+    getMessagesQueryKey,
+    addNewMessage,
+  ]);
 
   // 메시지 전송 함수
   const sendMessage = async (content: string, file?: File) => {
-    if (!chatState.isConnected) {
-      await connect();
+    if (!webSocketState.isConnected) {
+      throw new Error('WebSocket이 연결되어 있지 않습니다.');
     }
 
     let imgUrl: string | undefined;
@@ -248,25 +187,16 @@ export const useGroupChat = ({ chatRoomId, userId }: UseGroupChatParams) => {
       };
 
       try {
-        stompClient.current?.publish({
-          destination: `/app/chat/${chatRoomId}/send-messages`,
-          body: JSON.stringify(messagePayload),
-        });
+        publish(
+          `/app/chat/${chatRoomId}/send-messages`,
+          JSON.stringify(messagePayload),
+        );
       } catch (error) {
         console.error('메시지 전송 실패:', error);
         throw error;
       }
     }
   };
-
-  // 컴포넌트 마운트/언마운트 처리
-  useEffect(() => {
-    connect();
-
-    return () => {
-      disconnect();
-    };
-  }, [connect, disconnect]);
 
   // 메시지 정렬 및 중복 제거
   const messages = messagesData?.pages.flatMap(page => page.messages) ?? [];
@@ -278,10 +208,8 @@ export const useGroupChat = ({ chatRoomId, userId }: UseGroupChatParams) => {
 
   return {
     messages: uniqueMessages,
-    chatState,
+    chatState: webSocketState,
     sendMessage,
-    connect,
-    disconnect,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,

@@ -8,7 +8,7 @@ import Providers from '@/providers/tanstack-query/Providers';
 
 export const metadata: Metadata = {
   title: 'DevOnOff',
-  description: '개발자 온오프라인 스터디 플랫폼',
+  description: '온오프라인 개발 스터디 플랫폼',
 };
 
 export default async function RootLayout({

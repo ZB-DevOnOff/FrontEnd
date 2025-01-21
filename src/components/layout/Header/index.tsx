@@ -11,8 +11,10 @@ import CustomAlert from '@/components/common/Alert';
 import { FiBell } from 'react-icons/fi';
 import axiosInstance from '@/utils/axios';
 import handleApiError from '@/utils/handleApiError';
-import NotificationModal, { Notification } from './NotificationModal';
+import NotificationModal from './NotificationModal';
 import useNotification from '@/hooks/useNotification';
+import useWebSocket from '@/hooks/useWebSocket';
+import { Notification } from '@/types/notification';
 
 type NavigationItem = {
   path: string;
@@ -217,14 +219,18 @@ const Header = () => {
   const [activeMenu, setActiveMenu] = useState<string>('');
 
   const [userId, setUserId] = useState<number | null>(null);
-  const { newNotifications, connect, disconnect } = useNotification(
+  const {
+    updateNotificationCache,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useNotification(userId || 0);
+  const { connect, disconnect } = useWebSocket(userId || 0);
+  const { notifications }: { notifications: Notification[] } = useNotification(
     userId || 0,
   );
   const [isNotificationModalOpen, setNotificationModalOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [notificationCount, setNotificationCount] = useState(
-    notifications.length,
-  );
+  const unreadCount = notifications.filter((n: Notification) => !n.read).length;
 
   const pathname = usePathname();
   const router = useRouter();
@@ -246,49 +252,15 @@ const Header = () => {
     if (isSignedIn && userInfo?.id && userInfo?.id > 0) {
       setUserId(userInfo.id);
       connect();
-
-      if (newNotifications.length > 0) {
-        // 중복되지 않는 알림만 추가하기
-        const uniqueNotifications = newNotifications.filter(
-          newNotification =>
-            !notifications.some(
-              existingNotification =>
-                existingNotification.id === newNotification.id,
-            ),
-        );
-
-        // 중복되지 않는 알림만 상태에 추가
-        if (uniqueNotifications.length > 0) {
-          setNotifications(prev => [...prev, ...uniqueNotifications]);
-          setNotificationCount(prev => prev + uniqueNotifications.length);
-        }
-      }
     } else {
       setUserId(null);
       disconnect();
     }
-  }, [isSignedIn, userInfo, connect, disconnect, newNotifications]);
+  }, [isSignedIn, userInfo, connect, disconnect, notifications]);
 
   useEffect(() => {
-    fetchNotifications(); // 컴포넌트가 마운트될 때 알림 조회
-  }, [isSignedIn, userInfo]);
-
-  // useEffect(() => {
-  //   if (userInfo?.id && userInfo?.id > 0) {
-  //     setUserId(userInfo.id);
-  //   } else {
-  //     setUserId(null);
-  //   }
-  // }, [userInfo]);
-
-  // useEffect(() => {
-  //   if (isSignedIn && userInfo?.id) {
-  //     connect();
-  //   } else {
-  //     setUserId(null);
-  //     disconnect();
-  //   }
-  // }, [isSignedIn, connect, disconnect]);
+    console.log('Header에서 notifications 상태 변경 감지:', notifications);
+  }, [notifications]);
 
   // pathname이 변경될 때마다 현재 활성화된 메뉴 설정
   useEffect(() => {
@@ -344,41 +316,8 @@ const Header = () => {
     setShowAlert(true);
   };
 
-  const fetchNotifications = async () => {
-    try {
-      if (isSignedIn && userInfo?.id) {
-        const response = await axiosInstance.get(
-          `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/?page=0`,
-          {
-            headers: { 'Content-Type': 'application/json' },
-          },
-        );
-        if (response.status === 200 && response.data) {
-          const fetchedNotifications = response.data.content || [];
-          console.log('알림 조회 데이터:', response.data.content);
-          setNotifications(fetchedNotifications);
-          setNotificationCount(
-            fetchedNotifications.filter(
-              (notification: any) => !notification.read,
-            ).length,
-          ); // 읽지 않은 알림 카운트
-        }
-      }
-    } catch (error: any) {
-      console.error('알림 조회 실패:', error);
-      handleApiError(error, showErrorAlert);
-    } finally {
-      setShowConfirm(false);
-    }
-  };
-
-  // 알림 삭제 후 상태 갱신 함수
-  const updateNotificationCount = (updatedNotifications: Notification[]) => {
-    setNotifications(updatedNotifications);
-    setNotificationCount(
-      updatedNotifications.filter((notification: any) => !notification.read)
-        .length,
-    );
+  const handleNotificationUpdate = (updatedNotifications: Notification[]) => {
+    updateNotificationCache(() => updatedNotifications);
   };
 
   const handleSignOutClick = async () => {
@@ -427,7 +366,7 @@ const Header = () => {
       <div className="navbar-end hidden lg:flex space-x-2">
         {isSignedIn && (
           <NotificationButton
-            count={notificationCount}
+            count={unreadCount}
             onClick={toggleNotificationModal}
             isActive={isNotificationModalOpen}
           />
@@ -447,7 +386,7 @@ const Header = () => {
       <div className="navbar-end lg:hidden">
         {isSignedIn && (
           <NotificationButton
-            count={notificationCount}
+            count={unreadCount}
             onClick={toggleNotificationModal}
             isActive={isNotificationModalOpen}
           />
@@ -497,9 +436,10 @@ const Header = () => {
       {isNotificationModalOpen && (
         <NotificationModal
           notifications={notifications}
-          setNotifications={setNotifications}
-          setNotificationCount={setNotificationCount}
-          onDeleteNotification={updateNotificationCount}
+          onUpdateNotifications={handleNotificationUpdate}
+          hasNextPage={hasNextPage}
+          fetchNextPage={fetchNextPage}
+          isFetchingNextPage={isFetchingNextPage}
           onClose={toggleNotificationModal}
         />
       )}
