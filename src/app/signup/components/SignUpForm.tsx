@@ -392,7 +392,12 @@ const SignUpForm = () => {
                 required
                 className="w-full flex-grow input input-bordered px-4 py-2 focus:outline-teal-500 text-sm sm:text-base"
               />
-              <AuthTimer isActive={isTimerActive} onTimerEnd={handleTimerEnd} />
+              {emailSent && !authCodeVerified && (
+                <AuthTimer
+                  isActive={isTimerActive}
+                  onTimerEnd={handleTimerEnd}
+                />
+              )}
               <button
                 type="button"
                 onClick={handleAuthCodeVerifyClick}
