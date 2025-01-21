@@ -57,19 +57,19 @@ const MessageInput = ({ onSendMessage }: MessageInputProps) => {
       }
     }
   };
-
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
     const byteLength = calculateBytes(newContent);
 
+    setContent(newContent);
+
     if (byteLength <= 750) {
-      setContent(newContent);
       setByteExceeded(false);
       setExceedingCharacters(0);
     } else {
-      setContent(newContent.slice(0, newContent.length - 1)); // 마지막 문자 제거하여 750바이트 이하로 유지
       setByteExceeded(true);
-      setExceedingCharacters(Math.ceil((byteLength - 750) / 2)); // 초과된 바이트 수 계산
+      // 초과된 바이트 수를 글자 수로 변환 (한글 기준)
+      setExceedingCharacters(Math.ceil((byteLength - 750) / 2));
     }
   };
 

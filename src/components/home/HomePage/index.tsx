@@ -40,7 +40,7 @@ const HomePage = () => {
     {
       title: '🙋 개발 중 궁금한 점, 이제는 쉽게 해결!',
       description:
-        '질문 게시판을 통해 스터디원들과 개발 관련 질문을 주고받으며 실시간으로 문제를 해결하세요. 여러분의 궁금증을 신속하게 해결할 수 있습니다.',
+        'Q&A 게시판을 통해 스터디원들과 개발 관련 질문을 주고받으며 실시간으로 문제를 해결하세요. 여러분의 궁금증을 신속하게 해결할 수 있습니다.',
     },
     {
       title: '🌱 개발 정보를 나누며 함께 성장하는 커뮤니티!',
@@ -61,11 +61,11 @@ const HomePage = () => {
             alt={'DevOnOff 로고'}
             width={300}
             height={300}
-            className="object-contain -mt-52 -mb-28"
+            className="object-contain -mt-44 -mb-28"
           />
           <p className="text-lg text-gray-500 mb-8 whitespace-pre-line">
             {
-              'DevOnOff는 Dev와 On/Off를 결합한 이름으로,\n 개발 스터디를 온라인과 온/오프라인 모두 지원하는 스마트한 개발 스터디 플랫폼입니다.'
+              'DevOnOff는 Dev와 On/Off를 결합한 이름으로,\n 개발 스터디를 온라인과 온·오프라인 모두 지원하는 플랫폼입니다.'
             }
           </p>
           <button

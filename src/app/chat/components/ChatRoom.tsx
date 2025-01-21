@@ -29,7 +29,10 @@ const ChatHeader = ({ studyName }: { studyName: string | null }) => (
   <>
     <div className="bg-gray-900 text-gray-100 p-4 flex items-center gap-2">
       {['red', 'yellow', 'green'].map(color => (
-        <div key={color} className={`bg-${color}-500 w-3 h-3 rounded-full`} />
+        <div
+          key={color}
+          className={`w-3 h-3 rounded-full ${color === 'yellow' ? 'bg-yellow-500' : `bg-${color}-500`}`}
+        />
       ))}
     </div>
     <div className="flex items-center bg-gray-100 p-3 border-b border-gray-300">
