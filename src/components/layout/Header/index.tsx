@@ -1,105 +1,38 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useAuthStore } from '@/store/authStore';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import CustomConfirm from '@/components/common/Confirm';
 import CustomAlert from '@/components/common/Alert';
-import { FiBell } from 'react-icons/fi';
 import axiosInstance from '@/utils/axios';
 import handleApiError from '@/utils/handleApiError';
-import NotificationModal from './NotificationModal';
-import useNotification from '@/hooks/useNotification';
 import useWebSocket from '@/hooks/useWebSocket';
+import useNotification from '@/hooks/useNotification';
+import Logo from './Logo';
+import Navigation from './Navigation';
+import { NAVIGATION_ITEMS } from './constants';
 import { Notification } from '@/types/notification';
+import NotificationModal from './NotificationModal';
+import NotificationButton from './NotificationButton';
 
-type NavigationItem = {
-  path: string;
-  label: string;
-  id: string;
-};
-
-const NAVIGATION_ITEMS: NavigationItem[] = [
-  { path: '/community/study', label: '스터디', id: 'study' },
-  { path: '/community/info', label: '정보 공유', id: 'info' },
-  { path: '/community/qna', label: 'Q&A', id: 'qna' },
-  { path: '/community/ranking', label: '랭킹', id: 'ranking' },
-];
-
-const Logo = () => (
-  <Link
-    href="/"
-    className="btn btn-ghost text-base-content text-center overflow-hidden"
-  >
-    <div className="flex flex-col items-center">
-      <span className="block text-xs text-black">
-        스마트한 개발 스터디 플랫폼
-      </span>
-      <span className="block text-xl font-bold text-teal-500">
-        <Image
-          src={'/devonoff-logo.png'}
-          alt={'DevOnOff 로고'}
-          width={185}
-          height={185}
-          className="object-contain -mt-20"
-          priority
-        />
-      </span>
-    </div>
-  </Link>
-);
-
-const NotificationButton = ({
-  count,
-  onClick,
-  isActive,
-}: {
-  count: number;
-  onClick: () => void;
-  isActive: boolean;
-}) => (
-  <button
-    className={`btn btn-ghost relative ${isActive ? 'btn-active' : ''}`}
-    onClick={onClick}
-  >
-    <FiBell size={24} />
-    {count > 0 && (
-      <div className="absolute -top-1 -right-0.5 bg-customRed text-white rounded-full min-w-5 h-5 px-1 flex items-center justify-center text-xs">
-        {count > 99 ? '99+' : count}
-      </div>
-    )}
-  </button>
-);
-
-const Navigation = ({
-  items,
-  activeMenu,
-  onMenuClick,
-  className = '',
-  itemClassName = '',
-}: {
-  items: NavigationItem[];
+type AuthLinksProps = {
+  isSignedIn: boolean;
+  userInfo: any;
+  onSignOut: () => void;
   activeMenu: string;
   onMenuClick: (menu: string) => void;
   className?: string;
-  itemClassName?: string;
-}) => (
-  <nav className={className}>
-    {items.map(item => (
-      <Link
-        key={item.id}
-        href={item.path}
-        className={`btn ${itemClassName} ${activeMenu === item.id ? 'btn-active' : ''}`}
-        onClick={() => onMenuClick(item.id)}
-      >
-        {item.label}
-      </Link>
-    ))}
-  </nav>
-);
+  linkClassName?: string;
+};
+
+type MobileMenuProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+};
 
 const AuthLinks = ({
   isSignedIn,
@@ -109,15 +42,7 @@ const AuthLinks = ({
   onMenuClick,
   className = '',
   linkClassName = '',
-}: {
-  isSignedIn: boolean;
-  userInfo: any;
-  onSignOut: () => void;
-  activeMenu: string;
-  onMenuClick: (menu: string) => void;
-  className?: string;
-  linkClassName?: string;
-}) => (
+}: AuthLinksProps) => (
   <div className={className}>
     {isSignedIn ? (
       <>
@@ -145,15 +70,7 @@ const AuthLinks = ({
   </div>
 );
 
-const MobileMenu = ({
-  isOpen,
-  onClose,
-  children,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
-}) => {
+const MobileMenu = ({ isOpen, onClose, children }: MobileMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -224,13 +141,13 @@ const Header = () => {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
+    unreadCount,
   } = useNotification(userId || 0);
   const { connect, disconnect } = useWebSocket(userId || 0);
   const { notifications }: { notifications: Notification[] } = useNotification(
     userId || 0,
   );
   const [isNotificationModalOpen, setNotificationModalOpen] = useState(false);
-  const unreadCount = notifications.filter((n: Notification) => !n.read).length;
 
   const pathname = usePathname();
   const router = useRouter();
