@@ -1,5 +1,9 @@
 import { useCallback, useEffect } from 'react';
-import { useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import {
+  useQueryClient,
+  useInfiniteQuery,
+  useQuery,
+} from '@tanstack/react-query';
 import axiosInstance from '@/utils/axios';
 import useWebSocket from './useWebSocket';
 import { Notification } from '@/types/notification';
@@ -18,11 +22,41 @@ const useNotification = (userId: number) => {
   // 알림 데이터 조회 함수
   const fetchNotificationPage = async ({ pageParam = 0 }) => {
     if (!userId)
-      return { content: [], last: true, totalElements: 0, totalPages: 0 };
-    const response = await axiosInstance.get(
-      `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/?page=${pageParam}`,
-    );
-    return response.data;
+      return {
+        content: [],
+        last: true,
+        totalElements: 0,
+        totalPages: 0,
+      };
+    const [notificationsResponse, unreadCountResponse] = await Promise.all([
+      axiosInstance.get(
+        `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/?page=${pageParam}`,
+      ),
+      axiosInstance.get(
+        `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/unread`,
+      ),
+    ]);
+
+    const initialUnreadCount = unreadCountResponse.data;
+
+    return {
+      ...notificationsResponse.data,
+      unreadCount: initialUnreadCount,
+    };
+  };
+
+  // 읽지 않은 알림 개수 조회 함수
+  const fetchUnreadCount = async (userId: number) => {
+    if (!userId) return 0;
+    try {
+      const response = await axiosInstance.get(
+        `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/unread`,
+      );
+      const unreadCount = response.data;
+      return unreadCount;
+    } catch (error) {
+      console.error('읽지 않은 알림 개수 가져오기 에러:', error);
+    }
   };
 
   // React Query의 Infinite Query를 사용한 알림 데이터 관리
@@ -37,6 +71,12 @@ const useNotification = (userId: number) => {
       enabled: !!userId,
       staleTime: 1000 * 60,
     });
+
+  const { data: unreadCount } = useQuery({
+    queryKey: ['unreadCount', userId],
+    queryFn: () => fetchUnreadCount(userId),
+    enabled: !!userId,
+  });
 
   //  중복 제거 헬퍼 함수
   const removeDuplicates = (notifications: Notification[]) => {
@@ -55,23 +95,27 @@ const useNotification = (userId: number) => {
 
   // 알림 캐시 업데이트 함수
   const updateNotificationCache = useCallback(
-    (updater: (prev: Notification[]) => Notification[]) => {
+    async (updater: (prev: Notification[]) => Notification[]) => {
+      // 기존 알림 업데이트
       queryClient.setQueryData(getNotificationsQueryKey(), (old: any) => {
         if (!old?.pages) return old;
 
-        // 첫 페이지의 데이터만 업데이트
-        const updatedFirstPage = {
-          ...old.pages[0],
-          content: updater(old.pages[0].content),
-        };
+        const updatedPages = old.pages.map((page: any) => ({
+          ...page,
+          content: updater(page.content),
+        }));
 
         return {
           ...old,
-          pages: [updatedFirstPage, ...old.pages.slice(1)],
+          pages: updatedPages,
         };
       });
+
+      queryClient.invalidateQueries({
+        queryKey: ['unreadCount', userId],
+      });
     },
-    [queryClient, getNotificationsQueryKey],
+    [queryClient, getNotificationsQueryKey, userId],
   );
 
   // 새 알림 추가 함수
@@ -121,6 +165,7 @@ const useNotification = (userId: number) => {
 
   return {
     notifications,
+    unreadCount,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,

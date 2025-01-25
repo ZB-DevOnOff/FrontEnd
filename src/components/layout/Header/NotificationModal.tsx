@@ -37,20 +37,6 @@ const NotificationModal = ({
     () => () => {},
   );
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  const showErrorAlert = (errorMessage: string | null) => {
-    setAlertMessage(
-      errorMessage ||
-        '알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
-    );
-    setShowAlert(true);
-  };
-
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -75,6 +61,20 @@ const NotificationModal = ({
 
     fetchServerTime();
   }, []);
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  const showErrorAlert = (errorMessage: string | null) => {
+    setAlertMessage(
+      errorMessage ||
+        '알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
+    );
+    setShowAlert(true);
+  };
 
   const markNotificationAsRead = async (notificationId: number) => {
     try {
