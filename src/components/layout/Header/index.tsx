@@ -24,6 +24,7 @@ type AuthLinksProps = {
   onSignOut: () => void;
   activeMenu: string;
   onMenuClick: (menu: string) => void;
+  onClose?: () => void;
   className?: string;
   linkClassName?: string;
 };
@@ -40,6 +41,7 @@ const AuthLinks = ({
   onSignOut,
   activeMenu,
   onMenuClick,
+  onClose,
   className = '',
   linkClassName = '',
 }: AuthLinksProps) => (
@@ -59,10 +61,24 @@ const AuthLinks = ({
       </>
     ) : (
       <>
-        <Link href="/signin" className={`btn ${linkClassName}`}>
+        <Link
+          href="/signin"
+          className={`btn ${linkClassName}`}
+          onClick={() => {
+            onMenuClick('');
+            onClose?.();
+          }}
+        >
           로그인
         </Link>
-        <Link href="/signup" className={`btn ${linkClassName}`}>
+        <Link
+          href="/signup"
+          className={`btn ${linkClassName}`}
+          onClick={() => {
+            onMenuClick('');
+            onClose?.();
+          }}
+        >
           회원가입
         </Link>
       </>
