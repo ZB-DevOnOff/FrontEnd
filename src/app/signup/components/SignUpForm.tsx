@@ -45,6 +45,9 @@ const SignUpForm = () => {
 
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const [alertCallback, setAlertCallback] = useState<() => void>(
+    () => () => {},
+  );
 
   const [isTimerActive, setIsTimerActive] = useState(false);
 
@@ -308,8 +311,8 @@ const SignUpForm = () => {
       );
       if (response.status === 200) {
         setAlertMessage('회원가입이 성공적으로 완료되었습니다!');
+        setAlertCallback(() => () => router.push('/signin'));
         setShowAlert(true);
-        router.push('/signin');
       } else {
         setAlertMessage('회원가입 중 문제가 발생했습니다. 다시 시도해 주세요.');
         setShowAlert(true);
@@ -565,7 +568,10 @@ const SignUpForm = () => {
       {showAlert && (
         <CustomAlert
           message={alertMessage}
-          onClose={() => setShowAlert(false)}
+          onClose={() => {
+            setShowAlert(false);
+            alertCallback();
+          }}
         />
       )}
     </div>

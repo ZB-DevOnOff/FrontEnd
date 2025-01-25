@@ -1,5 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import { useCallback, useEffect } from 'react';
+import {
+  useQueryClient,
+  useInfiniteQuery,
+  useQuery,
+} from '@tanstack/react-query';
 import axiosInstance from '@/utils/axios';
 import useWebSocket from './useWebSocket';
 import { Notification } from '@/types/notification';
@@ -8,7 +12,6 @@ const NOTIFICATION_QUERY_KEY = 'notifications';
 
 const useNotification = (userId: number) => {
   const queryClient = useQueryClient();
-  const [unreadCount, setUnreadCount] = useState<number>(0);
 
   // 알림 쿼리 키 생성 함수
   const getNotificationsQueryKey = useCallback(
@@ -35,7 +38,6 @@ const useNotification = (userId: number) => {
     ]);
 
     const initialUnreadCount = unreadCountResponse.data;
-    setUnreadCount(initialUnreadCount);
 
     return {
       ...notificationsResponse.data,
@@ -44,14 +46,13 @@ const useNotification = (userId: number) => {
   };
 
   // 읽지 않은 알림 개수 조회 함수
-  const fetchUnreadCount = async () => {
+  const fetchUnreadCount = async (userId: number) => {
     if (!userId) return 0;
     try {
       const response = await axiosInstance.get(
         `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/unread`,
       );
       const unreadCount = response.data;
-      setUnreadCount(unreadCount);
       return unreadCount;
     } catch (error) {
       console.error('읽지 않은 알림 개수 가져오기 에러:', error);
@@ -71,6 +72,12 @@ const useNotification = (userId: number) => {
       staleTime: 1000 * 60,
     });
 
+  const { data: unreadCount } = useQuery({
+    queryKey: ['unreadCount', userId],
+    queryFn: () => fetchUnreadCount(userId),
+    enabled: !!userId,
+  });
+
   //  중복 제거 헬퍼 함수
   const removeDuplicates = (notifications: Notification[]) => {
     const uniqueNotifications = new Map();
@@ -89,6 +96,7 @@ const useNotification = (userId: number) => {
   // 알림 캐시 업데이트 함수
   const updateNotificationCache = useCallback(
     async (updater: (prev: Notification[]) => Notification[]) => {
+      // 기존 알림 업데이트
       queryClient.setQueryData(getNotificationsQueryKey(), (old: any) => {
         if (!old?.pages) return old;
 
@@ -103,11 +111,11 @@ const useNotification = (userId: number) => {
         };
       });
 
-      // unreadCount를 업데이트
-      const newUnreadCount = await fetchUnreadCount();
-      setUnreadCount(newUnreadCount);
+      queryClient.invalidateQueries({
+        queryKey: ['unreadCount', userId],
+      });
     },
-    [queryClient, getNotificationsQueryKey],
+    [queryClient, getNotificationsQueryKey, userId],
   );
 
   // 새 알림 추가 함수
