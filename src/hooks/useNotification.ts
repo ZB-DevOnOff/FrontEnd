@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import axiosInstance from '@/utils/axios';
 import useWebSocket from './useWebSocket';
@@ -8,6 +8,7 @@ const NOTIFICATION_QUERY_KEY = 'notifications';
 
 const useNotification = (userId: number) => {
   const queryClient = useQueryClient();
+  const [unreadCount, setUnreadCount] = useState<number>(0);
 
   // 알림 쿼리 키 생성 함수
   const getNotificationsQueryKey = useCallback(
@@ -18,11 +19,43 @@ const useNotification = (userId: number) => {
   // 알림 데이터 조회 함수
   const fetchNotificationPage = async ({ pageParam = 0 }) => {
     if (!userId)
-      return { content: [], last: true, totalElements: 0, totalPages: 0 };
-    const response = await axiosInstance.get(
-      `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/?page=${pageParam}`,
-    );
-    return response.data;
+      return {
+        content: [],
+        last: true,
+        totalElements: 0,
+        totalPages: 0,
+      };
+    const [notificationsResponse, unreadCountResponse] = await Promise.all([
+      axiosInstance.get(
+        `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/?page=${pageParam}`,
+      ),
+      axiosInstance.get(
+        `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/unread`,
+      ),
+    ]);
+
+    const initialUnreadCount = unreadCountResponse.data;
+    setUnreadCount(initialUnreadCount);
+
+    return {
+      ...notificationsResponse.data,
+      unreadCount: initialUnreadCount,
+    };
+  };
+
+  // 읽지 않은 알림 개수 조회 함수
+  const fetchUnreadCount = async () => {
+    if (!userId) return 0;
+    try {
+      const response = await axiosInstance.get(
+        `${process.env.NEXT_PUBLIC_API_ROUTE_URL}/notification/unread`,
+      );
+      const unreadCount = response.data;
+      setUnreadCount(unreadCount);
+      return unreadCount;
+    } catch (error) {
+      console.error('읽지 않은 알림 개수 가져오기 에러:', error);
+    }
   };
 
   // React Query의 Infinite Query를 사용한 알림 데이터 관리
@@ -55,21 +88,24 @@ const useNotification = (userId: number) => {
 
   // 알림 캐시 업데이트 함수
   const updateNotificationCache = useCallback(
-    (updater: (prev: Notification[]) => Notification[]) => {
+    async (updater: (prev: Notification[]) => Notification[]) => {
       queryClient.setQueryData(getNotificationsQueryKey(), (old: any) => {
         if (!old?.pages) return old;
 
-        // 첫 페이지의 데이터만 업데이트
-        const updatedFirstPage = {
-          ...old.pages[0],
-          content: updater(old.pages[0].content),
-        };
+        const updatedPages = old.pages.map((page: any) => ({
+          ...page,
+          content: updater(page.content),
+        }));
 
         return {
           ...old,
-          pages: [updatedFirstPage, ...old.pages.slice(1)],
+          pages: updatedPages,
         };
       });
+
+      // unreadCount를 업데이트
+      const newUnreadCount = await fetchUnreadCount();
+      setUnreadCount(newUnreadCount);
     },
     [queryClient, getNotificationsQueryKey],
   );
@@ -121,6 +157,7 @@ const useNotification = (userId: number) => {
 
   return {
     notifications,
+    unreadCount,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
