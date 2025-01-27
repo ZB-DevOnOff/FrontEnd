@@ -31,20 +31,20 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
       <thead>
         <tr>
-          <th style="background-color: #e6e6e6">회원가입</th>
-          <th style="background-color: #e6e6e6">로그인</th>
+          <th align="center" style="background-color: #e6e6e6">회원가입</th>
+          <th align="center" style="background-color: #e6e6e6">로그인</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>
+          <td align="center">
             <img
               src="./public/assets/1-1.회원가입.webp"
               alt="회원가입 이미지"/>
           </td>
-          <td>
+          <td align="center">
             <img
-              src="https://github.com/user-attachments/assets/29691f66-9eb0-472a-a20e-7b88805de4c0"
+              src="./public/assets/1-1.로그인.webp"
               alt="로그인 이미지"
               width="250" />
           </td>
@@ -55,103 +55,89 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 - 스터디 게시판 ([더 알아보기](https://www.notion.so/DevOnOff-f315721711c84a79ad3e7e3daae98c8b?pvs=4#165dd88aa9ea805ba6baebee89236715))
 
 <table>
-      <thead>
-        <tr>
-          <th style="background-color: #e6e6e6">스터디 게시판 - 온라인</th>
-          <th style="background-color: #e6e6e6">
-            스터디 게시판 - 온오프라인 병행
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="text-align: center">
-            <img
-              src="https://github.com/user-attachments/assets/1023119b-f9a4-4713-9f0a-d3719371f429"
-              width="250" />
-          </td>
-          <td style="text-align: center">
-            <img
-              src="https://github.com/user-attachments/assets/e5b173a7-71b5-4126-b4af-baff7a84a985"
-              width="250" />
-          </td>
-        </tr>
-        <tr>
-          <th style="background-color: #e6e6e6">
-            스터디 모집 글 작성 - 온라인
-          </th>
-          <th style="background-color: #e6e6e6">
-            스터디 모집 글 작성 - 온오프라인 병행
-          </th>
-        </tr>
-        <tr>
-          <td style="text-align: center">
-            <img
-              src="https://github.com/user-attachments/assets/9a5ee712-6e3d-493b-8077-5feb73736880"
-              width="250" />
-          </td>
-          <td style="text-align: center">
-            <img
-              src="https://github.com/user-attachments/assets/9a5ee712-6e3d-493b-8077-5feb73736880"
-              width="250" />
-          </td>
-        </tr>
-        <tr>
-          <th style="background-color: #e6e6e6">스터디 신청</th>
-          <th style="background-color: #e6e6e6">스터디 신청 수락</th>
-        </tr>
-        <tr>
-          <td style="text-align: center">
-            <img
-              src="https://github.com/user-attachments/assets/1023119b-f9a4-4713-9f0a-d3719371f429"
-              width="250" />
-          </td>
-          <td style="text-align: center">
-            <img
-              src="https://github.com/user-attachments/assets/e5b173a7-71b5-4126-b4af-baff7a84a985"
-              width="250" />
-          </td>
-        </tr>
-        <tr>
-          <th style="background-color: #e6e6e6">스터디 신청 거절</th>
-          <th style="background-color: #e6e6e6">
-            스터디 모집 마감 후 스터디 개설
-          </th>
-        </tr>
-        <tr>
-          <td style="text-align: center">
-            <img
-              src="https://github.com/user-attachments/assets/9a5ee712-6e3d-493b-8077-5feb73736880"
-              width="250" />
-          </td>
-          <td style="text-align: center">
-            <img
-              src="https://github.com/user-attachments/assets/9a5ee712-6e3d-493b-8077-5feb73736880"
-              width="250" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <thead>
+    <tr>
+      <th align="center" style="background-color: #e6e6e6">스터디 게시판 - 온라인</th>
+      <th align="center" style="background-color: #e6e6e6">스터디 게시판 - 온오프라인 병행</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">
+        <img src="./public/assets/2-1.스터디 게시판 - 온라인.webp" />
+      </td>
+      <td align="center">
+        <img src="./public/assets/2-2.스터디 게시판 - 온오프라인 병행.webp" />
+      </td>
+    </tr>
+  </tbody>
+  <thead>
+    <tr>
+      <th align="center" style="background-color: #e6e6e6">스터디 모집 글 작성 - 온라인</th>
+      <th align="center" style="background-color: #e6e6e6">스터디 모집 글 작성 - 온오프라인 병행</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">
+        <img src="./public/assets/2-3.스터디 모집 글 작성 - 온라인.webp"  />
+      </td>
+      <td align="center">
+        <img src="./public/assets/2-4.스터디 모집 글 작성 - 온오프라인 병행.webp" />
+      </td>
+    </tr>
+  </tbody>
+  <thead>
+    <tr>
+      <th align="center" style="background-color: #e6e6e6">스터디 신청</th>
+      <th align="center" style="background-color: #e6e6e6">스터디 신청 수락</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">
+        <img src="./public/assets/2-5.스터디 신청.webp" />
+      </td>
+      <td align="center">
+        <img src="./public/assets/2-6.스터디 신청 수락.webp" />
+      </td>
+    </tr>
+  </tbody>
+  <thead>
+    <tr>
+      <th align="center" style="background-color: #e6e6e6">스터디 신청 거절</th>
+      <th align="center" style="background-color: #e6e6e6">스터디 모집 마감 후 스터디 개설</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">
+        <img src="./public/assets/2-7.스터디 신청 거절.webp" />
+      </td>
+      <td align="center">
+        <img src="./public/assets/2-8.스터디 모집 마감 후 스터디 개설.webp" />
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 - 정보 공유 및 Q&A 게시판([더 알아보기](https://www.notion.so/DevOnOff-f315721711c84a79ad3e7e3daae98c8b?pvs=4#e07afdab17a6408fb1227355c0508056))
 <table>
       <thead>
         <tr>
-          <th style="background-color: #e6e6e6">정보 공유 게시판</th>
-          <th style="background-color: #e6e6e6">Q&A 게시판</th>
+          <th align="center" style="background-color: #e6e6e6">정보 공유 게시판</th>
+          <th align="center" style="background-color: #e6e6e6">Q&A 게시판</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td style="text-align: center">
+          <td align="center">
             <img
-              src="https://github.com/user-attachments/assets/625b9ff9-1222-4331-abb8-36f45d0cb9fe"
-              width="250" />
+              src="./public/assets/3-1.정보 공유 게시판.webp" />
           </td>
-          <td style="text-align: center">
+          <td align="center">
             <img
-              src="https://github.com/user-attachments/assets/c1c0167f-f799-4e4b-b2b2-9b0e1e45480a"
-              width="250" />
+              src="./public/assets/3-2.QnA 게시판.webp" />
           </td>
         </tr>
       </tbody>
@@ -161,13 +147,13 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
   <thead>
     <tr>
-      <th style="background-color:#E6E6E6">알림 조회 및 실시간 알림</th>
+      <th align="center" style="background-color:#E6E6E6">알림 조회 및 실시간 알림</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>
-        <img src="https://github.com/user-attachments/assets/930b681f-b931-4a3b-b009-c9e163f07837" width="150" />
+      <td align="center">
+        <img src="./public/assets/4.알림.webp" />
       </td>
     </tr>
   </tbody>
@@ -177,23 +163,21 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
       <thead>
         <tr>
-          <th style="background-color: #e6e6e6">회원 정보 수정</th>
-          <th style="background-color: #e6e6e6">
-            작성한 게시글 및 속한 스터디 조회
+          <th align="center" style="background-color: #e6e6e6">회원 정보 수정</th>
+          <th align="center" style="background-color: #e6e6e6">
+           속한 스터디 및 작성한 게시글 조회
           </th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td style="text-align: center">
+          <td align="center">
             <img
-              src="https://github.com/user-attachments/assets/747eafc0-2e55-43aa-b0fe-368ae4399cbb"
-              width="250" />
+              src="./public/assets/5-1.회원정보수정.webp" />
           </td>
-          <td style="text-align: center">
+          <td align="center">
             <img
-              src="https://github.com/user-attachments/assets/747eafc0-2e55-43aa-b0fe-368ae4399cbb"
-              width="250" />
+              src="./public/assets/5-2.속한 스터디 및 작성한 게시글 조회.webp" />
           </td>
         </tr>
       </tbody>
@@ -203,15 +187,14 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
       <thead>
         <tr>
-          <th style="background-color: #e6e6e6">실시간 채팅</th>
+          <th align="center" style="background-color: #e6e6e6">실시간 채팅</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td style="text-align: center">
+          <td align="center">
             <img
-              src="https://github.com/user-attachments/assets/bef7d9f2-c97c-4800-9b56-997d4617f23c"
-              width="250" />
+              src="./public/assets/6.채팅.webp" />
           </td>
         </tr>
       </tbody>
@@ -221,21 +204,19 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
       <thead>
         <tr>
-          <th style="background-color: #e6e6e6">스터디룸</th>
-          <th style="background-color: #e6e6e6">스터디 랭킹 조회</th>
+          <th align="center" style="background-color: #e6e6e6">스터디룸</th>
+          <th align="center" style="background-color: #e6e6e6">스터디 랭킹 조회</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td style="text-align: center">
+          <td align="center">
             <img
-              src="https://github.com/user-attachments/assets/625b9ff9-1222-4331-abb8-36f45d0cb9fe"
-              width="250" />
+              src="./public/assets/7-1.스터디룸.webp " />
           </td>
-          <td style="text-align: center">
+          <td align="center">
             <img
-              src="https://github.com/user-attachments/assets/c1c0167f-f799-4e4b-b2b2-9b0e1e45480a"
-              width="250" />
+              src="./public/assets/7-2.스터디 랭킹 조회.webp" />
           </td>
         </tr>
       </tbody>
@@ -288,35 +269,35 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 
 ## 🧑‍🤝‍🧑 팀원 소개
 
-<table style="text-align: center">
+<table>
       <thead>
         <tr>
-          <th>
+          <th align="center">
             <img
               src="https://github.com/user-attachments/assets/c491584d-b49e-4f90-b8ea-bf991e2da469"
               width="120" />
           </th>
-          <th>
+          <th align="center">
             <img
               src="https://github.com/user-attachments/assets/67bedb97-2420-4b67-9be5-f3a5d5dae741"
               width="120" />
           </th>
-          <th>
+          <th align="center">
             <img
               src="https://github.com/user-attachments/assets/3f6378ba-0c60-4368-a5aa-6916ae004457"
               width="120" />
           </th>
-          <th>
+          <th align="center">
             <img
               src="https://github.com/user-attachments/assets/0cac6218-4859-4778-868e-7a7fb58c6c9c"
               width="120" />
           </th>
-          <th>
+          <th align="center">
             <img
               src="https://github.com/user-attachments/assets/2569f924-f7ad-4eb5-a9aa-9d596ee58073"
               width="120" />
           </th>
-          <th>
+          <th align="center">
             <img
               src="https://github.com/user-attachments/assets/a14eb2d3-5c77-4515-a6a3-4cb32ccc958e"
               width="120" />
@@ -325,30 +306,30 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
       </thead>
       <tbody>
         <tr>
-          <td style="text-align: center">Front-End</td>
-          <td style="text-align: center">Front-End</td>
-          <td style="text-align: center">Back-End</td>
-          <td style="text-align: center">Back-End</td>
-          <td style="text-align: center">Back-End</td>
-          <td style="text-align: center">Back-End</td>
+          <td align="center">Front-End</td>
+          <td align="center">Front-End</td>
+          <td align="center">Back-End</td>
+          <td align="center">Back-End</td>
+          <td align="center">Back-End</td>
+          <td align="center">Back-End</td>
         </tr>
         <tr>
-          <td style="text-align: center">
+          <td align="center">
             <a href="https://github.com/jyeoney">양지연</a>
           </td>
-          <td style="text-align: center">
+          <td align="center">
             <a href="https://github.com/sim0102">심승태</a>
           </td>
-          <td style="text-align: center">
+          <td align="center">
             <a href="https://github.com/SwanyCastle">곽승환</a>
           </td>
-          <td style="text-align: center">
+          <td align="center">
             <a href="https://github.com/hjkim22">김형진</a>
           </td>
-          <td style="text-align: center">
+          <td align="center">
             <a href="https://github.com/yoon627">이종윤</a>
           </td>
-          <td style="text-align: center">
+          <td align="center">
             <a href="https://github.com/heekuukuu">이희경</a>
           </td>
         </tr>
