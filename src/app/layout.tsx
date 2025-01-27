@@ -9,6 +9,9 @@ import Providers from '@/providers/tanstack-query/Providers';
 export const metadata: Metadata = {
   title: 'DevOnOff',
   description: '온오프라인 개발 스터디 플랫폼',
+  icons: {
+    icon: '/devonoff-logo.png',
+  },
 };
 
 export default async function RootLayout({
