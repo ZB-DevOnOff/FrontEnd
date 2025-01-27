@@ -1,6 +1,6 @@
 # 🧑‍🏫 DevOnOff
 
-<img src="https://github.com/user-attachments/assets/16c64b87-0b4b-4324-b26b-b762eb765798" alt="DevOnOff 시연 영상" width="120" />
+<img src="https://github.com/user-attachments/assets/16c64b87-0b4b-4324-b26b-b762eb765798" alt="DevOnOff 로고" width="200" />
 
 **DevOnOff**는 ‘Dev’와 ‘On/Off’를 결합한 이름으로, 개발 스터디 모집, 참여, 진행 및 관리까지 모든 것을 간편하게 할 수 있는 올인원 개발 스터디 플랫폼입니다.
 
