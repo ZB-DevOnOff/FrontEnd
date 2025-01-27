@@ -31,20 +31,20 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
       <thead>
         <tr>
-          <th align="center" style="background-color: #e6e6e6">회원가입</th>
-          <th align="center" style="background-color: #e6e6e6">로그인</th>
+          <th align="center">회원가입</th>
+          <th align="center">로그인</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td align="center">
             <img
-              src="./public/assets/1-1.회원가입.webp"
+              src="./public/assets/1-1.회원가입.webp" width="350"
               alt="회원가입 이미지"/>
           </td>
           <td align="center">
             <img
-              src="./public/assets/1-1.로그인.webp"
+              src="./public/assets/1-2.로그인.webp" width="350"
               alt="로그인 이미지"
               width="250" />
           </td>
@@ -57,65 +57,65 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
   <thead>
     <tr>
-      <th align="center" style="background-color: #e6e6e6">스터디 게시판 - 온라인</th>
-      <th align="center" style="background-color: #e6e6e6">스터디 게시판 - 온오프라인 병행</th>
+      <th align="center">스터디 게시판 - 온라인</th>
+      <th align="center">스터디 게시판 - 온오프라인 병행</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td align="center">
-        <img src="./public/assets/2-1.스터디 게시판 - 온라인.webp" />
+        <img src="./public/assets/2-1.스터디 게시판 - 온라인.webp" width="350" />
       </td>
       <td align="center">
-        <img src="./public/assets/2-2.스터디 게시판 - 온오프라인 병행.webp" />
+        <img src="./public/assets/2-2.스터디 게시판 - 온오프라인 병행.webp" width="350" />
       </td>
     </tr>
   </tbody>
   <thead>
     <tr>
-      <th align="center" style="background-color: #e6e6e6">스터디 모집 글 작성 - 온라인</th>
-      <th align="center" style="background-color: #e6e6e6">스터디 모집 글 작성 - 온오프라인 병행</th>
+      <th align="center">스터디 모집 글 작성 - 온라인</th>
+      <th align="center">스터디 모집 글 작성 - 온오프라인 병행</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td align="center">
-        <img src="./public/assets/2-3.스터디 모집 글 작성 - 온라인.webp"  />
+        <img src="./public/assets/2-3.스터디 모집 글 작성 - 온라인.webp" width="350" />
       </td>
       <td align="center">
-        <img src="./public/assets/2-4.스터디 모집 글 작성 - 온오프라인 병행.webp" />
+        <img src="./public/assets/2-4.스터디 모집 글 작성 - 온오프라인 병행.webp" width="350" />
       </td>
     </tr>
   </tbody>
   <thead>
     <tr>
-      <th align="center" style="background-color: #e6e6e6">스터디 신청</th>
-      <th align="center" style="background-color: #e6e6e6">스터디 신청 수락</th>
+      <th align="center">스터디 신청</th>
+      <th align="center">스터디 신청 수락</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td align="center">
-        <img src="./public/assets/2-5.스터디 신청.webp" />
+        <img src="./public/assets/2-5.스터디 신청.webp" width="350" />
       </td>
       <td align="center">
-        <img src="./public/assets/2-6.스터디 신청 수락.webp" />
+        <img src="./public/assets/2-6.스터디 신청 수락.webp" width="350" />
       </td>
     </tr>
   </tbody>
   <thead>
     <tr>
-      <th align="center" style="background-color: #e6e6e6">스터디 신청 거절</th>
-      <th align="center" style="background-color: #e6e6e6">스터디 모집 마감 후 스터디 개설</th>
+      <th align="center">스터디 신청 거절</th>
+      <th align="center">스터디 모집 마감 후 스터디 개설</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td align="center">
-        <img src="./public/assets/2-7.스터디 신청 거절.webp" />
+        <img src="./public/assets/2-7.스터디 신청 거절.webp" width="350" />
       </td>
       <td align="center">
-        <img src="./public/assets/2-8.스터디 모집 마감 후 스터디 개설.webp" />
+        <img src="./public/assets/2-8.스터디 모집 마감 후 스터디 개설.webp" width="350" />
       </td>
     </tr>
   </tbody>
@@ -125,19 +125,19 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
       <thead>
         <tr>
-          <th align="center" style="background-color: #e6e6e6">정보 공유 게시판</th>
-          <th align="center" style="background-color: #e6e6e6">Q&A 게시판</th>
+          <th align="center">정보 공유 게시판</th>
+          <th align="center">Q&A 게시판</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td align="center">
             <img
-              src="./public/assets/3-1.정보 공유 게시판.webp" />
+              src="./public/assets/3-1.정보 공유 게시판.webp" width="350" />
           </td>
           <td align="center">
             <img
-              src="./public/assets/3-2.QnA 게시판.webp" />
+              src="./public/assets/3-2.QnA 게시판.webp" width="350" />
           </td>
         </tr>
       </tbody>
@@ -147,13 +147,13 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
   <thead>
     <tr>
-      <th align="center" style="background-color:#E6E6E6">알림 조회 및 실시간 알림</th>
+      <th align="center">알림 조회 및 실시간 알림</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td align="center">
-        <img src="./public/assets/4.알림.webp" />
+        <img src="./public/assets/4.알림.webp" width="350" />
       </td>
     </tr>
   </tbody>
@@ -163,8 +163,8 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
       <thead>
         <tr>
-          <th align="center" style="background-color: #e6e6e6">회원 정보 수정</th>
-          <th align="center" style="background-color: #e6e6e6">
+          <th align="center">회원 정보 수정</th>
+          <th align="center">
            속한 스터디 및 작성한 게시글 조회
           </th>
         </tr>
@@ -173,11 +173,11 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
         <tr>
           <td align="center">
             <img
-              src="./public/assets/5-1.회원정보수정.webp" />
+              src="./public/assets/5-1.회원정보수정.webp" width="350" />
           </td>
           <td align="center">
             <img
-              src="./public/assets/5-2.속한 스터디 및 작성한 게시글 조회.webp" />
+              src="./public/assets/5-2.속한 스터디 및 작성한 게시글 조회.webp" width="350"  />
           </td>
         </tr>
       </tbody>
@@ -187,14 +187,14 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
       <thead>
         <tr>
-          <th align="center" style="background-color: #e6e6e6">실시간 채팅</th>
+          <th align="center">실시간 채팅</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td align="center">
             <img
-              src="./public/assets/6.채팅.webp" />
+              src="./public/assets/6.채팅.webp" width="350" />
           </td>
         </tr>
       </tbody>
@@ -204,19 +204,19 @@ DevOnOff는 스터디 모집부터 진행, 관리까지 효율적으로 지원�
 <table>
       <thead>
         <tr>
-          <th align="center" style="background-color: #e6e6e6">스터디룸</th>
-          <th align="center" style="background-color: #e6e6e6">스터디 랭킹 조회</th>
+          <th align="center">스터디룸</th>
+          <th align="center">스터디 랭킹 조회</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td align="center">
             <img
-              src="./public/assets/7-1.스터디룸.webp " />
+              src="./public/assets/7-1.스터디룸.webp " width="350" />
           </td>
           <td align="center">
             <img
-              src="./public/assets/7-2.스터디 랭킹 조회.webp" />
+              src="./public/assets/7-2.스터디 랭킹 조회.webp" width="350" />
           </td>
         </tr>
       </tbody>
