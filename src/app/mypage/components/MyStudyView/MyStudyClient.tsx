@@ -3,20 +3,24 @@
 import { StudyPost, InfoPost, QnAPost } from '@/types/post';
 import { useCallback, useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
-import MyStudyCard from './MyStudyCard';
-import { MyStudyCardData } from './MyStudyCard';
+import MyStudyCard from '../MyStudyCard';
+import { MyStudyCardData } from '../MyStudyCard';
 import { StudyCard } from '@/app/community/study/components/StudyCard';
-import MyInfoPostCard from './MyInfoPostCard';
-import MyQnAPostCard from './MyQnAPostCard';
-import Pagination from './Pagination';
+import MyInfoPostCard from '../MyInfoPostCard';
+import MyQnAPostCard from '../MyQnAPostCard';
+import Pagination from '../Pagination';
 import axiosInstance from '@/utils/axios';
 import handleApiError from '@/utils/handleApiError';
 
-const MyStudyView = () => {
+interface MyStudyClientProps {
+  userId: number;
+  initialStudies: MyStudyCardData[];
+}
+const MyStudyClient = ({ userId, initialStudies }: MyStudyClientProps) => {
   const { userInfo, isSignedIn } = useAuthStore();
   const [activeTab, setActiveTab] = useState('myStudy'); // 기본값을 'myStudy'
   const [, setIsLoading] = useState(false);
-  const [myStudies, setMyStudies] = useState<MyStudyCardData[]>([]);
+  const [myStudies, setMyStudies] = useState<MyStudyCardData[]>(initialStudies);
   const [myStudyPosts, setMyStudyPosts] = useState<StudyPost[]>([]);
   const [myInfoPosts, setMyInfoPosts] = useState<InfoPost[]>([]);
   const [myQnAPosts, setMyQnAPosts] = useState<QnAPost[]>([]);
@@ -29,22 +33,22 @@ const MyStudyView = () => {
 
   const tabConfigs = {
     myStudy: {
-      url: `/study/author/${userInfo?.id}`,
+      url: `/study/author/${userId}`,
       setData: setMyStudies,
       logMessage: '나의 스터디 불러오기 성공',
     },
     myStudyPost: {
-      url: `/study-posts/author/${userInfo?.id}`,
+      url: `/study-posts/author/${userId}`,
       setData: setMyStudyPosts,
       logMessage: '나의 스터디 모집 글 불러오기 성공',
     },
     myInfoPost: {
-      url: `/info-posts/author/${userInfo?.id}`,
+      url: `/info-posts/author/${userId}`,
       setData: setMyInfoPosts,
       logMessage: '나의 정보 공유 게시글 불러오기 성공',
     },
     myQnAPost: {
-      url: `/qna-posts/author/${userInfo?.id}`,
+      url: `/qna-posts/author/${userId}`,
       setData: setMyQnAPosts,
       logMessage: '나의 Q&A 게시글 불러오기 성공',
     },
@@ -82,8 +86,14 @@ const MyStudyView = () => {
     );
   };
 
+  // 권한 체크
+  const isAuthorized = isSignedIn && userInfo?.id === userId;
+
   const handleTabClick = useCallback(
     async (tab: keyof typeof tabConfigs, page = 0) => {
+      // URL로 직접 접근하는 경우를 대비한 추가 권한 체크
+      if (!isAuthorized) return;
+
       setActiveTab(tab);
       setError(null);
       setIsLoading(true);
@@ -121,14 +131,14 @@ const MyStudyView = () => {
         }
       }
     },
-    [userInfo?.id],
+    [isAuthorized, userInfo?.id],
   );
 
   useEffect(() => {
-    if (isSignedIn && userInfo?.id) {
+    if (isSignedIn && userInfo?.id && isAuthorized) {
       handleTabClick('myStudy');
     }
-  }, [isSignedIn, userInfo, handleTabClick]);
+  }, [isSignedIn, userInfo, isAuthorized, handleTabClick]);
 
   const handlePageChange = (newPage: number) => {
     handleTabClick(activeTab as keyof typeof tabConfigs, newPage);
@@ -224,4 +234,4 @@ const MyStudyView = () => {
   );
 };
 
-export default MyStudyView;
+export default MyStudyClient;

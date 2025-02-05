@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import CustomConfirm from '@/components/common/Confirm';
@@ -11,14 +12,19 @@ import { MdEmail } from 'react-icons/md';
 import { FaCircle } from 'react-icons/fa';
 import { RiLockPasswordFill } from 'react-icons/ri';
 import handleApiError from '@/utils/handleApiError';
+import { User } from '@/types/post';
+
+interface UserInfoClientProps {
+  initialUserData: User;
+}
 
 const MAX_NICKNAME_LENGTH = 20;
 
-const UserInfoView = () => {
+const UserInfoClient = ({ initialUserData }: UserInfoClientProps) => {
   const { userInfo, setUserInfo, resetStore } = useAuthStore();
-  const [nickname, setNickname] = useState('');
+  const [nickname, setNickname] = useState(initialUserData.nickname || '');
   const [profileImageUrl, setProfileImageUrl] = useState(
-    userInfo?.profileImageUrl || '/default-profile-image.png',
+    initialUserData.profileImageUrl || '/default-profile-image.png',
   );
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
@@ -452,14 +458,14 @@ const UserInfoView = () => {
             <div className="md:col-span-9">
               <input
                 type="email"
-                value={userInfo?.email || ''}
+                value={initialUserData?.email || ''}
                 className="input input-bordered w-full"
                 disabled
               />
             </div>
           </div>
 
-          {userInfo?.signinType === 'GENERAL' && (
+          {initialUserData?.signinType === 'GENERAL' && (
             <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
               <label className="font-medium text-lg md:col-span-3 flex items-center">
                 <RiLockPasswordFill className="text-xl mr-2 text-gray-800" />
@@ -544,4 +550,4 @@ const UserInfoView = () => {
   );
 };
 
-export default UserInfoView;
+export default UserInfoClient;
