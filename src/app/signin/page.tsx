@@ -1,4 +1,10 @@
+import { Metadata } from 'next';
 import SignInForm from '@/app/signin/components/SignInForm';
+
+export const metadata: Metadata = {
+  title: '로그인 - 온오프라인 개발 스터디 플랫폼 DevOnOff',
+  description: 'DevOnOff 로그인 페이지입니다.',
+};
 
 const SingInPage = () => {
   return (
