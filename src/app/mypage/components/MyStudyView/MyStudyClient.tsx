@@ -114,15 +114,16 @@ const MyStudyClient = ({ userId, initialStudies }: MyStudyClientProps) => {
           console.log('Request URL: ', url); // URL 로그로 확인
           const response = await axiosInstance.get(url);
 
-          if (response.status === 200 && response.data) {
+          if (response.status === 200 && Array.isArray(response.data.content)) {
             config.setData(response.data.content);
-
             setPagination({
               currentPage: response.data.pageable.pageNumber + 1,
               pageSize: response.data.pageable.pageSize,
               totalElements: response.data.totalElements,
             });
             console.log(config.logMessage);
+          } else {
+            setError('잘못된 데이터 형식이 반환되었습니다.');
           }
         } catch (error: any) {
           handleApiError(error, setError);
@@ -171,6 +172,15 @@ const MyStudyClient = ({ userId, initialStudies }: MyStudyClientProps) => {
     const currentTab = contentMap[activeTab as keyof typeof contentMap];
     if (!isSignedIn) return <p>로그인이 필요합니다.</p>;
     if (error) return <p className="text-red-500">{error}</p>;
+
+    if (!Array.isArray(currentTab.data)) {
+      return (
+        <p>
+          데이터를 불러오는 데 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.
+        </p>
+      );
+    }
+
     if (!currentTab.data || currentTab.data.length === 0)
       return <p>{currentTab.emptyMessage}</p>;
 
